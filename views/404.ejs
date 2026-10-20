@@ -1,0 +1,17 @@
+<%- include('partials/head', { page }) %>
+<%- include('partials/header') %>
+<section class="section legal">
+  <div class="container narrow center">
+    <p class="eyebrow"><%= typeof serverError !== 'undefined' ? 'ERREUR 500' : typeof invalidLink !== 'undefined' ? 'LIEN INVALIDE' : 'ERREUR 404' %></p>
+    <h1><%= typeof serverError !== 'undefined' ? 'Une erreur est survenue.' : typeof invalidLink !== 'undefined' ? 'Ce lien n’est pas valide.' : 'Page introuvable.' %></h1>
+    <p class="muted">
+      <%= typeof serverError !== 'undefined'
+        ? 'Le serveur a rencontré un problème. Réessayez dans un instant.'
+        : typeof invalidLink !== 'undefined'
+          ? 'Le lien de suivi de votre commande est incorrect ou incomplet. Vérifiez le lien reçu après votre commande.'
+          : 'La page demandée n’existe pas ou a été déplacée.' %>
+    </p>
+    <p style="margin-top:1.5rem"><a href="/" class="btn btn-primary">Retour à l’accueil</a></p>
+  </div>
+</section>
+<%- include('partials/footer') %>

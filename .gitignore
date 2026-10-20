@@ -1,0 +1,10 @@
+# Dépendances (réinstallées par npm install)
+node_modules/
+package-lock.json
+
+# Données locales : commandes clients, config IA (jamais dans Git)
+data/
+
+# Secrets & environnement
+.env
+.env.*

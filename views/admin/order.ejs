@@ -1,0 +1,151 @@
+<%- include('../partials/head', { page }) %>
+<body class="page-admin">
+  <header class="admin-header">
+    <div class="container admin-header-inner">
+      <a href="/admin" class="brand"><img src="/assets/logo-wordmark.png" alt="DigitalVerse" class="brand-logo" width="160" height="30"></a>
+      <div class="admin-header-right">
+        <a href="/admin" class="btn btn-ghost btn-sm">← Toutes les commandes</a>
+        <a href="/admin/deconnexion" class="btn btn-outline btn-sm">Déconnexion</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container admin-body">
+    <header class="order-detail-head">
+      <div>
+        <h1>Commande <%= order.id %></h1>
+        <p class="muted small">Reçue le <%= new Date(order.createdAt).toLocaleString('fr-FR') %> — dernière mise à jour le <%= new Date(order.updatedAt).toLocaleString('fr-FR') %></p>
+      </div>
+      <span class="pill big" data-status="<%= order.status %>" id="detail-status-pill"><%= order.status %></span>
+    </header>
+
+    <div class="admin-grid-3">
+      <!-- Colonne 1 : infos client + actions -->
+      <div class="stack">
+        <div class="card">
+          <h2 class="card-title">Client</h2>
+          <dl class="side-dl">
+            <div><dt>Nom</dt><dd><%= order.client.firstName %> <%= order.client.lastName %></dd></div>
+            <div><dt>Téléphone</dt><dd><a href="tel:<%= order.client.phone %>"><%= order.client.phone %></a></dd></div>
+            <div><dt>E-mail</dt><dd><a href="mailto:<%= order.client.email %>"><%= order.client.email %></a></dd></div>
+            <div><dt>Projet</dt><dd><%= order.type === 'agent' ? 'Agent IA' : 'Site web' %></dd></div>
+            <div><dt>Offre</dt><dd><%= plan.name %> — <%= plan.price %> € <%= plan.unit %></dd></div>
+            <div><dt>Échéance souhaitée</dt><dd><%= new Date(order.desiredDate).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }) %></dd></div>
+            <% if (order.comment) { %><div><dt>Note du client</dt><dd><%= order.comment %></dd></div><% } %>
+          </dl>
+          <p class="muted small">Page de brief du client : <a href="/chat/<%= order.id %>?key=<%= order.accessKey %>" target="_blank" rel="noopener">ouvrir ↗</a></p>
+        </div>
+
+        <form class="card" id="order-actions" data-order="<%= order.id %>">
+          <h2 class="card-title">Traitement</h2>
+          <div class="form-field">
+            <label for="a-status">Statut de la commande</label>
+            <select id="a-status" name="status">
+              <% [['nouveau','Nouvelle'],['brief','Brief en cours'],['brief_termine','Brief terminé — à étudier'],['confirmee','Confirmée (devis accepté)'],['prete','Prête — livrée'],['archivee','Archivée']].forEach(function(s){ %>
+                <option value="<%= s[0] %>" <%= order.status === s[0] ? 'selected' : '' %>><%= s[1] %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="a-url">URL de livraison <span class="muted">(site en ligne ou agent IA déployé)</span></label>
+            <input type="url" id="a-url" name="livraisonUrl" placeholder="https://…" value="<%= order.livraison ? order.livraison.url : '' %>">
+          </div>
+          <div class="form-field">
+            <label for="a-livnote">Note de livraison <span class="muted">(visible par le client)</span></label>
+            <input type="text" id="a-livnote" name="livraisonNote" placeholder="Ex. : identifiants transmis par e-mail" value="<%= order.livraison ? order.livraison.note : '' %>">
+          </div>
+          <div class="form-field">
+            <label for="a-notes">Notes internes <span class="muted">(non visibles par le client)</span></label>
+            <textarea id="a-notes" name="adminNotes" rows="3"><%= order.adminNotes || '' %></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="a-save">
+            <span class="btn-label">Enregistrer</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+          <p class="muted small" id="a-result" role="status"></p>
+        </form>
+      </div>
+
+      <!-- Colonne 2 : brief généré -->
+      <div class="card">
+        <h2 class="card-title">Brief généré par l’assistant</h2>
+        <% if (!order.brief) { %>
+          <p class="muted">Le client n’a pas encore terminé son brief. La conversation est visible à droite.</p>
+        <% } else { %>
+          <div class="brief-block">
+            <p class="brief-label">Description initiale</p>
+            <p><%= order.brief.description || '—' %></p>
+          </div>
+          <% if (order.brief.sections && order.brief.sections.length) { %>
+            <% order.brief.sections.forEach(function(sec){ %>
+            <div class="brief-block">
+              <p class="brief-label"><%= sec.label %></p>
+              <p><%= sec.value %></p>
+            </div>
+            <% }); %>
+          <% } %>
+          <% if (order.brief.features && order.brief.features.length) { %>
+          <div class="brief-block">
+            <p class="brief-label">Éléments détectés</p>
+            <p><% order.brief.features.forEach(function(f){ %><span class="tag"><%= f %></span><% }); %></p>
+          </div>
+          <% } %>
+          <div class="brief-block verdict-<%= order.brief.compat.verdict %>">
+            <p class="brief-label">Compatibilité avec « <%= plan.name %> »</p>
+            <p><strong><%= order.brief.compat.verdict === 'compatible' ? '✓ Compatible' : order.brief.compat.verdict === 'ajustements' ? '⚠ Ajustements à prévoir' : '✕ Hors périmètre partiel' %></strong></p>
+            <p class="muted small"><%= order.brief.compat.summary %></p>
+            <% order.brief.compat.points.forEach(function(p){ %><p class="muted small">• <strong><%= p.label %></strong> — <%= p.msg %></p><% }); %>
+          </div>
+          <p class="muted small">Brief conclu le <%= new Date(order.brief.concludedAt).toLocaleString('fr-FR') %></p>
+        <% } %>
+      </div>
+
+      <!-- Colonne 3 : transcription -->
+      <div class="card">
+        <h2 class="card-title">Conversation du brief</h2>
+        <div class="transcript">
+          <% if (order.chat.length === 0) { %><p class="muted">Aucun échange pour le moment.</p><% } %>
+          <% order.chat.forEach(function(m){ %>
+            <div class="bubble <%= m.role === 'user' ? 'user' : 'assistant' %>">
+              <p class="bubble-text"><%= m.text %></p>
+              <p class="bubble-time muted small"><%= m.role === 'user' ? order.client.firstName : 'Assistant' %> — <%= new Date(m.at).toLocaleString('fr-FR') %></p>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const form = document.getElementById('order-actions');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        form.classList.add('loading');
+        const id = form.dataset.order;
+        const res = await fetch('/api/admin/commandes/' + encodeURIComponent(id), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: document.getElementById('a-status').value,
+            livraisonUrl: document.getElementById('a-url').value,
+            livraisonNote: document.getElementById('a-livnote').value,
+            adminNotes: document.getElementById('a-notes').value,
+          }),
+        });
+        form.classList.remove('loading');
+        const out = document.getElementById('a-result');
+        if (res.ok) {
+          out.textContent = 'Enregistré ✓';
+          const data = await res.json();
+          const pill = document.getElementById('detail-status-pill');
+          pill.dataset.status = data.order.status;
+          pill.textContent = data.order.status;
+        } else {
+          out.textContent = 'Erreur lors de l’enregistrement.';
+        }
+        setTimeout(() => (out.textContent = ''), 4000);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+# =========================================================================
+# Blueprint Render — DigitalVerse
+# Déploiement : poussez ce dossier sur GitHub, puis sur Render.com :
+#   « New + » → « Blueprint » → sélectionnez le dépôt.
+# Le disque persistant conserve commandes et réglages entre les déploiements.
+# Les deux mots de passe admin sont à renseigner dans le tableau de bord
+# Render (Environment) — ils ne figurent jamais dans ce fichier.
+# =========================================================================
+services:
+  - type: web
+    name: digitalverse
+    runtime: node
+    plan: starter          # plan payant : pas de mise en veille + disque disponible
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ADMIN_PASSWORD      # premier facteur — à définir dans Render (Environment)
+        sync: false
+      - key: ADMIN_PASSWORD_2    # second facteur — à définir dans Render (Environment)
+        sync: false
+      - key: DATA_DIR            # stocke db.json + settings.json sur le disque persistant
+        value: /opt/render/data
+      - key: SMTP_USER           # e-mails Gmail — adresse d'expédition (mot de passe d'application)
+        sync: false
+      - key: SMTP_PASS           # mot de passe d'application Gmail (16 caractères)
+        sync: false
+      - key: NOTIFY_EMAIL        # destinataire des notifications admin (commandes, messages)
+        sync: false
+    disk:
+      name: dv-data
+      mountPath: /opt/render/data
+      sizeGB: 1

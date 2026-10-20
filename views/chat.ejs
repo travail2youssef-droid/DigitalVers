@@ -1,0 +1,77 @@
+<%- include('partials/head', { page }) %>
+<body class="page-chat">
+<a class="skip-link" href="#chat-main">Aller à la conversation</a>
+<header class="site-header simple">
+  <div class="container header-inner">
+    <a href="/" class="brand" aria-label="DigitalVerse — retour à l’accueil">
+      <img src="/assets/logo-wordmark.png" alt="DigitalVerse" class="brand-logo" width="180" height="34">
+    </a>
+    <span class="chat-head-ref muted small">Commande <strong class="text-red"><%= order.id %></strong></span>
+  </div>
+</header>
+
+<main class="chat-layout" id="chat-main">
+  <aside class="chat-side">
+    <div class="card">
+      <p class="side-title">Votre commande</p>
+      <dl class="side-dl">
+        <div><dt>Client</dt><dd><%= order.client.firstName %> <%= order.client.lastName %></dd></div>
+        <div><dt>Projet</dt><dd><%= order.type === 'agent' ? 'Agent IA' : 'Site web' %></dd></div>
+        <div><dt>Offre</dt><dd><%= plan.name %> — <%= plan.price %> € <span class="muted"><%= plan.unit %></span></dd></div>
+        <div><dt>Échéance souhaitée</dt><dd><%= new Date(order.desiredDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) %></dd></div>
+        <div><dt>Statut</dt><dd><span class="pill" id="status-pill" data-status="<%= order.status %>">—</span></dd></div>
+      </dl>
+      <div class="copy-row" style="margin-top:0.9rem">
+        <input type="text" id="suivi-link" readonly aria-label="Votre lien privé de suivi">
+        <button type="button" class="btn btn-outline btn-sm" id="copy-suivi">Copier</button>
+      </div>
+      <p class="muted small" style="margin:0.4rem 0 0">Lien privé de suivi — conservez-le pour retrouver cette page (statut, livraison).</p>
+      <div id="livraison-box" class="livraison-box" hidden>
+        <p class="side-title text-red">Votre livraison est prête</p>
+        <a id="livraison-url" class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">Accéder à ma livraison</a>
+        <p class="muted small" id="livraison-note"></p>
+      </div>
+    </div>
+
+    <div class="card" id="progress-card">
+      <p class="side-title">Progression du brief</p>
+      <div class="progress"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+      <p class="muted small"><span id="progress-label">0</span> informations clés collectées</p>
+      <button class="btn btn-primary btn-block" id="finish-btn" disabled>
+        Terminer le brief
+      </button>
+      <p class="muted small">Disponible dès que l’assistant a collecté les informations essentielles (ou après 2 échanges).</p>
+    </div>
+  </aside>
+
+  <section class="chat-panel card" aria-label="Conversation avec l’assistant de brief">
+    <div class="chat-panel-head">
+      <div class="agent-id">
+        <span class="agent-avatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M9.5 3A3.5 3.5 0 0 0 6 6.5c0 .2 0 .4.03.6A3.5 3.5 0 0 0 4 10.5c0 1 .42 1.9 1.08 2.53A3.5 3.5 0 0 0 7.5 19H9a2 2 0 0 0 2-2V5.5A2.5 2.5 0 0 0 9.5 3Zm5 0A3.5 3.5 0 0 1 18 6.5c0 .2 0 .4-.03.6A3.5 3.5 0 0 1 20 10.5c0 1-.42 1.9-1.08 2.53A3.5 3.5 0 0 1 16.5 19H15a2 2 0 0 1-2-2V5.5A2.5 2.5 0 0 1 14.5 3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <div>
+          <p class="agent-name">Assistant de brief DigitalVerse</p>
+          <p class="muted small" id="agent-status">En ligne — répond instantanément</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chat-messages" aria-live="polite" aria-label="Messages"></div>
+
+    <div class="brief-result" id="brief-result" hidden></div>
+
+    <form class="chat-input" id="chat-form">
+      <label class="sr-only" for="chat-text">Votre message</label>
+      <textarea id="chat-text" rows="2" placeholder="Décrivez votre projet, répondez aux questions de l’assistant…" required></textarea>
+      <button type="submit" class="btn btn-primary btn-send" id="send-btn" aria-label="Envoyer">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-8-8 18-2-8-8-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
+  </section>
+</main>
+
+<script id="order-data" type="application/json"><%- orderJson %></script>
+<script src="/js/chat.js" defer></script>
+</body>
+</html>

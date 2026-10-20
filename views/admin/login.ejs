@@ -1,0 +1,27 @@
+<%- include('../partials/head', { page }) %>
+<body class="page-login">
+  <main class="login-wrap">
+    <div class="card login-card">
+      <img src="/assets/logo-wordmark.png" alt="DigitalVerse" class="brand-logo" width="190" height="36">
+      <h1>Espace administrateur</h1>
+      <div class="login-progress" aria-label="Étape <%= step %> sur 2">
+        <span class="dot <%= step >= 1 ? 'on' : '' %>"></span>
+        <span class="dot <%= step >= 2 ? 'on' : '' %>"></span>
+      </div>
+      <p class="muted small">Vérification <%= step %>/2 — <%= step === 1 ? 'premier facteur' : 'second facteur' %>. Réservé à l’équipe DigitalVerse.</p>
+      <% if (error) { %>
+        <p class="form-error-global" role="alert">Mot de passe incorrect. Réessayez.</p>
+      <% } %>
+      <form method="post" action="<%= step === 1 ? '/admin/connexion' : '/admin/connexion/etape-2' %>" class="login-form">
+        <div class="form-field">
+          <label for="password"><%= step === 1 ? 'Premier mot de passe' : 'Second mot de passe' %></label>
+          <input type="password" id="password" name="password" autocomplete="<%= step === 1 ? 'current-password' : 'off' %>" required autofocus>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block"><%= step === 1 ? 'Continuer' : 'Accéder à l’espace' %></button>
+      </form>
+      <p class="muted small">Mots de passe configurés via <code>ADMIN_PASSWORD</code> et <code>ADMIN_PASSWORD_2</code>.</p>
+      <a href="/" class="muted small">← Retour au site</a>
+    </div>
+  </main>
+</body>
+</html>

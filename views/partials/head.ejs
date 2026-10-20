@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= page.title %></title>
+  <meta name="description" content="<%= page.description %>">
+  <meta name="theme-color" content="#050505">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/favicon.png">
+  <!-- Open Graph / réseaux sociaux -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="DigitalVerse">
+  <meta property="og:title" content="<%= page.title %>">
+  <meta property="og:description" content="<%= page.description %>">
+  <meta property="og:image" content="/assets/hero-laptop.png">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= page.title %>">
+  <meta name="twitter:description" content="<%= page.description %>">
+  <meta name="twitter:image" content="/assets/hero-laptop.png">
+  <link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/main.css">
+  <% if (typeof headExtra !== 'undefined') { %><%- headExtra %><% } %>
+</head>
