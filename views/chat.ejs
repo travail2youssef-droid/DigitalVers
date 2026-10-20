@@ -6,21 +6,22 @@
     <a href="/" class="brand" aria-label="DigitalVerse — retour à l’accueil">
       <img src="/assets/logo-wordmark.png" alt="DigitalVerse" class="brand-logo" width="180" height="34">
     </a>
-    <span class="chat-head-ref muted small">Commande <strong class="text-red"><%= order.id %></strong></span>
+    <span class="chat-head-ref muted small">Demande <strong class="text-red"><%= order.id %></strong></span>
   </div>
 </header>
 
 <main class="chat-layout" id="chat-main">
   <aside class="chat-side">
     <div class="card">
-      <p class="side-title">Votre commande</p>
+      <p class="side-title">Votre demande</p>
       <dl class="side-dl">
-        <div><dt>Client</dt><dd><%= order.client.firstName %> <%= order.client.lastName %></dd></div>
-        <div><dt>Projet</dt><dd><%= order.type === 'agent' ? 'Agent IA' : 'Site web' %></dd></div>
-        <div><dt>Offre</dt><dd><%= plan.name %> — <%= plan.price %> € <span class="muted"><%= plan.unit %></span></dd></div>
-        <div><dt>Échéance souhaitée</dt><dd><%= new Date(order.desiredDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) %></dd></div>
+        <div><dt>Client</dt><dd id="side-client"><%= summary.clientName %></dd></div>
+        <div><dt>Projet</dt><dd id="side-projet"><%= summary.typeLabel %></dd></div>
+        <div><dt>Offre</dt><dd id="side-offre"><%= summary.planLabel %></dd></div>
+        <div><dt>Échéance souhaitée</dt><dd id="side-date"><%= summary.dateLabel %></dd></div>
         <div><dt>Statut</dt><dd><span class="pill" id="status-pill" data-status="<%= order.status %>">—</span></dd></div>
       </dl>
+      <p class="muted small" style="margin:0.6rem 0 0">Ces informations se complètent au fil de votre conversation avec l’assistant.</p>
       <div class="copy-row" style="margin-top:0.9rem">
         <input type="text" id="suivi-link" readonly aria-label="Votre lien privé de suivi">
         <button type="button" class="btn btn-outline btn-sm" id="copy-suivi">Copier</button>
@@ -40,7 +41,7 @@
       <button class="btn btn-primary btn-block" id="finish-btn" disabled>
         Terminer le brief
       </button>
-      <p class="muted small">Disponible dès que l’assistant a collecté les informations essentielles (ou après 2 échanges).</p>
+      <p class="muted small">Disponible dès que l’assistant a collecté toutes les informations essentielles, vos coordonnées et votre accord compris.</p>
     </div>
   </aside>
 

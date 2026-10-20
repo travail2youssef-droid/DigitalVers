@@ -14,7 +14,7 @@
   const agentStatus = document.getElementById('agent-status');
 
   const STATUTS = {
-    nouveau: 'Commande reçue',
+    nouveau: 'Demande démarrée',
     brief: 'Brief en cours',
     brief_termine: 'Brief transmis — étude en cours',
     confirmee: 'Commande confirmée — en production',
@@ -24,6 +24,9 @@
 
   let finished = Boolean(data.brief);
   let userCount = data.chat.filter((m) => m.role === 'user').length;
+  // Seul le serveur décide si le brief peut être transmis (informations
+  // essentielles, coordonnées et accord collectés par l’assistant).
+  let canConcludeState = Boolean(data.readyToConclude);
 
   /* ------------------------------------------------------------- affichage */
   function addBubble(role, text, at) {
@@ -65,9 +68,26 @@
     progressLabel.textContent = `${progress.done}/${progress.total}`;
   }
 
+  // Le récapitulatif se complète au fil de la conversation : l'assistant
+  // collecte progressivement le client, le projet, l'offre et l'échéance.
+  function setSummary(summary) {
+    if (!summary) return;
+    const map = {
+      'side-client': summary.clientName,
+      'side-projet': summary.typeLabel,
+      'side-offre': summary.planLabel,
+      'side-date': summary.dateLabel,
+    };
+    Object.entries(map).forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el && value) el.textContent = value;
+    });
+  }
+
   function updateFinishBtn(canConclude) {
+    if (typeof canConclude === 'boolean') canConcludeState = canConclude;
     if (finished) { finishBtn.disabled = true; finishBtn.textContent = 'Brief transmis ✓'; return; }
-    finishBtn.disabled = !(canConclude || userCount >= 2);
+    finishBtn.disabled = !canConcludeState;
   }
 
   function setStatusPill(status) {
@@ -133,6 +153,8 @@
   /* ------------------------------------------------------------------ init */
   data.chat.forEach((m) => addBubble(m.role, m.text, m.at));
   setStatusPill(data.status);
+  setSummary(data.summary);
+  setProgress(data.progress);
   if (data.brief) {
     showBrief(data.brief);
     progressBar.style.width = '100%';
@@ -193,6 +215,7 @@
       if (res.ok && out.ok) {
         addBubble('assistant', out.reply, new Date().toISOString());
         setProgress(out.progress);
+        setSummary(out.summary);
         updateFinishBtn(out.canConclude);
         if (out.closed) setStatusPill('brief_termine');
       } else {
@@ -203,11 +226,13 @@
       addBubble('assistant', 'Problème de connexion. Votre message n’a peut-être pas été enregistré — réessayez.', new Date().toISOString());
     } finally {
       sending = false;
-      sendBtn.disabled = false;
-      textEl.disabled = false;
-      textEl.focus();
-      agentStatus.textContent = 'En ligne — répond instantanément';
-      updateFinishBtn(false);
+      sendBtn.disabled = finished;
+      textEl.disabled = finished;
+      if (!finished) {
+        textEl.focus();
+        agentStatus.textContent = 'En ligne — répond instantanément';
+      }
+      updateFinishBtn();
     }
   }
 
@@ -243,12 +268,14 @@
         agentStatus.textContent = 'Brief transmis à DigitalVerse';
         textEl.placeholder = 'Brief transmis — ajoutez des précisions par la suite via DigitalVerse si besoin.';
       } else {
-        finishBtn.textContent = out.error || 'Terminer le brief';
-        finishBtn.disabled = false;
+        addBubble('assistant', out.error || 'Votre brief ne peut pas encore être transmis. Continuez à répondre à mes questions, puis réessayez.', new Date().toISOString());
+        finishBtn.textContent = 'Terminer le brief';
+        updateFinishBtn(false);
       }
     } catch {
+      addBubble('assistant', 'Problème de connexion pendant la transmission. Votre brief n’a peut-être pas été envoyé — réessayez dans un instant.', new Date().toISOString());
       finishBtn.textContent = 'Terminer le brief';
-      finishBtn.disabled = false;
+      updateFinishBtn();
     }
   });
 

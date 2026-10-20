@@ -13,7 +13,14 @@
   };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmtDate = (iso) => new Date(iso).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-  const fmtDay = (iso) => new Date(iso).toLocaleDateString('fr-FR');
+  // L'échéance peut être une date ISO, un texte libre (« fin novembre »…)
+  // collecté par l'assistant, ou pas encore connue.
+  const fmtDay = (value) => {
+    if (!value) return 'À définir';
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleDateString('fr-FR');
+  };
+  const clientNameOf = (o) => `${o.client?.firstName || ''} ${o.client?.lastName || ''}`.trim() || 'Client à identifier';
 
   /* ------------------------------------------------------------- onglets */
   const tabs = document.querySelectorAll('.admin-tab');
@@ -35,12 +42,15 @@
   let latestOrders = [];
 
   function rowOrder(o, isNew) {
-    const plan = o.planName ? `${o.planName} — ${o.planPrice} €${o.planUnit === '/mois' ? '/mois' : ''}` : o.planSlug;
+    const plan = o.planName && o.planPrice != null
+      ? `${o.planName} — ${o.planPrice} €${o.planUnit === '/mois' ? '/mois' : ''}`
+      : (o.planName || o.planSlug || 'À définir');
+    const contact = [o.client?.email, o.client?.phone].filter(Boolean).join(' · ') || 'Coordonnées à collecter';
     return `<tr class="${isNew ? 'is-new' : ''}">
       <td>${fmtDate(o.createdAt)}</td>
-      <td><span class="cell-main">${isNew ? '<span class="row-new-badge" aria-label="nouveau"></span>' : ''}${esc(o.client.firstName)} ${esc(o.client.lastName)}</span><br>
-          <span class="cell-sub">${esc(o.client.email)} · ${esc(o.client.phone)}</span></td>
-      <td>${o.type === 'agent' ? '🤖 Agent IA' : '🌐 Site web'}</td>
+      <td><span class="cell-main">${isNew ? '<span class="row-new-badge" aria-label="nouveau"></span>' : ''}${esc(clientNameOf(o))}</span><br>
+          <span class="cell-sub">${esc(contact)}</span></td>
+      <td>${o.type === 'agent' ? '🤖 Agent IA' : o.type === 'site' ? '🌐 Site web' : 'À définir'}</td>
       <td>${esc(plan)}</td>
       <td>${esc(fmtDay(o.desiredDate))}</td>
       <td><span class="pill" data-status="${esc(o.status)}">${STATUTS[o.status] || esc(o.status)}</span>${o.brief ? ' <span class="cell-sub">brief ✓</span>' : ''}</td>
@@ -70,8 +80,8 @@
       .map(
         (o) => `<tr>
         <td><span class="cell-main">${esc(o.id)}</span></td>
-        <td>${esc(o.client.firstName)} ${esc(o.client.lastName)}</td>
-        <td>${esc(o.planName || o.planSlug)}</td>
+        <td>${esc(clientNameOf(o))}</td>
+        <td>${esc(o.planName || o.planSlug || 'À définir')}</td>
         <td>${o.livraison && o.livraison.url ? `<a href="${esc(o.livraison.url)}" target="_blank" rel="noopener">${esc(o.livraison.url)}</a>${o.livraison.note ? `<br><span class="cell-sub">${esc(o.livraison.note)}</span>` : ''}` : '<span class="muted">—</span>'}</td>
         <td><span class="pill" data-status="${esc(o.status)}">${STATUTS[o.status]}</span></td>
       </tr>`

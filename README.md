@@ -1,8 +1,9 @@
 # DigitalVerse — site de l'agence
 
 Site web complet de l'agence **DigitalVerse** : vitrine premium (français, noir/blanc/rouge),
-tunnel de **commande en ligne** (site web ou agent IA), **assistant de brief IA** qui pose les
-questions clés et vérifie la compatibilité avec l'offre choisie, puis **gestionnaire de commandes**
+demande démarrant **directement avec l'assistant IA** (site web ou agent IA, sans formulaire
+de commande classique), qui collecte le projet et les coordonnées en conversation, pose les
+questions clés du brief et vérifie la compatibilité avec l'offre choisie, puis **gestionnaire de commandes**
 avec espace administrateur auto-actualisé et registre des livraisons.
 
 ## Démarrage
@@ -27,10 +28,12 @@ npm start          # http://localhost:3000
 ## Notifications e-mail (Gmail)
 
 Le site envoie automatiquement (quand le SMTP est configuré) :
-- **à vous (admin)** : nouvelle commande (avec récap complet + lien admin), brief
-  terminé à étudier, nouveau message de contact ;
-- **au client** : confirmation de commande **avec son lien privé de brief**
-  (indispensable pour qu'il puisse y revenir), accusé de réception du formulaire.
+- **à vous (admin)** : brief terminé à étudier (avec les coordonnées collectées par
+  l'assistant IA pendant la conversation), nouveau message de contact — aucun e-mail
+  n'est envoyé au simple démarrage d'une conversation ;
+- **au client** : confirmation envoyée **après la transmission de son brief**, avec son
+  **lien privé de suivi** (indispensable pour qu'il puisse y revenir), et accusé de
+  réception du formulaire de contact le cas échéant.
 
 Sans configuration SMTP, tout fonctionne pareil — les envois sont simplement ignorés.
 
@@ -42,7 +45,7 @@ Sans configuration SMTP, tout fonctionne pareil — les envois sont simplement i
 3. Sur Render (Environment) : `SMTP_USER` = votre adresse Gmail, `SMTP_PASS` =
    ce code (les espaces sont acceptés), `NOTIFY_EMAIL` = l'adresse qui doit
    recevoir les alertes (souvent la même).
-4. Redéployez, puis passez une fausse commande pour vérifier la réception.
+4. Redéployez, puis démarrez une fausse demande avec l'assistant IA et terminez le brief pour vérifier la réception.
 
 > L'espace `/admin` exige **deux mots de passe à la suite** (pages 1/2 puis 2/2).
 > La session dure 12 h ; le jeton intermédiaire expire après 10 min et ne donne
@@ -79,12 +82,15 @@ gratuitement) — le code est isolé dans `lib/store.js`, migration simple.
 
 - **Site vitrine** : `/` — sections Accueil, Services, Nos offres (Sites web + Agents IA),
   Réalisations (projets *concepts* clairement étiquetés), Processus, À propos, FAQ, Contact.
-- **Commande client** : `/commander` — choix du type de projet (site / agent IA), de l'offre,
-  de l'échéance souhaitée, puis coordonnées (prénom, nom, téléphone, e-mail).
-  Le client est ensuite redirigé vers sa **page de brief** (`/chat/...`) avec un **lien unique et privé**
-  à conserver pour suivre sa commande.
-- **Assistant de brief IA** : pose les questions une par une, s'arrête de lui-même quand le brief
-  est suffisamment complet, génère une synthèse et **vérifie la compatibilité** avec l'offre choisie.
+- **Demande client via l'assistant IA** : `/commander` — page de démarrage de la conversation
+  (une offre peut y être présélectionnée depuis les cartes tarifaires, sans aucun champ à remplir).
+  Un clic crée la demande et redirige le client vers sa **page de conversation** (`/chat/...`) avec un
+  **lien unique et privé** à conserver pour suivre sa demande. L'assistant IA collecte alors, au fil
+  de l'échange : la description du projet, le type (site / agent IA), l'offre, les questions du brief,
+  l'échéance souhaitée, le prénom et le nom, l'e-mail, le téléphone (facultatif) et l'accord explicite
+  de recontact — sans lequel le brief ne peut pas être transmis.
+- **Assistant de brief IA** : pose les questions une par une, s'arrête de lui-même quand la demande
+  et le brief sont suffisamment complets, génère une synthèse et **vérifie la compatibilité** avec l'offre choisie.
   Trois moteurs possibles, réglables dans l'admin (onglet *API de l'agent IA*) :
   - **Assistant intégré** (défaut) : aucun service externe requis.
   - **n8n — workflow Chat Trigger** : branchez votre workflow (Chat Trigger → AI Agent → Simple Memory).
@@ -92,8 +98,9 @@ gratuitement) — le code est isolé dans `lib/store.js`, migration simple.
     (`https://<votre-n8n>/webhook/<id>/chat`) et collez-la dans l'admin, puis **activez le workflow**.
     Le serveur envoie `{ sessionId, action: "sendMessage", chatInput }` avec un `sessionId` unique par
     commande (la Simple Memory conserve le fil par client) et **injecte automatiquement au premier
-    message** le contexte DigitalVerse : offre choisie, client, consignes de brief (questions ciblées,
-    conclusion `[BRIEF_OK]`) — aucune modification du workflow n'est nécessaire. Une consigne
+    message** le contexte DigitalVerse : informations déjà connues, informations restant à collecter
+    en conversation et consignes de brief (questions ciblées, conclusion `[BRIEF_OK]` uniquement
+    quand tout est collecté) — aucune modification du workflow n'est nécessaire. Une consigne
     personnalisée peut remplacer la consigne automatique via le champ prévu dans l'admin. Si le
     webhook tombe en panne, l'assistant intégré prend le relais en transparent.
   - **API compatible OpenAI** (`/chat/completions`) : endpoint, modèle, clé (jamais exposée au navigateur).
@@ -115,13 +122,13 @@ Les données sont stockées en JSON dans `./data/` (créé automatiquement) : `d
 
 Les tarifs, offres, FAQ, textes et règles de compatibilité sont centralisés dans
 `config/site.config.js`. Modifiez ce seul fichier pour ajuster les prix ou les offres —
-site, formulaire de commande et admin se mettent à jour automatiquement.
+site, assistant IA et admin se mettent à jour automatiquement.
 
 ## Points de transparence (par conception)
 
-- Aucun paiement n'est encaissé en ligne : la commande déclenche l'étude + devis, le règlement
-  est confirmé hors site. Pour ajouter un vrai paiement (Stripe etc.), branchez-le dans
-  `POST /api/commande` — les clés resteront côté serveur.
+- Aucun paiement n'est encaissé en ligne : la demande transmise par l'assistant déclenche
+  l'étude + devis, le règlement est confirmé hors site. Pour ajouter un vrai paiement
+  (Stripe etc.), branchez-le autour de `POST /api/demande-ia` — les clés resteront côté serveur.
 - Projets du portfolio = **concepts** (mentionnés comme tels) ; remplacez-les par de vraies
   réalisations dans `config/site.config.js`.
 - Mentions légales : champs entre crochets `[…]` à compléter avec les informations officielles.

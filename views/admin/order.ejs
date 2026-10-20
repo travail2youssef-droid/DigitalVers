@@ -1,4 +1,16 @@
 <%- include('../partials/head', { page }) %>
+<%
+  const client = order.client || {};
+  const clientName = `${client.firstName || ''} ${client.lastName || ''}`.trim() || '—';
+  const planLabel = plan ? `${plan.name} — ${plan.price} € ${plan.unit}` : 'À définir avec l’assistant';
+  const desiredDateLabel = (() => {
+    if (!order.desiredDate) return 'À définir';
+    const d = new Date(order.desiredDate);
+    return Number.isNaN(d.getTime())
+      ? order.desiredDate
+      : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  })();
+%>
 <body class="page-admin">
   <header class="admin-header">
     <div class="container admin-header-inner">
@@ -25,12 +37,12 @@
         <div class="card">
           <h2 class="card-title">Client</h2>
           <dl class="side-dl">
-            <div><dt>Nom</dt><dd><%= order.client.firstName %> <%= order.client.lastName %></dd></div>
-            <div><dt>Téléphone</dt><dd><a href="tel:<%= order.client.phone %>"><%= order.client.phone %></a></dd></div>
-            <div><dt>E-mail</dt><dd><a href="mailto:<%= order.client.email %>"><%= order.client.email %></a></dd></div>
-            <div><dt>Projet</dt><dd><%= order.type === 'agent' ? 'Agent IA' : 'Site web' %></dd></div>
-            <div><dt>Offre</dt><dd><%= plan.name %> — <%= plan.price %> € <%= plan.unit %></dd></div>
-            <div><dt>Échéance souhaitée</dt><dd><%= new Date(order.desiredDate).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }) %></dd></div>
+            <div><dt>Nom</dt><dd><%= clientName %></dd></div>
+            <div><dt>Téléphone</dt><dd><% if (client.phone) { %><a href="tel:<%= client.phone %>"><%= client.phone %></a><% } else { %>—<% } %></dd></div>
+            <div><dt>E-mail</dt><dd><% if (client.email) { %><a href="mailto:<%= client.email %>"><%= client.email %></a><% } else { %>—<% } %></dd></div>
+            <div><dt>Projet</dt><dd><%= order.type === 'agent' ? 'Agent IA' : order.type === 'site' ? 'Site web' : 'À définir' %></dd></div>
+            <div><dt>Offre</dt><dd><%= planLabel %></dd></div>
+            <div><dt>Échéance souhaitée</dt><dd><%= desiredDateLabel %></dd></div>
             <% if (order.comment) { %><div><dt>Note du client</dt><dd><%= order.comment %></dd></div><% } %>
           </dl>
           <p class="muted small">Page de brief du client : <a href="/chat/<%= order.id %>?key=<%= order.accessKey %>" target="_blank" rel="noopener">ouvrir ↗</a></p>
@@ -91,10 +103,10 @@
           </div>
           <% } %>
           <div class="brief-block verdict-<%= order.brief.compat.verdict %>">
-            <p class="brief-label">Compatibilité avec « <%= plan.name %> »</p>
+            <p class="brief-label">Compatibilité<%= plan ? ` avec « ${plan.name} »` : '' %></p>
             <p><strong><%= order.brief.compat.verdict === 'compatible' ? '✓ Compatible' : order.brief.compat.verdict === 'ajustements' ? '⚠ Ajustements à prévoir' : '✕ Hors périmètre partiel' %></strong></p>
             <p class="muted small"><%= order.brief.compat.summary %></p>
-            <% order.brief.compat.points.forEach(function(p){ %><p class="muted small">• <strong><%= p.label %></strong> — <%= p.msg %></p><% }); %>
+            <% (order.brief.compat.points || []).forEach(function(p){ %><p class="muted small">• <strong><%= p.label %></strong> — <%= p.msg %></p><% }); %>
           </div>
           <p class="muted small">Brief conclu le <%= new Date(order.brief.concludedAt).toLocaleString('fr-FR') %></p>
         <% } %>
@@ -108,7 +120,7 @@
           <% order.chat.forEach(function(m){ %>
             <div class="bubble <%= m.role === 'user' ? 'user' : 'assistant' %>">
               <p class="bubble-text"><%= m.text %></p>
-              <p class="bubble-time muted small"><%= m.role === 'user' ? order.client.firstName : 'Assistant' %> — <%= new Date(m.at).toLocaleString('fr-FR') %></p>
+              <p class="bubble-time muted small"><%= m.role === 'user' ? (client.firstName || 'Client') : 'Assistant' %> — <%= new Date(m.at).toLocaleString('fr-FR') %></p>
             </div>
           <% }); %>
         </div>

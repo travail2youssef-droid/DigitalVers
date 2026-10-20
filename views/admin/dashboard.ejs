@@ -95,7 +95,7 @@
               <label for="api-n8nurl">URL du webhook Chat Trigger</label>
               <input type="text" id="api-n8nurl" name="n8nUrl" placeholder="https://votre-n8n.exemple.fr/webhook/b639adfd-6c4b-48cd-af68-fb21384fcc52/chat" value="<%= ai.n8nUrl %>">
               <p class="muted small">Workflow n8n : <code>Chat Trigger → AI Agent (Groq) → Simple Memory</code>. Dans n8n, activez « Make Chat Publicly Available » sur le Chat Trigger, copiez la <strong>Chat URL</strong> et collez-la ici. Pensez à <strong>activer le workflow</strong> (bascule « Active ») sinon le webhook renvoie 404.</p>
-              <p class="muted small">Le serveur envoie un <code>sessionId</code> unique par commande (votre Simple Memory conserve le fil par client) et injecte automatiquement au premier message le contexte DigitalVerse — offre choisie, client, consignes de brief — sans aucune modification de votre workflow. Le champ « Consigne personnalisée » ci-dessous, s’il est rempli, remplace cette consigne automatique.</p>
+              <p class="muted small">Le serveur envoie un <code>sessionId</code> unique par commande (votre Simple Memory conserve le fil par client) et injecte automatiquement au premier message le contexte DigitalVerse — informations déjà connues, informations restant à collecter en conversation (offre, échéance, coordonnées, accord) et consignes de brief — sans aucune modification de votre workflow. Le champ « Consigne personnalisée » ci-dessous, s’il est rempli, remplace cette consigne automatique.</p>
             </div>
           </div>
 
@@ -132,7 +132,7 @@
         <div class="card">
           <h2 class="card-title">Comment ça marche ?</h2>
           <ol class="muted small help-list">
-            <li>Le client commande une offre (site ou agent IA) et est redirigé vers la page de brief.</li>
+            <li>Le client démarre sa demande avec l’assistant IA (<code>/commander</code>) : aucune saisie de formulaire, l’assistant collecte en conversation le projet, l’offre, l’échéance et les coordonnées.</li>
             <li>L’assistant pose des questions clés puis <strong>s’arrête de lui-même</strong> quand le brief est assez complet.</li>
             <li>La compatibilité avec l’offre choisie est vérifiée automatiquement, puis le brief apparaît ici, dans l’onglet <strong>Commandes</strong>.</li>
             <li>Vous étudiez la demande, changez le statut, et indiquez l’<strong>URL de livraison</strong> (site mis en ligne ou agent déployé) quand tout est prêt — le client la voit depuis sa page de brief.</li>
