@@ -1,6 +1,6 @@
 /* =========================================================================
    DIGITALVERSE — serveur Express
-   Site vitrine + tunnel de commande + brief IA + espace administrateur.
+   Site vitrine + demande via assistant IA + brief IA + espace administrateur.
    Démarrage : npm start   (PORT par défaut : 3000)
    Variables d'environnement :
      PORT            Port d'écoute (défaut 3000)
@@ -14,9 +14,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BRAND, PLANS, SERVICES, AVANTAGES, PORTFOLIO, PROCESSUS, FAQ, PRICING_GLOBAL_NOTE, PROJECT_TYPES } from './config/site.config.js';
 import { loadDb, saveDb, loadSettings, saveSettings } from './lib/store.js';
-import { agentReply, buildBrief, testExternalApi, openingMessage } from './lib/agent.js';
 import {
-  notifyAdminNewOrder, notifyAdminBriefDone, notifyAdminNewMessage,
+  agentReply, buildBrief, testExternalApi, openingMessage,
+  missingIntake, intakeProgress, formatDesiredDate,
+} from './lib/agent.js';
+import {
+  notifyAdminBriefDone, notifyAdminNewMessage,
   confirmOrderToClient, ackContactToClient,
 } from './lib/mailer.js';
 
@@ -47,7 +50,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 /* ------------------------------------------------------------ outils */
 const isEmail = (s) => typeof s === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s.trim()) && s.length < 120;
-const isPhone = (s) => typeof s === 'string' && /^\+?[0-9 .\-()]{8,20}$/.test(s.trim());
 const clean = (s, max = 500) => (typeof s === 'string' ? s.trim().slice(0, max) : '');
 const uid = (n = 12) => crypto.randomBytes(n).toString('hex');
 
@@ -113,6 +115,19 @@ function orderPublic(o) {
   const p = PLANS[o.planSlug] || {};
   return { ...o, planName: p.name || o.planSlug, planPrice: p.price, planUnit: p.unit };
 }
+/* Récapitulatif affiché dans la barre latérale du chat et mis à jour après
+   chaque message : les informations sont collectées progressivement par
+   l'assistant, elles peuvent donc encore être « à définir ». */
+function orderSummaryForChat(o) {
+  const p = PLANS[o.planSlug];
+  const clientName = `${o.client?.firstName || ''} ${o.client?.lastName || ''}`.trim();
+  return {
+    clientName: clientName || 'À définir avec l’assistant',
+    typeLabel: o.type === 'agent' ? 'Agent IA' : o.type === 'site' ? 'Site web' : 'À définir avec l’assistant',
+    planLabel: p ? `${p.name} — ${p.price} € ${p.unit}` : 'À définir avec l’assistant',
+    dateLabel: formatDesiredDate(o.desiredDate),
+  };
+}
 function checkOrderKey(req, res, order) {
   const key = req.query.key || req.body?.key;
   if (!order) { res.status(404).json({ ok: false, error: 'Commande introuvable.' }); return false; }
@@ -143,66 +158,51 @@ app.get('/', (req, res) => {
 app.get('/mentions-legales', (req, res) => res.render('mentions-legales', { BRAND, page: { title: 'Mentions légales — DigitalVerse', description: 'Mentions légales de DigitalVerse.' } }));
 app.get('/politique-de-confidentialite', (req, res) => res.render('confidentialite', { BRAND, page: { title: 'Politique de confidentialité — DigitalVerse', description: 'Politique de confidentialité et traitement des données personnelles de DigitalVerse.' } }));
 
-/* ================================================================== COMMANDE */
+/* ==================================================== DEMANDE VIA ASSISTANT IA
+   Il n'y a plus de formulaire de commande classique : /commander est la page
+   de démarrage de la conversation. Cliquer sur « Démarrer » crée une demande
+   encore vide ; l'assistant IA collecte ensuite, en conversation, le type de
+   projet, l'offre, l'échéance, les coordonnées et l'accord de recontact.
+   Aucun e-mail n'est envoyé au démarrage (on ne connaît pas encore le
+   client) : les notifications partent quand le brief est transmis. */
 app.get('/commander', (req, res) => {
   const offre = PLANS[req.query.offre] ? req.query.offre : '';
   res.render('commander', {
-    BRAND, PLANS,
-    plansJson: jsonForScript(Object.fromEntries(Object.entries(PLANS).map(([s, p]) => [s, { type: p.type, name: p.name, price: p.price, unit: p.unit, mode: p.mode, tagline: p.tagline }]))),
+    BRAND,
+    plan: offre ? { slug: offre, ...PLANS[offre] } : null,
     offre,
-    page: { title: 'Commander — DigitalVerse', description: 'Commandez votre site web ou votre agent IA DigitalVerse : choisissez votre offre, indiquez vos coordonnées, puis décrivez votre projet à notre assistant de brief.' },
+    page: { title: 'Démarrer votre projet avec l’assistant IA — DigitalVerse', description: 'Démarrez votre demande de site web ou d’agent IA directement avec l’assistant IA de DigitalVerse : il vous pose les questions une par une et transmet votre brief à l’équipe, sans formulaire à remplir.' },
   });
 });
 
-const ORDER_FIELDS = ['type', 'planSlug', 'desiredDate', 'firstName', 'lastName', 'phone', 'email'];
-app.post('/api/commande', rateLimit(30), (req, res) => {
-  const b = req.body || {};
-  const errors = {};
-  b.type = b.type === 'agent' ? 'agent' : b.type === 'site' ? 'site' : '';
-  if (!b.type) errors.type = 'Choisissez le type de projet (site web ou agent IA).';
-  const plan = PLANS[b.planSlug];
-  if (!plan) errors.planSlug = 'Choisissez une offre.';
-  else if (plan.type !== b.type) errors.planSlug = 'Cette offre ne correspond pas au type de projet choisi.';
-  if (!clean(b.desiredDate, 30)) errors.desiredDate = 'Indiquez une échéance souhaitée.';
-  else if (Number.isNaN(Date.parse(b.desiredDate))) errors.desiredDate = 'Date invalide.';
-  if (clean(b.firstName).length < 2) errors.firstName = 'Prénom requis (2 caractères minimum).';
-  if (clean(b.lastName).length < 2) errors.lastName = 'Nom requis (2 caractères minimum).';
-  if (!isPhone(b.phone)) errors.phone = 'Numéro de téléphone invalide.';
-  if (!isEmail(b.email)) errors.email = 'Adresse e-mail invalide.';
-  if (b.consent !== true && b.consent !== 'true' && b.consent !== 'on') errors.consent = 'Votre consentement est nécessaire pour traiter votre demande.';
-  if (Object.keys(errors).length) return res.status(400).json({ ok: false, errors });
-
+app.post('/api/demande-ia', rateLimit(30), (req, res) => {
+  // Seule donnée acceptée : une offre éventuellement présélectionnée depuis
+  // les cartes tarifaires. Tout le reste est collecté par l'assistant.
+  const planSlug = PLANS[req.body?.planSlug] ? req.body.planSlug : '';
+  const plan = planSlug ? PLANS[planSlug] : null;
   const db = loadDb();
   const order = {
     id: 'DV-' + Date.now().toString(36).toUpperCase() + '-' + uid(3).toUpperCase(),
     accessKey: uid(16),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    type: b.type,
-    planSlug: b.planSlug,
-    desiredDate: clean(b.desiredDate, 30),
-    comment: clean(b.comment, 800),
-    client: {
-      firstName: clean(b.firstName, 60),
-      lastName: clean(b.lastName, 60),
-      phone: clean(b.phone, 30),
-      email: clean(b.email, 120),
-    },
+    source: 'assistant-ia',
+    consentAt: null,
+    type: plan ? plan.type : '',
+    planSlug,
+    desiredDate: '',
+    comment: '',
+    client: { firstName: '', lastName: '', phone: '', email: '' },
     status: 'nouveau',
     chat: [],
-    agentState: null,
+    agentState: { asked: [], covered: [], intake: { awaiting: 'description' }, ready: false },
     brief: null,
     livraison: null,
     adminNotes: '',
   };
   order.chat.push({ role: 'assistant', text: openingMessage(order), at: new Date().toISOString() });
-  order.agentState = { asked: [], covered: [] };
   db.orders.unshift(order);
   saveDb(db);
-  fireAndForget(
-    notifyAdminNewOrder(order, siteOrigin(req)),
-    confirmOrderToClient(order, siteOrigin(req))
-  );
   res.json({ ok: true, redirect: `/chat/${order.id}?key=${order.accessKey}` });
 });
 
@@ -211,13 +211,24 @@ app.get('/chat/:id', (req, res) => {
   const { order } = getOrder(req.params.id);
   if (!order) return res.status(404).render('404', { BRAND, page: { title: 'Introuvable — DigitalVerse' } });
   if (req.query.key !== order.accessKey) return res.status(403).render('404', { BRAND, page: { title: 'Lien invalide — DigitalVerse' }, invalidLink: true });
-  const plan = PLANS[order.planSlug];
+  const plan = PLANS[order.planSlug] || null;
   res.render('chat', {
     BRAND,
     order: orderPublic(order),
-    orderJson: jsonForScript({ id: order.id, key: order.accessKey, chat: order.chat, brief: order.brief, status: order.status, livraison: order.livraison }),
+    summary: orderSummaryForChat(order),
+    orderJson: jsonForScript({
+      id: order.id,
+      key: order.accessKey,
+      chat: order.chat,
+      brief: order.brief,
+      status: order.status,
+      livraison: order.livraison,
+      summary: orderSummaryForChat(order),
+      progress: intakeProgress(order),
+      readyToConclude: Boolean(order.agentState?.ready) && missingIntake(order).length === 0,
+    }),
     plan,
-    page: { title: 'Votre brief — DigitalVerse', description: 'Décrivez votre projet à l’assistant de brief DigitalVerse.' },
+    page: { title: 'Votre demande avec l’assistant IA — DigitalVerse', description: 'Décrivez votre projet à l’assistant IA DigitalVerse : il constitue votre demande et votre brief en conversation.' },
   });
 });
 
@@ -225,7 +236,7 @@ app.post('/api/chat/:id/message', rateLimit(90), async (req, res) => {
   const { db, order } = getOrder(req.params.id);
   if (!checkOrderKey(req, res, order)) return;
   if (order.status === 'brief_termine' || order.brief) {
-    return res.json({ ok: true, closed: true, reply: 'Votre brief a déjà été transmis à DigitalVerse. Nous revenons vers vous rapidement par e-mail ou téléphone.', progress: null, canConclude: false });
+    return res.json({ ok: true, closed: true, reply: 'Votre brief a déjà été transmis à DigitalVerse. Nous revenons vers vous rapidement par e-mail ou téléphone.', progress: intakeProgress(order), summary: orderSummaryForChat(order), canConclude: false });
   }
   const text = clean(req.body?.text, 1500);
   if (!text) return res.status(400).json({ ok: false, error: 'Message vide.' });
@@ -238,7 +249,7 @@ app.post('/api/chat/:id/message', rateLimit(90), async (req, res) => {
   order.chat.push({ role: 'assistant', text: r.text, at: new Date().toISOString() });
   order.updatedAt = new Date().toISOString();
   saveDb(db);
-  res.json({ ok: true, reply: r.text, progress: r.progress, canConclude: r.canConclude || false, apiError: r.apiError || null });
+  res.json({ ok: true, reply: r.text, progress: r.progress, summary: orderSummaryForChat(order), canConclude: r.canConclude || false, apiError: r.apiError || null });
 });
 
 app.post('/api/chat/:id/terminer', rateLimit(30), async (req, res) => {
@@ -246,6 +257,20 @@ app.post('/api/chat/:id/terminer', rateLimit(30), async (req, res) => {
   if (!checkOrderKey(req, res, order)) return;
   const userCount = order.chat.filter((m) => m.role === 'user').length;
   if (userCount === 0) return res.status(400).json({ ok: false, error: 'Décrivez d’abord votre projet à l’assistant.' });
+  /* Une demande démarrée avec l'assistant IA ne peut être transmise que si
+     les informations essentielles ont été collectées en conversation.
+     Les anciennes commandes (sans `source`) ne sont pas concernées : leurs
+     coordonnées et leur accord venaient de l'ancien formulaire. */
+  if (!order.brief && order.source === 'assistant-ia') {
+    const missing = missingIntake(order);
+    if (missing.length) {
+      return res.status(400).json({
+        ok: false,
+        error: `Votre brief ne peut pas encore être transmis : il manque ${missing.join(', ')}. Répondez simplement aux questions de l’assistant, puis réessayez.`,
+        missing,
+      });
+    }
+  }
   if (!order.brief) {
     order.brief = buildBrief(order);
     order.status = 'brief_termine';
@@ -256,7 +281,13 @@ app.post('/api/chat/:id/terminer', rateLimit(30), async (req, res) => {
     });
     order.updatedAt = new Date().toISOString();
     saveDb(db);
-    fireAndForget(notifyAdminBriefDone(order, siteOrigin(req)));
+    /* Les e-mails ne partent qu'ici : au démarrage de la conversation, on ne
+       connaît ni le client ni son adresse. La confirmation client contient
+       son lien privé de suivi, indispensable pour retrouver sa demande. */
+    fireAndForget(
+      notifyAdminBriefDone(order, siteOrigin(req)),
+      order.client?.email ? confirmOrderToClient(order, siteOrigin(req)) : null
+    );
   }
   res.json({ ok: true, brief: order.brief, status: order.status });
 });
@@ -358,7 +389,7 @@ app.get('/admin', requireAdmin, (req, res) => {
 app.get('/admin/commandes/:id', requireAdmin, (req, res) => {
   const { order } = getOrder(req.params.id);
   if (!order) return res.status(404).render('404', { BRAND, page: { title: 'Commande introuvable — DigitalVerse' } });
-  res.render('admin/order', { BRAND, order: orderPublic(order), plan: PLANS[order.planSlug], page: { title: `Commande ${order.id} — DigitalVerse` } });
+  res.render('admin/order', { BRAND, order: orderPublic(order), plan: PLANS[order.planSlug] || null, page: { title: `Commande ${order.id} — DigitalVerse` } });
 });
 
 /* ------- API admin (JSON, utilisée par le tableau de bord auto-actualisé) */

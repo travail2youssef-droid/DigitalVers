@@ -1,7 +1,7 @@
 {
   "name": "digitalverse",
   "version": "1.0.0",
-  "description": "Site premium de l'agence DigitalVerse — vitrine, commande en ligne, brief IA et espace administrateur.",
+  "description": "Site premium de l'agence DigitalVerse — vitrine, demande via assistant IA, brief IA et espace administrateur.",
   "type": "module",
   "main": "server.js",
   "scripts": {

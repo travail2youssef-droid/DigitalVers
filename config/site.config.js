@@ -19,7 +19,7 @@ export const BRAND = {
 
 /* -------------------------------------------------------------------------
    OFFRES & TARIFS — source unique de vérité pour les prix affichés sur le
-   site, le formulaire de commande et l’espace administrateur.
+   site, l’assistant de brief IA et l’espace administrateur.
    - type : 'site' | 'agent'
    - unit : libellé de facturation affiché
    - mode : 'one_shot' | 'monthly'
@@ -227,7 +227,7 @@ export const FAQ = [
   },
   {
     q: 'Quel est le délai de réalisation ?',
-    a: 'Le délai dépend du périmètre du projet et des contenus disponibles. Il est estimé dans le devis, une fois votre besoin précisé. Indiquez simplement votre échéance souhaitée dans le formulaire de commande : nous vous confirmons ce qui est réalisable.',
+    a: 'Le délai dépend du périmètre du projet et des contenus disponibles. Il est estimé dans le devis, une fois votre besoin précisé. Indiquez simplement votre échéance souhaitée à notre assistant IA lors de votre demande : nous vous confirmons ce qui est réalisable.',
   },
   {
     q: 'Le site sera-t-il adapté aux mobiles ?',
@@ -247,11 +247,11 @@ export const FAQ = [
   },
   {
     q: 'Proposez-vous des solutions d’intelligence artificielle ?',
-    a: 'Oui : chatbots IA pour votre site (dès 40 €/mois) et automatisations personnalisées connectées à vos outils (dès 100 €/mois). Après votre commande, notre assistant IA vous aide à définir précisément le besoin avant toute mise en production.',
+    a: 'Oui : chatbots IA pour votre site (dès 40 €/mois) et automatisations personnalisées connectées à vos outils (dès 100 €/mois). Lors de votre demande, notre assistant IA vous aide à définir précisément le besoin avant toute mise en production.',
   },
   {
     q: 'Comment obtenir un devis personnalisé ?',
-    a: 'Deux options : commandez directement une offre en ligne (vous serez ensuite guidé par notre assistant IA pour détailler votre projet), ou décrivez votre besoin via le formulaire de contact. Vous recevez une réponse claire avec le périmètre et le tarif proposés.',
+    a: 'Deux options : démarrez une demande avec notre assistant IA, qui collectera votre projet, votre échéance et vos coordonnées en conversation, ou décrivez votre besoin via le formulaire de contact. Vous recevez une réponse claire avec le périmètre et le tarif proposés.',
   },
 ];
 

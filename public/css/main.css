@@ -371,9 +371,6 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: #ff4d5
   background: #0a0a0b; border: 1px solid var(--border-strong);
   border-radius: 10px; padding: 0.55rem 0.75rem; width: 100%;
 }
-.order-success { scroll-margin-top: 100px; }
-.order-success .btn-block { margin-top: 1.2rem; }
-
 /* ------------------------------------------------------------------ footer */
 .site-footer { border-top: 1px solid var(--border); background: #070708; padding-top: 3.5rem; }
 .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 2rem; padding-bottom: 2.5rem; }
@@ -412,47 +409,27 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: #ff4d5
 .step-item p { margin: 0; }
 .order-note { display: flex; gap: 0.6rem; align-items: flex-start; }
 .order-note .icon { color: var(--red); margin-top: 0.2rem; }
-.order-summary { padding: 1.3rem 1.4rem; }
 .summary-title { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 0.5rem; }
-.summary-plan { font-weight: 700; margin-bottom: 0.15rem; }
-.summary-price { color: var(--red); font-size: 1.4rem; font-weight: 800; margin-bottom: 0.3rem; }
 
-.order-form fieldset { border: 0; margin: 0; padding: 0; }
-.type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.type-card input { position: absolute; opacity: 0; pointer-events: none; }
-.type-card-body {
-  display: grid; gap: 0.35rem; justify-items: start;
+/* Lanceur de la demande via l’assistant IA (remplace l’ancien formulaire) */
+.ia-launcher { display: grid; gap: 1.4rem; }
+.ia-launcher-head { display: flex; gap: 1rem; align-items: flex-start; }
+.ia-launcher-head h2 { margin-bottom: 0.35rem; }
+.ia-launcher-head p { margin: 0; }
+.ia-avatar { width: 54px; height: 54px; flex: none; border-radius: 16px; }
+.ia-avatar svg { width: 28px; height: 28px; }
+.ia-plan-presel {
   background: #0a0a0b; border: 1px solid var(--border-strong); border-radius: var(--radius);
-  padding: 1.2rem 1.3rem; cursor: pointer; transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  padding: 1.1rem 1.25rem;
 }
-.type-card-body svg { width: 30px; height: 30px; color: var(--red); margin-bottom: 0.3rem; }
-.type-card:hover .type-card-body { border-color: rgba(242, 13, 37, 0.4); }
-.type-card input:checked + .type-card-body {
-  border-color: var(--red); background: rgba(242, 13, 37, 0.07);
-  box-shadow: 0 0 0 3px rgba(242, 13, 37, 0.15);
-}
-.type-card input:focus-visible + .type-card-body { outline: 2px solid var(--red); outline-offset: 3px; }
-
-.plan-cards { display: grid; gap: 0.8rem; }
-.plan-option input { position: absolute; opacity: 0; pointer-events: none; }
-.plan-option-body {
-  display: grid; grid-template-columns: 1fr auto; gap: 0.2rem 1rem; align-items: center;
-  background: #0a0a0b; border: 1px solid var(--border-strong); border-radius: var(--radius);
-  padding: 0.95rem 1.1rem; cursor: pointer; transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-}
-.plan-option:hover .plan-option-body { border-color: rgba(242, 13, 37, 0.4); }
-.plan-option input:checked + .plan-option-body { border-color: var(--red); background: rgba(242, 13, 37, 0.07); box-shadow: 0 0 0 3px rgba(242, 13, 37, 0.15); }
-.plan-option input:focus-visible + .plan-option-body { outline: 2px solid var(--red); outline-offset: 3px; }
-.plan-name { font-weight: 700; }
-.plan-name .pill-mini { margin-left: 0.5rem; }
-.plan-tagline { grid-column: 1; color: var(--muted); font-size: 0.85rem; }
-.plan-price { grid-column: 2; grid-row: 1 / span 2; text-align: right; font-weight: 800; font-size: 1.25rem; white-space: nowrap; }
-.plan-price small { display: block; font-weight: 500; font-size: 0.75rem; color: var(--muted); }
-.pill-mini {
-  background: var(--red-soft); color: var(--red); border: 1px solid rgba(242, 13, 37, 0.35);
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 0.15rem 0.55rem; border-radius: 999px; vertical-align: middle;
-}
+.ia-plan-presel .summary-title { margin-bottom: 0.35rem; }
+.ia-plan-presel p { margin: 0.25rem 0; }
+.ia-plan-name { font-weight: 700; font-size: 1.05rem; }
+.ia-plan-price { color: var(--red); font-weight: 800; white-space: nowrap; }
+.ia-points { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
+.ia-points li { display: flex; gap: 0.65rem; align-items: flex-start; }
+.ia-points .icon { color: var(--red); flex: none; margin-top: 0.15rem; }
+.ia-privacy { margin: 0; }
 
 /* ================================================================== PAGE CHAT */
 .page-chat { background: var(--bg-2); min-height: 100vh; }
@@ -668,7 +645,7 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: #ff4d5
 }
 @media (max-width: 620px) {
   .cards-4, .pricing-grid, .pricing-grid-2 { grid-template-columns: 1fr; }
-  .form-row, .type-cards { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .bubble { max-width: 92%; }
   .section-head.split { flex-direction: column; align-items: flex-start; }
