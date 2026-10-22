@@ -386,9 +386,69 @@ app.post('/api/admin/commandes/:id', requireAdmin, (req, res) => {
     order.livraison = { url: clean(b.livraisonUrl, 400), note: clean(b.livraisonNote, 400) };
   }
   if (typeof b.adminNotes === 'string') order.adminNotes = clean(b.adminNotes, 1000);
+  if (typeof b.paye === 'boolean') {
+    order.paye = b.paye;
+    if (b.paye) {
+      order.montantReel = typeof b.montantReel === 'number' && b.montantReel > 0 ? b.montantReel : (order.montantReel || order.planPrice || 0);
+      order.datePaiement = new Date().toISOString();
+    } else {
+      order.montantReel = null;
+      order.datePaiement = null;
+    }
+  }
   order.updatedAt = new Date().toISOString();
   saveDb(db);
   res.json({ ok: true, order: orderPublic(order) });
+});
+
+/* Marquer / dé-marquer une vente comme accomplie (payée). Données réelles : le montant
+   est celui de l'offre, sauf si le montant réel saisi est différent. */
+app.post('/api/admin/commandes/:id/paye', requireAdmin, (req, res) => {
+  const { db, order } = getOrder(req.params.id);
+  if (!order) return res.status(404).json({ ok: false, error: 'Commande introuvable.' });
+  const b = req.body || {};
+  const paye = b.paye === true;
+  order.paye = paye;
+  if (paye) {
+    order.montantReel = typeof b.montantReel === 'number' && b.montantReel > 0 ? b.montantReel : (order.montantReel || order.planPrice || 0);
+    order.datePaiement = new Date().toISOString();
+  } else {
+    order.montantReel = null;
+    order.datePaiement = null;
+  }
+  order.updatedAt = new Date().toISOString();
+  saveDb(db);
+  res.json({ ok: true, order: orderPublic(order) });
+});
+
+/* Statistiques réelles du chiffre d’affaires (basées sur les commandes payées). */
+app.get('/api/admin/stats', requireAdmin, (req, res) => {
+  const db = loadDb();
+  const now = new Date();
+  const mois = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    mois.push({ key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'), label: d.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }), ca: 0 });
+  }
+  const moisMap = new Map(mois.map((m) => [m.key, m]));
+  let caTotal = 0;
+  let nbPaye = 0;
+  let nbEnAttente = 0;
+  const orders = db.orders.map(orderPublic);
+  for (const o of orders) {
+    const prix = typeof o.montantReel === 'number' && o.montantReel > 0 ? o.montantReel : (o.planPrice || 0);
+    if (o.paye) {
+      caTotal += prix;
+      nbPaye += 1;
+      const key = (o.datePaiement || o.createdAt).slice(0, 7).replace('/', '-');
+      const m = moisMap.get(key);
+      if (m) m.ca += prix;
+    } else if (!['archivee'].includes(o.status)) {
+      nbEnAttente += 1;
+    }
+  }
+  const panierMoyen = nbPaye ? caTotal / nbPaye : 0;
+  res.json({ ok: true, caTotal, nbPaye, nbEnAttente, panierMoyen, parMois: mois });
 });
 app.post('/api/admin/settings', requireAdmin, (req, res) => {
   const b = req.body || {};

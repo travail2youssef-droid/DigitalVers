@@ -22,6 +22,7 @@
       tabs.forEach((x) => { x.classList.toggle('active', x === t); x.setAttribute('aria-selected', String(x === t)); });
       document.querySelectorAll('.admin-panel').forEach((p) => (p.hidden = p.id !== 'panel-' + t.dataset.tab));
       if (t.dataset.tab === 'messages') loadMessages();
+      if (t.dataset.tab === 'statistiques') loadStats();
     })
   );
 
@@ -102,6 +103,85 @@
   filter.addEventListener('change', () => renderOrders(latestOrders));
   loadOrders();
   setInterval(loadOrders, 8000);
+
+  /* ============================================ STATISTIQUES (CA réel) */
+  const statCA = document.getElementById('stat-ca');
+  const statCADetail = document.getElementById('stat-ca-detail');
+  const statNbPaye = document.getElementById('stat-nbpaye');
+  const statNbPayeDetail = document.getElementById('stat-nbpaye-detail');
+  const statEnAttente = document.getElementById('stat-enattente');
+  const chartEmpty = document.getElementById('chart-ca-empty');
+  const canvas = document.getElementById('chart-ca');
+  const ctx = canvas ? canvas.getContext('2d') : null;
+
+  let lastParMois = [];
+
+  async function loadStats() {
+    try {
+      const res = await fetch('/api/admin/stats');
+      if (res.status === 401) { location.href = '/admin/connexion'; return; }
+      const out = await res.json();
+      if (!out.ok) return;
+      lastParMois = out.parMois;
+      document.getElementById('count-ca').textContent = out.caTotal.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+      if (statCA) statCA.textContent = out.caTotal.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+      if (statCADetail) statCADetail.textContent = out.nbPaye + ' commande' + (out.nbPaye > 1 ? 's' : '') + ' payée' + (out.nbPaye > 1 ? 'es' : '');
+      if (statNbPaye) statNbPaye.textContent = out.nbPaye;
+      if (statNbPayeDetail) statNbPayeDetail.textContent = 'Panier moyen : ' + (out.panierMoyen || 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+      if (statEnAttente) statEnAttente.textContent = out.nbEnAttente;
+      drawCAChart(out.parMois);
+    } catch { /* silencieux */ }
+  }
+
+  function drawCAChart(parMois) {
+    if (!ctx || !canvas) return;
+    chartEmpty && (chartEmpty.style.display = 'none');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const w = rect.width, h = rect.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const values = parMois.map((m) => m.ca);
+    const max = Math.max(...values, 1);
+    const pad = 24;
+    const bw = (w - pad * 2) / parMois.length - 16;
+    let hasData = false;
+
+    // barres
+    ctx.fillStyle = '#f20d25';
+    parMois.forEach((m, i) => {
+      if (m.ca <= 0) return;
+      hasData = true;
+      const bx = pad + i * (bw + 16) + 8;
+      const by = h - 26 - (m.ca / max) * (h - 56);
+      ctx.fillRect(bx, by, bw, h - 26 - by);
+      ctx.fillStyle = '#b8b8b8';
+      ctx.font = '11px Inter, system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(m.label, bx + bw / 2, h - 10);
+      ctx.fillStyle = '#f20d25';
+    });
+
+    // ligne max
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad, h - 26);
+    ctx.lineTo(w - pad, h - 26);
+    ctx.stroke();
+
+    if (!hasData) {
+      chartEmpty && (chartEmpty.style.display = 'block');
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    const p = document.getElementById('panel-statistiques');
+    if (p && !p.hidden && lastParMois.length) drawCAChart(lastParMois);
+  });
 
   /* ------------------------------------------------------------ messages */
   const msgList = document.getElementById('messages-list');
