@@ -16,6 +16,7 @@
       <button class="admin-tab active" role="tab" aria-selected="true" data-tab="commandes">Commandes <span class="tab-count" id="count-commandes">0</span></button>
       <button class="admin-tab" role="tab" aria-selected="false" data-tab="messages">Messages <span class="tab-count" id="count-messages">0</span></button>
       <button class="admin-tab" role="tab" aria-selected="false" data-tab="registre">Registre des livraisons</button>
+      <button class="admin-tab" role="tab" aria-selected="false" data-tab="statistiques">Statistiques <span class="tab-count" id="count-ca">0 €</span></button>
       <button class="admin-tab" role="tab" aria-selected="false" data-tab="api">API de l’agent IA</button>
     </nav>
 
@@ -72,6 +73,36 @@
           <thead><tr><th>Commande</th><th>Client</th><th>Offre</th><th>Livraison (URL)</th><th>Statut</th></tr></thead>
           <tbody id="registry-tbody"><tr><td colspan="5" class="muted">Chargement…</td></tr></tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- ============ STATISTIQUES ============ -->
+    <section class="admin-panel" id="panel-statistiques" role="tabpanel" hidden>
+      <div class="panel-toolbar">
+        <h2 class="card-title" style="margin:0">Chiffre d’affaires — données réelles</h2>
+        <p class="muted small">Calculé à partir des commandes réellement marquées « payées ». Aucune donnée simulée.</p>
+      </div>
+      <div class="admin-grid-3" style="margin-bottom:1.4rem">
+        <div class="card">
+          <p class="muted small">Chiffre d’affaires total</p>
+          <p id="stat-ca" style="font-size:1.6rem;font-weight:800;letter-spacing:-0.02em">– €</p>
+          <p class="muted small" id="stat-ca-detail"></p>
+        </div>
+        <div class="card">
+          <p class="muted small">Commandes payées</p>
+          <p id="stat-nbpaye" style="font-size:1.6rem;font-weight:800">–</p>
+          <p class="muted small" id="stat-nbpaye-detail"></p>
+        </div>
+        <div class="card">
+          <p class="muted small">En attente de paiement</p>
+          <p id="stat-enattente" style="font-size:1.6rem;font-weight:800">–</p>
+          <p class="muted small">Commandes non archivées non payées.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:1.4rem">
+        <p class="muted small">Évolution par mois (6 derniers mois)</p>
+        <div style="height:240px;position:relative"><canvas id="chart-ca"></canvas></div>
+        <p id="chart-ca-empty" class="muted small center" style="margin-top:1rem;display:none">Aucune donnée de chiffre d’affaires pour le moment.</p>
       </div>
     </section>
 
