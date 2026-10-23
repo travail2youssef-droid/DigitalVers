@@ -122,7 +122,7 @@
       <article class="card price-card tilt-3d reveal-3d <%= p.recommended ? 'recommended' : '' %>">
         <% if (p.recommended) { %><span class="badge-reco">Recommandée</span><% } %>
         <h3><%= p.name %></h3>
-        <p class="price"><span class="price-amount"><%= p.price %> €</span> <span class="price-unit"><%= p.unit %></span></p>
+        <p class="price"><span class="price-amount"><% if (p.from) { %>dès <% } %><%= p.price.toLocaleString('fr-FR') %> €</span> <span class="price-unit"><%= p.unit %></span></p>
         <p class="muted small"><%= p.tagline %></p>
         <ul class="price-features">
           <% p.features.forEach(function(f){ %>
@@ -143,7 +143,7 @@
       <article class="card price-card tilt-3d reveal-3d <%= p.recommended ? 'recommended' : '' %>">
         <% if (p.recommended) { %><span class="badge-reco">Recommandée</span><% } %>
         <h3><%= p.name %></h3>
-        <p class="price"><span class="price-amount"><%= p.price %> €</span> <span class="price-unit"><%= p.unit %></span></p>
+        <p class="price"><span class="price-amount"><% if (p.from) { %>dès <% } %><%= p.price.toLocaleString('fr-FR') %> €</span> <span class="price-unit"><%= p.unit %></span></p>
         <p class="muted small"><%= p.tagline %></p>
         <ul class="price-features">
           <% p.features.forEach(function(f){ %>
@@ -310,10 +310,10 @@
           <label for="c-budget">Budget estimé <span class="muted">(optionnel)</span></label>
           <select id="c-budget" name="budget">
             <option value="">Je préfère ne pas préciser</option>
-            <option value="< 300 €">Moins de 300 €</option>
-            <option value="300 – 600 €">300 – 600 €</option>
-            <option value="600 – 1 500 €">600 – 1 500 €</option>
-            <option value="> 1 500 €">Plus de 1 500 €</option>
+            <option value="< 500 €">Moins de 500 €</option>
+            <option value="500 – 1 200 €">500 – 1 200 €</option>
+            <option value="1 200 – 2 500 €">1 200 – 2 500 €</option>
+            <option value="> 2 500 €">Plus de 2 500 €</option>
           </select>
         </div>
       </div>

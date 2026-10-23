@@ -139,7 +139,7 @@
         const chatbot = out.tarifsAgents.find((t) => t.slug === 'chatbot-ia');
         const automation = out.tarifsAgents.find((t) => t.slug === 'automatisation-ia');
         if (chatbot) statTarifChatbot.textContent = chatbot.price.toLocaleString('fr-FR') + ' € ' + chatbot.unit;
-        if (automation) statTarifAutomation.textContent = automation.price.toLocaleString('fr-FR') + ' € ' + automation.unit;
+        if (automation) statTarifAutomation.textContent = (automation.from ? 'dès ' : '') + automation.price.toLocaleString('fr-FR') + ' € ' + automation.unit;
       }
 
       // Ventilation CA par type
