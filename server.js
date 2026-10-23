@@ -12,7 +12,7 @@ import cookieParser from 'cookie-parser';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BRAND, PLANS, SERVICES, AVANTAGES, PORTFOLIO, PROCESSUS, FAQ, PRICING_GLOBAL_NOTE, PROJECT_TYPES } from './config/site.config.js';
+import { BRAND, PLANS, SERVICES, AVANTAGES, PORTFOLIO, PROCESSUS, FAQ, PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES } from './config/site.config.js';
 import { loadDb, saveDb, loadSettings, saveSettings } from './lib/store.js';
 import { agentReply, buildBrief, testExternalApi, openingMessage } from './lib/agent.js';
 import {
@@ -134,7 +134,7 @@ function fireAndForget(...promises) {
 app.get('/', (req, res) => {
   res.render('index', {
     BRAND, PLANS, SERVICES, AVANTAGES, PORTFOLIO, PROCESSUS, FAQ,
-    PRICING_GLOBAL_NOTE, PROJECT_TYPES,
+    PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES,
     sent: req.query.envoye === '1',
     page: { title: 'DigitalVerse — Agence web & IA', description: BRAND.description },
   });
@@ -147,7 +147,7 @@ app.get('/politique-de-confidentialite', (req, res) => res.render('confidentiali
 app.get('/commander', (req, res) => {
   const offre = PLANS[req.query.offre] ? req.query.offre : '';
   res.render('commander', {
-    BRAND, PLANS,
+    BRAND, PLANS, SUBSCRIPTION_CANCELLATION_NOTE,
     plansJson: jsonForScript(Object.fromEntries(Object.entries(PLANS).map(([s, p]) => [s, { type: p.type, name: p.name, price: p.price, unit: p.unit, mode: p.mode, tagline: p.tagline, from: !!p.from }]))),
     offre,
     page: { title: 'Commander — DigitalVerse', description: 'Commandez votre site web ou votre agent IA DigitalVerse : choisissez votre offre, indiquez vos coordonnées, puis décrivez votre projet à notre assistant de brief.' },

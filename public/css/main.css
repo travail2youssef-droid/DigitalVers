@@ -258,6 +258,19 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 .pricing-note { margin-top: 2rem; color: var(--muted-2); font-size: 0.82rem; max-width: 900px; }
 
+/* Notice « annulation des abonnements » sous la grille tarifaire */
+.pricing-notice {
+  display: flex; gap: 0.75rem; align-items: flex-start;
+  max-width: 900px; margin-top: 1.6rem; padding: 0.95rem 1.15rem;
+  background: var(--red-soft);
+  border: 1px solid rgba(242, 13, 37, 0.28);
+  border-left: 3px solid var(--red);
+  border-radius: 12px;
+  font-size: 0.9rem; line-height: 1.55; color: var(--text);
+}
+.pricing-notice .icon { width: 20px; height: 20px; flex: 0 0 auto; color: var(--red); margin-top: 0.1rem; }
+.pricing-notice p { margin: 0; }
+
 /* ------------------------------------------------------------------ portfolio */
 .portfolio-grid { align-items: stretch; }
 .project-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
@@ -410,6 +423,15 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: #ff4d5
 .step-item.active .step-num { background: linear-gradient(180deg, #f5223a, var(--red-dark)); border-color: transparent; box-shadow: var(--glow); }
 .step-item.done .step-num { border-color: var(--red); color: var(--red); }
 .step-item p { margin: 0; }
+.sum-cancel-note {
+  display: flex; gap: 0.5rem; align-items: flex-start;
+  margin-top: 0.65rem; padding: 0.6rem 0.7rem;
+  background: var(--red-soft); border-radius: 10px;
+  font-size: 0.78rem; line-height: 1.5; color: var(--muted);
+}
+.sum-cancel-note[hidden] { display: none; }
+.sum-cancel-note .icon { width: 16px; height: 16px; flex: 0 0 auto; color: var(--red); margin-top: 0.12rem; }
+
 .order-note { display: flex; gap: 0.6rem; align-items: flex-start; }
 .order-note .icon { color: var(--red); margin-top: 0.2rem; }
 .order-summary { padding: 1.3rem 1.4rem; }

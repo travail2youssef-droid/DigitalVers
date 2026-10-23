@@ -51,6 +51,8 @@
     document.getElementById('sum-date').textContent = dateInput.value
       ? 'Échéance souhaitée : ' + new Date(dateInput.value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
       : '';
+    const cancelNote = document.getElementById('sum-cancel-note');
+    if (cancelNote) cancelNote.hidden = p.mode !== 'monthly';
   }
 
   document.querySelectorAll('input[name="type"]').forEach((r) =>

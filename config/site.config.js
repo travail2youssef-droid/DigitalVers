@@ -362,6 +362,10 @@ export const COMPAT_RULES = {
 export const PRICING_GLOBAL_NOTE =
   'TVA : non précisée à ce stade — le statut de TVA applicable sera indiqué sur le devis. Hébergement, noms de domaine, licences tierces et coûts d’API/IA externes ne sont inclus que si mentionnés explicitement au devis. Aucune modification ou assistance illimitée n’est promise : chaque périmètre est défini par écrit.';
 
+/* Notice spécifique aux abonnements mensuels (affichée sous les tarifs et dans le récapitulatif de commande) */
+export const SUBSCRIPTION_CANCELLATION_NOTE =
+  'Pour les abonnements mensuels : vous pouvez exiger une annulation de votre abonnement au bout de 6 mois sans résultats concluants, à condition que le justificatif soit valable.';
+
 /* Types de projet proposés dans le formulaire de contact */
 export const PROJECT_TYPES = [
   'Site vitrine',
