@@ -183,4 +183,54 @@
       }
     });
   }
+
+  /* ------------------------------------------------ parallax au scroll */
+  const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const parallaxLayers = document.querySelectorAll('.parallax-layer');
+  if (parallaxLayers.length && !prefersReduced && window.innerWidth > 920) {
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      parallaxLayers.forEach((layer) => {
+        const speed = parseFloat(layer.dataset.speed || '0.15');
+        layer.style.transform = `translateY(${scrollY * speed}px)`;
+      });
+    }, { passive: true });
+  }
+
+  /* ------------------------------------------------ inclinaison 3D au survol */
+  const tiltTargets = document.querySelectorAll('.tilt-3d');
+  tiltTargets.forEach((target) => {
+    target.addEventListener('mousemove', (e) => {
+      if (prefersReduced) return;
+      const rect = target.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -6;
+      const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 6;
+      target.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    });
+    target.addEventListener('mouseleave', () => {
+      target.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+    });
+  });
+
+  /* ------------------------------------------------ reveal 3D au scroll */
+  const reveals3d = document.querySelectorAll('.reveal-3d');
+  if (reveals3d.length && 'IntersectionObserver' in window && !prefersReduced) {
+    const ro = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            ro.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    reveals3d.forEach((el, i) => {
+      el.style.setProperty('--d', `${(i % 6) * 0.08}s`);
+      ro.observe(el);
+    });
+  }
 })();

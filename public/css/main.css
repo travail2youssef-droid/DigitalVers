@@ -785,3 +785,57 @@ a, button { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 768px) {
   .admin-grid-3 { grid-template-columns: 1fr; }
 }
+
+/* ================================================================== PARALLAX & ANIMATIONS 3D */
+
+/* Calque parallax — se déplace à une vitesse différente du scroll */
+.parallax { position: relative; overflow: hidden; }
+.parallax-layer {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Flottement organique */
+@keyframes float {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(2deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+.float {
+  animation: float 7s ease-in-out infinite;
+}
+.float:nth-child(2n) { animation-delay: 1.5s; animation-direction: alternate-reverse; }
+.float:nth-child(3n) { animation-delay: 3s; }
+
+/* Cartes en relief 3D au survol */
+.tilt-3d {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+}
+.tilt-3d > * {
+  transform: translateZ(24px);
+}
+.tilt-3d:hover {
+  transform: perspective(1000px) rotateX(-4deg) rotateY(4deg) scale(1.02);
+}
+
+/* Révélation 3D au scroll */
+.reveal-3d {
+  opacity: 0;
+  transform: translateY(34px) rotateX(-8deg);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal-3d.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Tablette et mobile : on désactive le parallax lourd pour garder la fluidité */
+@media (max-width: 920px), (prefers-reduced-motion: reduce) {
+  .parallax-layer { transform: none !important; animation: none !important; }
+  .tilt-3d:hover { transform: none; }
+  .float { animation: none; }
+}
