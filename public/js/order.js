@@ -15,7 +15,7 @@
   dateInput.min = tomorrow.toISOString().split('T')[0];
 
   const fmtPrice = (p) =>
-    `${p.from ? 'd�s ' : ''}${p.price.toLocaleString('fr-FR')} €${p.mode === 'monthly' ? '/mois' : ''}`;
+    `${p.from ? 'dès ' : ''}${p.price.toLocaleString('fr-FR')} €${p.mode === 'monthly' ? '/mois' : ''}`;
 
   /* ------------------------------------------ rendu des offres selon le type */
   function renderPlans(type) {
