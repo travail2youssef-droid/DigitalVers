@@ -3,13 +3,13 @@
 
 <!-- ============================ HERO ============================ -->
 <section class="hero" id="accueil">
-  <div class="hero-bg" aria-hidden="true">
-    <div class="hero-glow hero-glow-1"></div>
-    <div class="hero-glow hero-glow-2"></div>
+  <div class="hero-bg parallax" aria-hidden="true">
+    <div class="hero-glow hero-glow-1 parallax-layer" data-speed="0.35"></div>
+    <div class="hero-glow hero-glow-2 parallax-layer" data-speed="0.2"></div>
   </div>
   <div class="container hero-grid">
     <div class="hero-copy">
-      <p class="eyebrow reveal"><span class="eyebrow-dot" aria-hidden="true"></span>AGENCE DIGITALE • WEB &amp; IA</p>
+      <p class="eyebrow reveal"><span class="eyebrow-dot float" aria-hidden="true"></span>AGENCE DIGITALE • WEB &amp; IA</p>
       <h1 class="hero-title reveal">
         <%= BRAND.sloganA %><br>
         Construisez <span class="text-red">votre avenir</span>.
@@ -52,7 +52,7 @@
     </header>
     <div class="cards-3">
       <% SERVICES.forEach(function(s){ %>
-      <article class="card service-card reveal">
+      <article class="card service-card tilt-3d reveal-3d">
         <div class="card-icon" aria-hidden="true">
           <% if (s.icon === 'code') { %>
             <svg viewBox="0 0 24 24"><path d="m8 6-6 6 6 6M16 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -82,7 +82,7 @@
     </header>
     <div class="cards-4">
       <% AVANTAGES.forEach(function(a){ %>
-      <article class="card why-card reveal">
+      <article class="card why-card tilt-3d reveal-3d">
         <div class="card-icon sm" aria-hidden="true">
           <% if (a.icon === 'pen') { %>
             <svg viewBox="0 0 24 24"><path d="M12 19h8M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -119,7 +119,7 @@
 
     <div class="pricing-grid" id="offres-site" role="tabpanel" aria-labelledby="tab-site">
       <% ['vitrine-starter','vitrine-care','business-fonctionnel','business-care'].forEach(function(slug){ const p = PLANS[slug]; %>
-      <article class="card price-card reveal <%= p.recommended ? 'recommended' : '' %>">
+      <article class="card price-card tilt-3d reveal-3d <%= p.recommended ? 'recommended' : '' %>">
         <% if (p.recommended) { %><span class="badge-reco">Recommandée</span><% } %>
         <h3><%= p.name %></h3>
         <p class="price"><span class="price-amount"><%= p.price %> €</span> <span class="price-unit"><%= p.unit %></span></p>
@@ -140,7 +140,7 @@
 
     <div class="pricing-grid pricing-grid-2 hidden" id="offres-agent" role="tabpanel" aria-labelledby="tab-agent" hidden>
       <% ['chatbot-ia','automatisation-ia'].forEach(function(slug){ const p = PLANS[slug]; %>
-      <article class="card price-card reveal <%= p.recommended ? 'recommended' : '' %>">
+      <article class="card price-card tilt-3d reveal-3d <%= p.recommended ? 'recommended' : '' %>">
         <% if (p.recommended) { %><span class="badge-reco">Recommandée</span><% } %>
         <h3><%= p.name %></h3>
         <p class="price"><span class="price-amount"><%= p.price %> €</span> <span class="price-unit"><%= p.unit %></span></p>
