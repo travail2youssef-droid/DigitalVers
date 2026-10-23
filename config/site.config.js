@@ -108,7 +108,7 @@ export const PLANS = {
     features: [
       'Intégration à votre activité',
       'Configuration adaptée à l’entreprise',
-      'Gestion technique du côté client de votre site',
+      'Gestion technique du côté administrateur de votre site',
     ],
     note: 'Les frais d’utilisation de l’IA sont facturés séparément si nécessaire. Nombre de conversations et périmètre définis au contrat.',
     cta: 'Choisir Chatbot IA',
