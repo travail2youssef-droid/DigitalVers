@@ -110,6 +110,10 @@
   const statNbPaye = document.getElementById('stat-nbpaye');
   const statNbPayeDetail = document.getElementById('stat-nbpaye-detail');
   const statEnAttente = document.getElementById('stat-enattente');
+  const statTarifChatbot = document.getElementById('stat-tarif-chatbot');
+  const statTarifAutomation = document.getElementById('stat-tarif-automation');
+  const statCAAgent = document.getElementById('stat-ca-agent');
+  const statNbAgent = document.getElementById('stat-nb-agent');
   const chartEmpty = document.getElementById('chart-ca-empty');
   const canvas = document.getElementById('chart-ca');
   const ctx = canvas ? canvas.getContext('2d') : null;
@@ -129,6 +133,21 @@
       if (statNbPaye) statNbPaye.textContent = out.nbPaye;
       if (statNbPayeDetail) statNbPayeDetail.textContent = 'Panier moyen : ' + (out.panierMoyen || 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
       if (statEnAttente) statEnAttente.textContent = out.nbEnAttente;
+
+      // Tarifs des offres Agents IA
+      if (out.tarifsAgents && statTarifChatbot && statTarifAutomation) {
+        const chatbot = out.tarifsAgents.find((t) => t.slug === 'chatbot-ia');
+        const automation = out.tarifsAgents.find((t) => t.slug === 'automatisation-ia');
+        if (chatbot) statTarifChatbot.textContent = chatbot.price.toLocaleString('fr-FR') + ' € ' + chatbot.unit;
+        if (automation) statTarifAutomation.textContent = automation.price.toLocaleString('fr-FR') + ' € ' + automation.unit;
+      }
+
+      // Ventilation CA par type
+      if (out.parType) {
+        if (statCAAgent) statCAAgent.textContent = out.parType.agent.ca.toLocaleString('fr-FR') + ' €';
+        if (statNbAgent) statNbAgent.textContent = out.parType.agent.nb + ' commande' + (out.parType.agent.nb > 1 ? 's' : '') + ' payée' + (out.parType.agent.nb > 1 ? 'es' : '');
+      }
+
       drawCAChart(out.parMois);
     } catch { /* silencieux */ }
   }

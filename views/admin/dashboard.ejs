@@ -99,6 +99,26 @@
           <p class="muted small">Commandes non archivées non payées.</p>
         </div>
       </div>
+
+      <!-- Tarifs des offres Agents IA -->
+      <div class="admin-grid-3" style="margin-bottom:1.4rem">
+        <div class="card">
+          <p class="muted small">Chatbot IA</p>
+          <p id="stat-tarif-chatbot" style="font-size:1.6rem;font-weight:800">– €</p>
+          <p class="muted small">Abonnement mensuel</p>
+        </div>
+        <div class="card">
+          <p class="muted small">Automatisation personnalisée</p>
+          <p id="stat-tarif-automation" style="font-size:1.6rem;font-weight:800">– €</p>
+          <p class="muted small">Abonnement mensuel</p>
+        </div>
+        <div class="card">
+          <p class="muted small">CA Agents IA (payées)</p>
+          <p id="stat-ca-agent" style="font-size:1.6rem;font-weight:800">– €</p>
+          <p class="muted small" id="stat-nb-agent"></p>
+        </div>
+      </div>
+
       <div class="card" style="margin-bottom:1.4rem">
         <p class="muted small">Évolution par mois (6 derniers mois)</p>
         <div style="height:240px;position:relative"><canvas id="chart-ca"></canvas></div>
