@@ -448,7 +448,20 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
     }
   }
   const panierMoyen = nbPaye ? caTotal / nbPaye : 0;
-  res.json({ ok: true, caTotal, nbPaye, nbEnAttente, panierMoyen, parMois: mois });
+  /* Ventilation du CA par type de projet : site web ou agent IA */
+  const parType = { site: { ca: 0, nb: 0, label: 'Sites web' }, agent: { ca: 0, nb: 0, label: 'Agents IA' } };
+  for (const o of orders) {
+    if (!o.paye) continue;
+    const prix = typeof o.montantReel === 'number' && o.montantReel > 0 ? o.montantReel : (o.planPrice || 0);
+    const t = o.type === 'agent' ? 'agent' : 'site';
+    parType[t].ca += prix;
+    parType[t].nb += 1;
+  }
+  /* Tarifs publics des offres Agents IA (source : config/site.config.js) */
+  const tarifsAgents = Object.entries(PLANS)
+    .filter(([, p]) => p.type === 'agent')
+    .map(([slug, p]) => ({ slug, name: p.name, price: p.price, unit: p.unit }));
+  res.json({ ok: true, caTotal, nbPaye, nbEnAttente, panierMoyen, parMois: mois, parType, tarifsAgents });
 });
 app.post('/api/admin/settings', requireAdmin, (req, res) => {
   const b = req.body || {};
