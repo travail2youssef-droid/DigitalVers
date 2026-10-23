@@ -297,4 +297,93 @@
   } else {
     reveals3d.forEach((el) => el.classList.add('visible'));
   }
+
+  /* ------------------------------------------------ champ d'étoiles 3D en perspective (hero) */
+  const heroEl = document.querySelector('.hero');
+  const heroBg = document.querySelector('.hero-bg');
+  if (heroEl && heroBg && fxActive) {
+    const cv = document.createElement('canvas');
+    cv.id = 'fx-stars';
+    heroBg.appendChild(cv);
+    const cx = cv.getContext('2d');
+    const N = Math.min(170, Math.round(window.innerWidth / 9));
+    let W = 0, H = 0, raf = 0, visible = true, mx = 0, my = 0;
+    const stars = [];
+    const resize = () => {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const r = heroEl.getBoundingClientRect();
+      W = r.width; H = r.height;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      cv.style.width = W + 'px'; cv.style.height = H + 'px';
+      cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    for (let i = 0; i < N; i++) stars.push({ x: Math.random(), y: Math.random(), z: Math.random() * 0.9 + 0.1, red: Math.random() < 0.18 });
+    window.addEventListener('pointermove', (e) => {
+      mx = (e.clientX / window.innerWidth) * 2 - 1;
+      my = (e.clientY / window.innerHeight) * 2 - 1;
+    }, { passive: true });
+    const tick = () => {
+      cx.clearRect(0, 0, W, H);
+      const sc = window.scrollY;
+      for (const st of stars) {
+        st.z -= 0.0012;
+        if (st.z <= 0.06) { st.z = 1; st.x = Math.random(); st.y = Math.random(); }
+        const k = (0.55 / st.z) * 0.35;
+        const px = (st.x - 0.5) * W * k + W / 2 + mx * (1 - st.z) * 26;
+        const py = (st.y - 0.5) * H * k + H / 2 - sc * 0.1 * (1 - st.z) + my * (1 - st.z) * 18;
+        if (px < -20 || px > W + 20 || py < -20 || py > H + 20) continue;
+        const r = (1 - st.z) * 1.9 + 0.25;
+        cx.globalAlpha = Math.min(1, (1 - st.z) * 0.8 + 0.12);
+        cx.fillStyle = st.red ? '#f20d25' : 'rgba(255,255,255,0.92)';
+        cx.beginPath();
+        cx.arc(px, py, r, 0, 6.283);
+        cx.fill();
+      }
+      cx.globalAlpha = 1;
+      if (visible) raf = requestAnimationFrame(tick); else raf = 0;
+    };
+    resize();
+    tick();
+    window.addEventListener('resize', resize);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        for (const en of entries) {
+          if (en.isIntersecting && !raf) { visible = true; raf = requestAnimationFrame(tick); }
+          else if (!en.isIntersecting) { visible = false; if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+        }
+      }, { threshold: 0.01 }).observe(heroEl);
+    }
+  }
+
+  /* ------------------------------------------------ scène 3D du hero : rotation au curseur */
+  const scene = document.querySelector('[data-scene]');
+  if (scene && fxActive && heroEl) {
+    const inner = scene.querySelector('.hero-scene-inner');
+    const glare = scene.querySelector('.scene-glare');
+    heroEl.addEventListener('pointermove', (e) => {
+      const r = scene.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width - 0.5;
+      const ny = (e.clientY - r.top) / r.height - 0.5;
+      inner.style.transform = 'rotateX(' + (ny * -9).toFixed(2) + 'deg) rotateY(' + (nx * 13).toFixed(2) + 'deg)';
+      if (glare) {
+        glare.style.setProperty('--gx', (e.clientX - r.left) / r.width * 100 + '%');
+        glare.style.setProperty('--gy', (e.clientY - r.top) / r.height * 100 + '%');
+      }
+    }, { passive: true });
+    heroEl.addEventListener('pointerleave', () => { inner.style.transform = 'rotateX(0deg) rotateY(0deg)'; });
+  }
+
+  /* ------------------------------------------------ flip des cartes services (tactile + clavier) */
+  const coarse = !window.matchMedia('(hover: hover)').matches;
+  document.querySelectorAll('.flip-card').forEach((card) => {
+    if (coarse) {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        card.classList.toggle('flipped');
+      });
+    }
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('flipped'); }
+    });
+  });
 })();
