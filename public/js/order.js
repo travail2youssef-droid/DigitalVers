@@ -15,7 +15,7 @@
   dateInput.min = tomorrow.toISOString().split('T')[0];
 
   const fmtPrice = (p) =>
-    `${p.price} €${p.mode === 'monthly' ? '/mois' : ''}`;
+    `${p.from ? 'd�s ' : ''}${p.price.toLocaleString('fr-FR')} €${p.mode === 'monthly' ? '/mois' : ''}`;
 
   /* ------------------------------------------ rendu des offres selon le type */
   function renderPlans(type) {
@@ -30,7 +30,7 @@
           <span class="plan-option-body">
             <span class="plan-name">${p.name}${p.mode === 'monthly' ? ' <span class="pill-mini">Abonnement</span>' : ''}</span>
             <span class="plan-tagline">${p.tagline}</span>
-            <span class="plan-price">${p.price} €<small>${p.unit}</small></span>
+            <span class="plan-price">${p.from ? 'dès ' : ''}${p.price.toLocaleString('fr-FR')} €<small>${p.unit}</small></span>
           </span>`;
         planGroup.appendChild(label);
       });

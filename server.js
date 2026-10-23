@@ -148,7 +148,7 @@ app.get('/commander', (req, res) => {
   const offre = PLANS[req.query.offre] ? req.query.offre : '';
   res.render('commander', {
     BRAND, PLANS,
-    plansJson: jsonForScript(Object.fromEntries(Object.entries(PLANS).map(([s, p]) => [s, { type: p.type, name: p.name, price: p.price, unit: p.unit, mode: p.mode, tagline: p.tagline }]))),
+    plansJson: jsonForScript(Object.fromEntries(Object.entries(PLANS).map(([s, p]) => [s, { type: p.type, name: p.name, price: p.price, unit: p.unit, mode: p.mode, tagline: p.tagline, from: !!p.from }]))),
     offre,
     page: { title: 'Commander — DigitalVerse', description: 'Commandez votre site web ou votre agent IA DigitalVerse : choisissez votre offre, indiquez vos coordonnées, puis décrivez votre projet à notre assistant de brief.' },
   });
@@ -460,7 +460,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
   /* Tarifs publics des offres Agents IA (source : config/site.config.js) */
   const tarifsAgents = Object.entries(PLANS)
     .filter(([, p]) => p.type === 'agent')
-    .map(([slug, p]) => ({ slug, name: p.name, price: p.price, unit: p.unit }));
+    .map(([slug, p]) => ({ slug, name: p.name, price: p.price, unit: p.unit, from: !!p.from }));
   res.json({ ok: true, caTotal, nbPaye, nbEnAttente, panierMoyen, parMois: mois, parType, tarifsAgents });
 });
 app.post('/api/admin/settings', requireAdmin, (req, res) => {
