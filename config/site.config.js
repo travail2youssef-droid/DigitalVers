@@ -143,16 +143,19 @@ export const SERVICES = [
     icon: 'code',
     title: 'Création de sites web',
     text: 'Des sites modernes, rapides et sur mesure, conçus pour valoriser votre entreprise et convertir vos visiteurs.',
+    points: ['Design sur mesure et responsive', 'Référencement de base inclus', 'Hébergement et mise en ligne'],
   },
   {
     icon: 'brain',
     title: 'Solutions IA',
     text: 'Des solutions intelligentes adaptées à vos besoins pour améliorer l’expérience client et optimiser vos opérations.',
+    points: ['Chatbot entraîné sur vos contenus', 'Réponses automatiques 24h/24', 'Configuration adaptée à votre activité'],
   },
   {
     icon: 'bolt',
     title: 'Automatisation',
     text: 'Automatisez certaines tâches répétitives pour gagner du temps et améliorer votre efficacité.',
+    points: ['Tâches répétitives automatisées', 'Connexion à vos outils compatibles', 'Suivi technique régulier'],
   },
 ];
 

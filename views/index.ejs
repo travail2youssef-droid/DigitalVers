@@ -39,10 +39,33 @@
       </ul>
     </div>
     <div class="hero-visual reveal" data-speed="0.14" data-mouse="15">
-      <img src="/assets/hero-laptop.png" alt="Ordinateur portable affichant un site web haut de gamme en thème sombre avec accents rouges" width="1376" height="768" fetchpriority="high">
+      <div class="hero-scene" data-scene>
+        <div class="hero-scene-inner">
+          <img src="/assets/hero-laptop.png" alt="Ordinateur portable affichant un site web haut de gamme en thème sombre avec accents rouges" width="1376" height="768" fetchpriority="high">
+          <span class="scene-glare" aria-hidden="true"></span>
+          <span class="scene-chip chip-1" style="--z:70px">Design sur mesure</span>
+          <span class="scene-chip chip-2" style="--z:105px"><i class="chip-dot" aria-hidden="true"></i>IA intégrée</span>
+          <span class="scene-chip chip-3" style="--z:55px">SEO inclus</span>
+          <span class="scene-chip chip-4" style="--z:90px"><i class="chip-dot" aria-hidden="true"></i>Support réactif</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- ============================ BANDEAU DÉFILANT ============================ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <% for (let i = 0; i < 2; i++) { %>
+    <span class="mq-item">Sites web sur mesure</span><span class="mq-sep">✦</span>
+    <span class="mq-item mq-red">Chatbots IA</span><span class="mq-sep">✦</span>
+    <span class="mq-item">Automatisation</span><span class="mq-sep">✦</span>
+    <span class="mq-item mq-red">Design responsive</span><span class="mq-sep">✦</span>
+    <span class="mq-item">Référencement</span><span class="mq-sep">✦</span>
+    <span class="mq-item mq-red">Maintenance incluse</span><span class="mq-sep">✦</span>
+    <% } %>
+  </div>
+</div>
 
 <!-- ============================ SERVICES ============================ -->
 <section class="section" id="services">
@@ -54,7 +77,9 @@
     </header>
     <div class="cards-3">
       <% SERVICES.forEach(function(s){ %>
-      <article class="card service-card tilt-3d reveal-3d spotlight">
+      <article class="card service-card flip-card reveal-3d spotlight" tabindex="0" aria-label="<%= s.title %> — survolez ou appuyez pour les détails">
+        <div class="flip-inner">
+        <div class="flip-front">
         <div class="card-icon" aria-hidden="true">
           <% if (s.icon === 'code') { %>
             <svg viewBox="0 0 24 24"><path d="m8 6-6 6 6 6M16 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -69,6 +94,15 @@
         <a class="link-arrow" href="/commander">Discuter de ce besoin
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
+        </div>
+        <div class="flip-back">
+          <p class="flip-back-title"><%= s.title %></p>
+          <ul class="flip-points">
+            <% s.points.forEach(function(pt){ %><li><%= pt %></li><% }); %>
+          </ul>
+          <span class="flip-hint">Retourner</span>
+        </div>
+        </div>
       </article>
       <% }); %>
     </div>
