@@ -184,39 +184,101 @@
     });
   }
 
-  /* ------------------------------------------------ parallax au scroll */
+  /* ------------------------------------------------ moteur parallax unifié (scroll + souris) */
   const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const parallaxLayers = document.querySelectorAll('.parallax-layer');
-  if (parallaxLayers.length && !prefersReduced && window.innerWidth > 920) {
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      parallaxLayers.forEach((layer) => {
-        const speed = parseFloat(layer.dataset.speed || '0.15');
-        layer.style.transform = `translateY(${scrollY * speed}px)`;
+  const isDesktop = window.matchMedia('(min-width: 921px) and (pointer: fine)').matches;
+  const fxActive = !prefersReduced && isDesktop;
+
+  const fxItems = [];
+  if (fxActive) {
+    document.querySelectorAll('[data-speed], [data-mouse]').forEach((el) => {
+      fxItems.push({
+        el,
+        speed: parseFloat(el.dataset.speed || '0'),
+        m: parseFloat(el.dataset.mouse || '0'),
+        cx: 0, cy: 0, tx: 0, ty: 0,
       });
+    });
+    let px = 0, py = 0;
+    window.addEventListener('pointermove', (e) => {
+      px = (e.clientX / window.innerWidth) * 2 - 1;
+      py = (e.clientY / window.innerHeight) * 2 - 1;
     }, { passive: true });
+
+    (function fxTick() {
+      const vh = window.innerHeight;
+      for (const f of fxItems) {
+        const rect = f.el.getBoundingClientRect();
+        if (rect.bottom < -420 || rect.top > vh + 420) continue;
+        const delta = (rect.top + rect.height / 2 - vh / 2) / vh; // -1..1 environ
+        const nx = f.m * px * 1.6;
+        const ny = f.speed * delta * 170 + f.m * py * 0.9;
+        f.cx += (nx - f.cx) * 0.08;
+        f.cy += (ny - f.cy) * 0.08;
+        f.el.style.transform = 'translate3d(' + f.cx.toFixed(2) + 'px,' + f.cy.toFixed(2) + 'px,0)';
+      }
+      requestAnimationFrame(fxTick);
+    })();
   }
 
+  /* ------------------------------------------------ barre de progression du scroll */
+  const sp = document.createElement('div');
+  sp.className = 'scroll-progress';
+  sp.setAttribute('aria-hidden', 'true');
+  document.body.prepend(sp);
+  const updateSp = () => {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    sp.style.setProperty('--sp', h > 40 ? Math.min(1, window.scrollY / h).toFixed(4) : 0);
+  };
+  window.addEventListener('scroll', updateSp, { passive: true });
+  window.addEventListener('resize', updateSp);
+  updateSp();
+
   /* ------------------------------------------------ inclinaison 3D au survol */
-  const tiltTargets = document.querySelectorAll('.tilt-3d');
+  const tiltTargets = document.querySelectorAll('.tilt-3d, .tilt-soft');
   tiltTargets.forEach((target) => {
+    const strong = target.classList.contains('tilt-3d');
+    const max = strong ? 6 : 4.5;
+    const scale = strong ? 1.02 : 1.012;
     target.addEventListener('mousemove', (e) => {
       if (prefersReduced) return;
       const rect = target.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -6;
-      const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 6;
-      target.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+      const rx = ((e.clientY - rect.top - rect.height / 2) / rect.height) * -2 * max;
+      const ry = ((e.clientX - rect.left - rect.width / 2) / rect.width) * 2 * max;
+      target.style.transform = 'perspective(1000px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg) scale(' + scale + ')';
     });
     target.addEventListener('mouseleave', () => {
-      target.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+      target.style.transform = strong ? 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)' : '';
     });
   });
 
+  /* ------------------------------------------------ halo rouge suivant le curseur sur les cartes */
+  if (!prefersReduced) {
+    document.querySelectorAll('.spotlight').forEach((el) => {
+      el.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--sx', (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
+        el.style.setProperty('--sy', (((e.clientY - r.top) / r.height) * 100).toFixed(1) + '%');
+      });
+    });
+  }
+
+  /* ------------------------------------------------ boutons magnétiques */
+  if (fxActive) {
+    document.querySelectorAll('.magnetic').forEach((btn) => {
+      btn.addEventListener('pointermove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const x = e.clientX - r.left - r.width / 2;
+        const y = e.clientY - r.top - r.height / 2;
+        btn.style.transform = 'translate(' + (x * 0.18).toFixed(1) + 'px,' + (y * 0.22).toFixed(1) + 'px)';
+      });
+      btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+    });
+  }
+
   /* ------------------------------------------------ reveal 3D au scroll */
   const reveals3d = document.querySelectorAll('.reveal-3d');
-  if (reveals3d.length && 'IntersectionObserver' in window && !prefersReduced) {
+  if (reveals3d.length && 'IntersectionObserver' in window) {
     const ro = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -232,5 +294,7 @@
       el.style.setProperty('--d', `${(i % 6) * 0.08}s`);
       ro.observe(el);
     });
+  } else {
+    reveals3d.forEach((el) => el.classList.add('visible'));
   }
 })();

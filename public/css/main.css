@@ -849,15 +849,93 @@ a, button { -webkit-tap-highlight-color: transparent; }
   opacity: 0;
   transform: translateY(34px) rotateX(-8deg);
   transition: opacity 0.8s ease, transform 0.8s ease;
+  transition-delay: var(--d, 0s);
 }
 .reveal-3d.visible {
   opacity: 1;
   transform: none;
 }
 
-/* Tablette et mobile : on désactive le parallax lourd pour garder la fluidité */
+/* Éléments pilotés par le moteur parallax (scroll + souris) */
+[data-speed], [data-mouse] { will-change: transform; }
+.hero-bg .parallax-layer, .parallax-soft > .parallax-layer { inset: 0; }
+.parallax-soft { position: relative; overflow: clip; }
+
+/* Halos dérivant lentement */
+@keyframes drift-a { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(46px, 26px) scale(1.12); } }
+@keyframes drift-b { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-38px, -24px) scale(1.08); } }
+.drift-a { animation: drift-a 11s ease-in-out infinite; }
+.drift-b { animation: drift-b 13s ease-in-out infinite; }
+
+/* Anneau orbital en rotation très lente */
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.orbit { animation: spin-slow 36s linear infinite; }
+.hero-ring {
+  position: absolute; top: 6%; right: 3%;
+  width: min(340px, 32vw); aspect-ratio: 1;
+  border: 1.5px dashed rgba(242, 13, 37, 0.28); border-radius: 50%;
+}
+.hero-dot {
+  position: absolute; top: 18%; left: 6%;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--red); box-shadow: 0 0 18px var(--red);
+}
+.fx-orb {
+  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.2;
+  background: radial-gradient(circle, var(--red) 0%, transparent 65%);
+}
+.fx-orb-1 { width: 420px; height: 420px; top: -140px; left: -140px; }
+.fx-orb-2 { width: 520px; height: 520px; bottom: -200px; right: -160px; opacity: 0.16; }
+
+/* Halo rouge suivant le curseur sur les cartes */
+.spotlight { position: relative; }
+.spotlight::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(280px circle at var(--sx, 50%) var(--sy, 50%), rgba(242, 13, 37, 0.12), transparent 62%);
+  opacity: 0; transition: opacity 0.35s ease;
+}
+.spotlight:hover::after { opacity: 1; }
+
+/* Inclinaison douce (sans profondeur 3D interne) */
+.tilt-soft { perspective: 900px; transition: transform 0.12s ease-out; }
+
+/* Boutons magnétiques */
+.magnetic { transition: transform 0.22s ease-out; }
+
+/* Reflet animé sur le titre du hero */
+@keyframes sheen { 0%, 18% { background-position: 120% 0; } 55%, 100% { background-position: -140% 0; } }
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero-title .text-red {
+    background: linear-gradient(110deg, var(--red) 30%, #ff7b84 48%, var(--red) 62%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    animation: sheen 6s ease-in-out infinite;
+  }
+}
+
+/* Badge « Recommandée » pulsant */
+@keyframes badge-pulse {
+  0% { box-shadow: 0 4px 16px rgba(242, 13, 37, 0.4), 0 0 0 0 rgba(242, 13, 37, 0.35); }
+  70%, 100% { box-shadow: 0 4px 16px rgba(242, 13, 37, 0.4), 0 0 0 12px rgba(242, 13, 37, 0); }
+}
+.badge-reco { animation: badge-pulse 2.8s ease-out infinite; }
+
+/* Image du hero qui flotte doucement */
+.hero-visual img { animation: float 9s ease-in-out infinite; }
+
+/* Barre de progression du scroll */
+.scroll-progress {
+  position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 1200; pointer-events: none;
+  background: linear-gradient(90deg, var(--red), #ff6a74);
+  transform-origin: 0 50%; transform: scaleX(var(--sp, 0));
+}
+
+/* Tablette et mobile : on désactive les effets lourds pour garder la fluidité */
 @media (max-width: 920px), (prefers-reduced-motion: reduce) {
-  .parallax-layer { transform: none !important; animation: none !important; }
-  .tilt-3d:hover { transform: none; }
-  .float { animation: none; }
+  .parallax-layer, [data-speed], [data-mouse] { transform: none !important; }
+  .drift-a, .drift-b, .orbit, .float, .badge-reco, .hero-visual img, .hero-title .text-red { animation: none !important; }
+  .tilt-3d:hover, .tilt-soft:hover { transform: none; }
+  .spotlight::after { display: none; }
+  .magnetic { transition: none; }
 }
