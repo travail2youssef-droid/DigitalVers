@@ -51,6 +51,12 @@ const isPhone = (s) => typeof s === 'string' && /^\+?[0-9 .\-()]{8,20}$/.test(s.
 const clean = (s, max = 500) => (typeof s === 'string' ? s.trim().slice(0, max) : '');
 const uid = (n = 12) => crypto.randomBytes(n).toString('hex');
 
+/* URL canonique du site : BRAND.url si configuré, hôte de la requête sinon */
+function siteUrl(req) {
+  const configured = String(BRAND.url || '').replace(/\/+$/, '');
+  return configured || req.protocol + '://' + req.get('host');
+}
+
 function jsonForScript(obj) {
   return JSON.stringify(obj).replace(/</g, '\\u003c');
 }
@@ -132,16 +138,72 @@ function fireAndForget(...promises) {
 
 /* ==================================================================== SITE */
 app.get('/', (req, res) => {
+  const site = siteUrl(req);
+  const seoGraph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': site + '/#organisation',
+        name: BRAND.name,
+        url: site,
+        logo: site + '/assets/logo-emblem.png',
+        description: BRAND.description,
+      },
+      {
+        '@type': 'WebSite',
+        '@id': site + '/#site',
+        name: BRAND.name,
+        url: site,
+        inLanguage: 'fr-FR',
+        publisher: { '@id': site + '/#organisation' },
+      },
+      {
+        '@type': 'ProfessionalService',
+        '@id': site + '/#agence',
+        name: BRAND.name,
+        url: site,
+        description: BRAND.description,
+        areaServed: { '@type': 'Country', name: 'France' },
+        knowsLanguage: ['fr-FR'],
+        provider: { '@id': site + '/#organisation' },
+        hasOfferCatalog: {
+          '@type': 'OfferCatalog',
+          name: 'Offres DigitalVerse',
+          itemListElement: Object.values(PLANS).map((pl) => ({
+            '@type': 'Offer',
+            itemOffered: { '@type': 'Service', name: pl.name, description: pl.tagline },
+            price: pl.price,
+            priceCurrency: 'EUR',
+            category: pl.mode === 'monthly' ? 'Abonnement mensuel' : 'Paiement unique',
+          })),
+        },
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: FAQ.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      },
+    ],
+  };
   res.render('index', {
     BRAND, PLANS, SERVICES, AVANTAGES, PORTFOLIO, PROCESSUS, FAQ,
     PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES,
     sent: req.query.envoye === '1',
-    page: { title: 'DigitalVerse — Agence web & IA', description: BRAND.description },
+    jsonLd: jsonForScript(seoGraph),
+    page: {
+      title: 'DigitalVerse — Agence web & IA | Sites sur mesure, chatbots, automatisation',
+      description: 'Création de sites web sur mesure et solutions IA pour entreprises : vitrine, site business, chatbot IA, automatisation. Tarifs clairs, devis transparent, accompagnement sérieux.',
+      path: '/',
+    },
   });
 });
 
-app.get('/mentions-legales', (req, res) => res.render('mentions-legales', { BRAND, page: { title: 'Mentions légales — DigitalVerse', description: 'Mentions légales de DigitalVerse.' } }));
-app.get('/politique-de-confidentialite', (req, res) => res.render('confidentialite', { BRAND, page: { title: 'Politique de confidentialité — DigitalVerse', description: 'Politique de confidentialité et traitement des données personnelles de DigitalVerse.' } }));
+app.get('/mentions-legales', (req, res) => res.render('mentions-legales', { BRAND, page: { title: 'Mentions légales — DigitalVerse', description: 'Mentions légales de DigitalVerse : éditeur, hébergement, propriété intellectuelle et responsabilités.', path: '/mentions-legales' } }));
+app.get('/politique-de-confidentialite', (req, res) => res.render('confidentialite', { BRAND, page: { title: 'Politique de confidentialité — DigitalVerse', description: 'Politique de confidentialité de DigitalVerse : données collectées via les formulaires et la commande, finalités, durées de conservation et vos droits.', path: '/politique-de-confidentialite' } }));
 
 /* ================================================================== COMMANDE */
 app.get('/commander', (req, res) => {
@@ -150,7 +212,7 @@ app.get('/commander', (req, res) => {
     BRAND, PLANS, SUBSCRIPTION_CANCELLATION_NOTE,
     plansJson: jsonForScript(Object.fromEntries(Object.entries(PLANS).map(([s, p]) => [s, { type: p.type, name: p.name, price: p.price, unit: p.unit, mode: p.mode, tagline: p.tagline, from: !!p.from }]))),
     offre,
-    page: { title: 'Commander — DigitalVerse', description: 'Commandez votre site web ou votre agent IA DigitalVerse : choisissez votre offre, indiquez vos coordonnées, puis décrivez votre projet à notre assistant de brief.' },
+    page: { title: 'Commander un site web ou un agent IA en ligne — DigitalVerse', description: 'Commandez en ligne : choisissez votre offre (site vitrine, site business, chatbot IA, automatisation), indiquez vos coordonnées, puis détaillez votre projet à notre assistant IA. Aucun paiement demandé à cette étape.', path: '/commander' },
   });
 });
 
@@ -209,15 +271,15 @@ app.post('/api/commande', rateLimit(30), (req, res) => {
 /* ===================================================================== CHAT */
 app.get('/chat/:id', (req, res) => {
   const { order } = getOrder(req.params.id);
-  if (!order) return res.status(404).render('404', { BRAND, page: { title: 'Introuvable — DigitalVerse' } });
-  if (req.query.key !== order.accessKey) return res.status(403).render('404', { BRAND, page: { title: 'Lien invalide — DigitalVerse' }, invalidLink: true });
+  if (!order) return res.status(404).render('404', { BRAND, page: { title: 'Page introuvable — DigitalVerse', robots: 'noindex, nofollow' } });
+  if (req.query.key !== order.accessKey) return res.status(403).render('404', { BRAND, page: { title: 'Lien invalide — DigitalVerse', robots: 'noindex, nofollow' }, invalidLink: true });
   const plan = PLANS[order.planSlug];
   res.render('chat', {
     BRAND,
     order: orderPublic(order),
     orderJson: jsonForScript({ id: order.id, key: order.accessKey, chat: order.chat, brief: order.brief, status: order.status, livraison: order.livraison }),
     plan,
-    page: { title: 'Votre brief — DigitalVerse', description: 'Décrivez votre projet à l’assistant de brief DigitalVerse.' },
+    page: { title: 'Votre brief — DigitalVerse', description: 'Décrivez votre projet à l’assistant de brief DigitalVerse.', robots: 'noindex, nofollow' },
   });
 });
 
@@ -297,11 +359,40 @@ app.post('/api/contact', rateLimit(20), (req, res) => {
   res.json({ ok: true });
 });
 
+/* ============================================================== SEO — ROBOTS/SITEMAP */
+app.get('/robots.txt', (req, res) => {
+  const site = siteUrl(req);
+  res.type('text/plain').send([
+    'User-agent: *',
+    'Allow: /',
+    'Disallow: /admin',
+    'Disallow: /chat',
+    'Disallow: /api',
+    '',
+    'Sitemap: ' + site + '/sitemap.xml',
+    '',
+  ].join('\n'));
+});
+app.get('/sitemap.xml', (req, res) => {
+  const site = siteUrl(req);
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = [
+    { p: '/', pr: '1.0', freq: 'weekly' },
+    { p: '/commander', pr: '0.9', freq: 'monthly' },
+    { p: '/mentions-legales', pr: '0.3', freq: 'yearly' },
+    { p: '/politique-de-confidentialite', pr: '0.3', freq: 'yearly' },
+  ];
+  const body = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + urls.map((u) => '  <url><loc>' + site + u.p + '</loc><lastmod>' + today + '</lastmod><changefreq>' + u.freq + '</changefreq><priority>' + u.pr + '</priority></url>').join('\n')
+    + '\n</urlset>\n';
+  res.type('application/xml').send(body);
+});
+
 /* ==================================================================== ADMIN */
 app.get('/admin/connexion', (req, res) => {
   if (validSession(req)) return res.redirect('/admin');
   if (validPending(req)) return res.redirect('/admin/connexion/etape-2');
-  res.render('admin/login', { BRAND, step: 1, error: req.query.erreur === '1', page: { title: 'Connexion — Espace DigitalVerse' } });
+  res.render('admin/login', { BRAND, step: 1, error: req.query.erreur === '1', page: { title: 'Connexion — Espace DigitalVerse', robots: 'noindex, nofollow' } });
 });
 app.post('/admin/connexion', rateLimit(15), (req, res) => {
   const pwd = req.body?.password || '';
@@ -315,7 +406,7 @@ app.post('/admin/connexion', rateLimit(15), (req, res) => {
 app.get('/admin/connexion/etape-2', (req, res) => {
   if (validSession(req)) return res.redirect('/admin');
   if (!validPending(req)) return res.redirect('/admin/connexion');
-  res.render('admin/login', { BRAND, step: 2, error: req.query.erreur === '1', page: { title: 'Vérification 2/2 — Espace DigitalVerse' } });
+  res.render('admin/login', { BRAND, step: 2, error: req.query.erreur === '1', page: { title: 'Vérification 2/2 — Espace DigitalVerse', robots: 'noindex, nofollow' } });
 });
 app.post('/admin/connexion/etape-2', rateLimit(15), (req, res) => {
   if (!validPending(req)) return res.redirect('/admin/connexion');
@@ -341,7 +432,7 @@ app.get('/admin', requireAdmin, (req, res) => {
   const settings = loadSettings();
   res.render('admin/dashboard', {
     BRAND,
-    page: { title: 'Espace administrateur — DigitalVerse' },
+    page: { title: 'Espace administrateur — DigitalVerse', robots: 'noindex, nofollow' },
     ai: {
       mode: settings.ai.mode,
       endpoint: settings.ai.endpoint,
@@ -357,8 +448,8 @@ app.get('/admin', requireAdmin, (req, res) => {
 
 app.get('/admin/commandes/:id', requireAdmin, (req, res) => {
   const { order } = getOrder(req.params.id);
-  if (!order) return res.status(404).render('404', { BRAND, page: { title: 'Commande introuvable — DigitalVerse' } });
-  res.render('admin/order', { BRAND, order: orderPublic(order), plan: PLANS[order.planSlug], page: { title: `Commande ${order.id} — DigitalVerse` } });
+  if (!order) return res.status(404).render('404', { BRAND, page: { title: 'Commande introuvable — DigitalVerse', robots: 'noindex, nofollow' } });
+  res.render('admin/order', { BRAND, order: orderPublic(order), plan: PLANS[order.planSlug], page: { title: `Commande ${order.id} — DigitalVerse`, robots: 'noindex, nofollow' } });
 });
 
 /* ------- API admin (JSON, utilisée par le tableau de bord auto-actualisé) */
@@ -484,10 +575,10 @@ app.post('/api/admin/settings/test', requireAdmin, async (req, res) => {
 });
 
 /* ================================================================= divers */
-app.use((req, res) => res.status(404).render('404', { BRAND, page: { title: 'Page introuvable — DigitalVerse' } }));
+app.use((req, res) => res.status(404).render('404', { BRAND, page: { title: 'Page introuvable — DigitalVerse', robots: 'noindex, nofollow' } }));
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).render('404', { BRAND, page: { title: 'Erreur — DigitalVerse' }, serverError: true });
+  res.status(500).render('404', { BRAND, page: { title: 'Erreur — DigitalVerse', robots: 'noindex, nofollow' }, serverError: true });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
