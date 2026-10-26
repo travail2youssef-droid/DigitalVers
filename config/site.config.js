@@ -14,7 +14,7 @@ export const BRAND = {
     'DigitalVerse conçoit des sites web sur mesure et des solutions intelligentes pour aider les entreprises à se développer, gagner en efficacité et se démarquer.',
   description:
     'DigitalVerse est une agence digitale spécialisée dans la création de sites web sur mesure et l’intégration de solutions d’intelligence artificielle pour les entreprises.',
-  url: 'https://digitalverse.fr', // à remplacer par le domaine réel en production
+  url: 'https://digitalvers.onrender.com', // domaine de production (Render) ; à changer ici si domaine personnalisé
 };
 
 /* -------------------------------------------------------------------------
