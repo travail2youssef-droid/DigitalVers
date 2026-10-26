@@ -3,7 +3,7 @@
 <header class="site-header" id="haut">
   <div class="container header-inner">
     <a href="/#accueil" class="brand" aria-label="DigitalVerse — retour à l’accueil">
-      <img src="/assets/logo-wordmark.png" alt="DigitalVerse" class="brand-logo" width="180" height="34">
+      <picture><source type="image/webp" srcset="/assets/logo-wordmark.webp<%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>"><img src="/assets/logo-wordmark.png<%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>" alt="DigitalVerse" class="brand-logo" width="180" height="34"></picture>
     </a>
     <nav class="main-nav" aria-label="Navigation principale">
       <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Ouvrir le menu">

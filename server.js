@@ -8,6 +8,8 @@
                      (défaut : « digitalverse-admin » — À CHANGER)
    ========================================================================= */
 import express from 'express';
+import compression from 'compression';
+import fs from 'node:fs';
 import cookieParser from 'cookie-parser';
 import crypto from 'node:crypto';
 import path from 'node:path';
@@ -37,10 +39,44 @@ app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   next();
 });
+/* Compression gzip/brotli : indispensable pour le poids du HTML/CSS/JS. */
+app.use(compression());
+
+/* Empreinte des fichiers publics : sert à versionner les URL d'assets
+   (?v=…) pour pouvoir les cacher longtemps sans jamais servir du périmé. */
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const ASSET_V = (() => {
+  try {
+    const h = crypto.createHash('sha1');
+    const walk = (d, rel) => {
+      for (const e of fs.readdirSync(d, { withFileTypes: true }).sort((x, y) => x.name.localeCompare(y.name))) {
+        if (e.isDirectory()) { walk(path.join(d, e.name), rel ? rel + '/' + e.name : e.name); continue; }
+        const st = fs.statSync(path.join(d, e.name));
+        h.update(rel ? rel + '/' + e.name : e.name).update(String(st.size)).update(String(Math.round(st.mtimeMs)));
+      }
+    };
+    walk(PUBLIC_DIR, '');
+    return h.digest('hex').slice(0, 10);
+  } catch { return 'dev'; }
+})();
+app.use((req, res, next) => { res.locals.assetV = ASSET_V; next(); });
+
 app.use(express.json({ limit: '200kb' }));
 app.use(express.urlencoded({ extended: true, limit: '200kb' }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h', index: false }));
+app.use(express.static(PUBLIC_DIR, {
+  index: false,
+  maxAge: '7d', // sûr : toutes les URL d'assets sont versionnées (?v=…)
+  setHeaders(res0, filePath) {
+    // le fichier de vérification Google doit rester toujours frais
+    if (/google[0-9a-f]+\.html$/.test(filePath)) res0.setHeader('Cache-Control', 'public, max-age=300');
+  },
+}));
+/* Zones privées : interdiction stricte même si un lien fuite quelque part. */
+app.use((req, res, next) => {
+  if (/^\/(admin|chat|api)(\/|$)/.test(req.path)) res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  next();
+});
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -149,6 +185,13 @@ app.get('/', (req, res) => {
         url: site,
         logo: site + '/assets/logo-emblem.png',
         description: BRAND.description,
+        knowsAbout: [
+          'Création de sites web sur mesure',
+          'Chatbots IA pour entreprises',
+          'Automatisation des processus métier',
+          'SEO technique et performance web',
+          'Hébergement web et maintenance',
+        ],
       },
       {
         '@type': 'WebSite',
@@ -195,8 +238,8 @@ app.get('/', (req, res) => {
     sent: req.query.envoye === '1',
     jsonLd: jsonForScript(seoGraph),
     page: {
-      title: 'DigitalVerse — Agence web & IA | Sites sur mesure, chatbots, automatisation',
-      description: 'Création de sites web sur mesure et solutions IA pour entreprises : vitrine, site business, chatbot IA, automatisation. Tarifs clairs, devis transparent, accompagnement sérieux.',
+      title: 'DigitalVerse — Agence web, chatbots IA & automatisation',
+      description: 'Agence web & IA en Île-de-France : sites sur mesure, chatbots IA et automatisation pour entreprises. Tarifs clairs, commande en ligne, accompagnement complet.',
       path: '/',
     },
   });
@@ -208,11 +251,32 @@ app.get('/politique-de-confidentialite', (req, res) => res.render('confidentiali
 /* ================================================================== COMMANDE */
 app.get('/commander', (req, res) => {
   const offre = PLANS[req.query.offre] ? req.query.offre : '';
+  const site = siteUrl(req);
+  const commanderGraph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Accueil', item: site + '/' },
+          { '@type': 'ListItem', position: 2, name: 'Commander', item: site + '/commander' },
+        ],
+      },
+      {
+        '@type': 'WebPage',
+        '@id': site + '/commander',
+        name: 'Commander une offre — DigitalVerse',
+        isPartOf: { '@id': site + '/#site' },
+        about: { '@id': site + '/#agence' },
+      },
+    ],
+  };
   res.render('commander', {
+    jsonLd: jsonForScript(commanderGraph),
     BRAND, PLANS, SUBSCRIPTION_CANCELLATION_NOTE,
     plansJson: jsonForScript(Object.fromEntries(Object.entries(PLANS).map(([s, p]) => [s, { type: p.type, name: p.name, price: p.price, unit: p.unit, mode: p.mode, tagline: p.tagline, from: !!p.from }]))),
     offre,
-    page: { title: 'Commander un site web ou un agent IA en ligne — DigitalVerse', description: 'Commandez en ligne : choisissez votre offre (site vitrine, site business, chatbot IA, automatisation), indiquez vos coordonnées, puis détaillez votre projet à notre assistant IA. Aucun paiement demandé à cette étape.', path: '/commander' },
+    page: { title: 'Commander un site web ou un agent IA en ligne — DigitalVerse', description: 'Commandez en ligne : choisissez votre offre, indiquez vos coordonnées, puis détaillez votre projet à notre assistant IA. Aucun paiement demandé à cette étape.', path: '/commander' },
   });
 });
 
