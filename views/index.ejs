@@ -4,24 +4,22 @@
 <!-- ============================ HERO ============================ -->
 <section class="hero" id="accueil">
   <div class="hero-bg parallax" aria-hidden="true">
-    <div class="parallax-layer" data-speed="0.55"><div class="hero-glow hero-glow-1 drift-a"></div></div>
-    <div class="parallax-layer" data-speed="0.3"><div class="hero-glow hero-glow-2 drift-b"></div></div>
-    <div class="parallax-layer" data-speed="0.8"><div class="hero-ring orbit"></div></div>
-    <div class="parallax-layer" data-speed="0.45"><span class="hero-dot float"></span></div>
+    <div class="hero-glow hero-glow-1 parallax-layer" data-speed="0.10"></div>
+    <div class="hero-glow hero-glow-2 parallax-layer" data-speed="0.06"></div>
   </div>
   <div class="container hero-grid">
-    <div class="hero-copy" data-mouse="-9">
-      <p class="eyebrow reveal"><span class="eyebrow-dot float" aria-hidden="true"></span>AGENCE DIGITALE • WEB &amp; IA</p>
+    <div class="hero-copy">
+      <p class="eyebrow reveal"><span class="eyebrow-dot" aria-hidden="true"></span>AGENCE DIGITALE • WEB &amp; IA</p>
       <h1 class="hero-title reveal">
         <%= BRAND.sloganA %><br>
         Construisez <span class="text-red">votre avenir</span>.
       </h1>
       <p class="hero-sub reveal"><%= BRAND.intro %></p>
       <div class="hero-actions reveal">
-        <a href="#services" class="btn btn-primary magnetic">Découvrir nos services
+        <a href="#services" class="btn btn-primary">Découvrir nos services
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-        <a href="/commander" class="btn btn-ghost magnetic">Parler de mon projet</a>
+        <a href="/commander" class="btn btn-ghost">Parler de mon projet</a>
       </div>
       <ul class="hero-trust reveal" aria-label="Nos engagements">
         <li>
@@ -38,34 +36,11 @@
         </li>
       </ul>
     </div>
-    <div class="hero-visual reveal" data-speed="0.14" data-mouse="15">
-      <div class="hero-scene" data-scene>
-        <div class="hero-scene-inner">
-          <img src="/assets/hero-laptop.png" alt="Ordinateur portable affichant un site web haut de gamme en thème sombre avec accents rouges" width="1376" height="768" fetchpriority="high">
-          <span class="scene-glare" aria-hidden="true"></span>
-          <span class="scene-chip chip-1" style="--z:70px">Design sur mesure</span>
-          <span class="scene-chip chip-2" style="--z:105px"><i class="chip-dot" aria-hidden="true"></i>IA intégrée</span>
-          <span class="scene-chip chip-3" style="--z:55px">SEO inclus</span>
-          <span class="scene-chip chip-4" style="--z:90px"><i class="chip-dot" aria-hidden="true"></i>Support réactif</span>
-        </div>
-      </div>
+    <div class="hero-visual reveal">
+      <img src="/assets/hero-laptop.png" alt="Ordinateur portable affichant un site web haut de gamme en thème sombre avec accents rouges" width="1376" height="768" fetchpriority="high">
     </div>
   </div>
 </section>
-
-<!-- ============================ BANDEAU DÉFILANT ============================ -->
-<div class="marquee" aria-hidden="true">
-  <div class="marquee-track">
-    <% for (let i = 0; i < 2; i++) { %>
-    <span class="mq-item">Sites web sur mesure</span><span class="mq-sep">✦</span>
-    <span class="mq-item mq-red">Chatbots IA</span><span class="mq-sep">✦</span>
-    <span class="mq-item">Automatisation</span><span class="mq-sep">✦</span>
-    <span class="mq-item mq-red">Design responsive</span><span class="mq-sep">✦</span>
-    <span class="mq-item">Référencement</span><span class="mq-sep">✦</span>
-    <span class="mq-item mq-red">Maintenance incluse</span><span class="mq-sep">✦</span>
-    <% } %>
-  </div>
-</div>
 
 <!-- ============================ SERVICES ============================ -->
 <section class="section" id="services">
@@ -77,9 +52,7 @@
     </header>
     <div class="cards-3">
       <% SERVICES.forEach(function(s){ %>
-      <article class="card service-card flip-card reveal-3d spotlight" tabindex="0" aria-label="<%= s.title %> — survolez ou appuyez pour les détails">
-        <div class="flip-inner">
-        <div class="flip-front">
+      <article class="card service-card tilt-3d reveal-3d spotlight">
         <div class="card-icon" aria-hidden="true">
           <% if (s.icon === 'code') { %>
             <svg viewBox="0 0 24 24"><path d="m8 6-6 6 6 6M16 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -94,15 +67,6 @@
         <a class="link-arrow" href="/commander">Discuter de ce besoin
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-        </div>
-        <div class="flip-back">
-          <p class="flip-back-title"><%= s.title %></p>
-          <ul class="flip-points">
-            <% s.points.forEach(function(pt){ %><li><%= pt %></li><% }); %>
-          </ul>
-          <span class="flip-hint">Retourner</span>
-        </div>
-        </div>
       </article>
       <% }); %>
     </div>
@@ -203,9 +167,7 @@
 </section>
 
 <!-- ============================ RÉALISATIONS ============================ -->
-<section class="section section-alt parallax-soft" id="realisations">
-  <div class="parallax-layer" data-speed="0.25" aria-hidden="true"><div class="fx-orb fx-orb-1 drift-b"></div></div>
-  <div class="parallax-layer" data-speed="0.4" aria-hidden="true"><div class="fx-orb fx-orb-2 drift-a"></div></div>
+<section class="section section-alt" id="realisations">
   <div class="container">
     <header class="section-head split reveal">
       <div>
@@ -264,7 +226,7 @@
       <p>Notre approche associe un design exigeant, un développement soigné et une intégration raisonnée de l’intelligence artificielle — là où elle apporte une vraie valeur : répondre plus vite, automatiser le répétitif, mieux servir vos clients.</p>
       <p>Chaque projet commence par un brief précis et se poursuit par un accompagnement transparent : des périmètres écrits, des tarifs annoncés, et une relation construite sur la durée.</p>
       <div class="about-actions">
-        <a href="/commander" class="btn btn-primary magnetic">Démarrer un projet</a>
+        <a href="/commander" class="btn btn-primary">Démarrer un projet</a>
         <a href="#contact" class="btn btn-ghost">Nous contacter</a>
       </div>
     </div>
@@ -298,9 +260,7 @@
 </section>
 
 <!-- ============================ CONTACT ============================ -->
-<section class="section section-alt parallax-soft" id="contact">
-  <div class="parallax-layer" data-speed="0.3" aria-hidden="true"><div class="fx-orb fx-orb-2 drift-a"></div></div>
-  <div class="parallax-layer" data-speed="0.5" aria-hidden="true"><div class="fx-orb fx-orb-1 drift-b"></div></div>
+<section class="section section-alt" id="contact">
   <div class="container contact-grid">
     <div class="reveal">
       <p class="eyebrow">CONTACT</p>
