@@ -1,0 +1,48 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Keep-alive DigitalVers — réveille/entretient le service Render toutes les
+# 5 minutes. Utile si le service repasse en plan free (Render endort une
+# instance après ~10 min sans trafic) ; sans effet négatif en plan payant.
+#
+# Indépendant de n8n : si l'instance n8n tombe, ce ping continue.
+# Note GitHub : après 60 jours sans aucun push sur le dépôt, les workflows
+# planifiés sont désactivés — un clic « Run workflow » (ou n'importe quel
+# push) les relance.
+# ─────────────────────────────────────────────────────────────────────────────
+name: keep-alive
+
+on:
+  schedule:
+    # toutes les 5 minutes, 24 h/24 (intervalle minimum autorisé par GitHub)
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}   # déclenchement manuel (bouton « Run workflow »)
+
+permissions: {}
+
+concurrency:
+  group: keep-alive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    name: Ping du site
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: GET léger (robots.txt — 2 lignes, réveille le conteneur)
+        env:
+          PING_URL: https://digitalvers.onrender.com/robots.txt
+        run: |
+          code=000
+          for i in 1 2; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -m 60 \
+              -A 'DigitalVers-KeepAlive (GitHub Actions scheduled ping)' \
+              "$PING_URL" || true)
+            if [ "$code" = "200" ]; then
+              echo "Site vivant (HTTP 200) — tentative $i"
+              exit 0
+            fi
+            echo "Tentative $i : HTTP $code — nouvelle tentative dans 20 s…"
+            sleep 20
+          done
+          echo "::error::digitalvers.onrender.com n'a pas répondu 200 (dernier code : $code)"
+          exit 1
