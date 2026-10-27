@@ -37,7 +37,10 @@
       </ul>
     </div>
     <div class="hero-visual reveal">
-      <img src="/assets/hero-laptop.png" alt="Ordinateur portable affichant un site web haut de gamme en thème sombre avec accents rouges" width="1376" height="768" fetchpriority="high">
+      <picture>
+        <source type="image/webp" srcset="/assets/hero-laptop.webp<%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>">
+        <img src="/assets/hero-laptop.png<%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>" alt="Ordinateur portable affichant un site web haut de gamme en thème sombre avec accents rouges" width="1376" height="768" fetchpriority="high" decoding="async">
+      </picture>
     </div>
   </div>
 </section>
@@ -183,7 +186,10 @@
       <% PORTFOLIO.forEach(function(p){ %>
       <article class="card project-card tilt-soft reveal-3d spotlight">
         <div class="project-media">
-          <img src="<%= p.image %>" alt="<%= p.alt %>" loading="lazy" width="1200" height="800">
+          <picture>
+                      <source type="image/webp" srcset="<%= p.image.replace(/\.png$/, '.webp') %><%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>">
+                      <img src="<%= p.image %><%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>" alt="<%= p.alt %>" loading="lazy" decoding="async" width="1376" height="768">
+                    </picture>
           <span class="project-kind"><%= p.kind %></span>
         </div>
         <div class="project-body">

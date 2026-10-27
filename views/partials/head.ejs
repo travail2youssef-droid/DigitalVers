@@ -4,19 +4,21 @@
   <%
     const siteUrl = String(typeof BRAND !== 'undefined' && BRAND.url ? BRAND.url : '').replace(/\/+$/, '');
     const pageDesc = (typeof page.description !== 'undefined' && page.description) ? page.description : (typeof BRAND !== 'undefined' ? BRAND.description : '');
-    const robots = page.robots || 'index, follow, max-image-preview:large';
+    const robots = page.robots || 'index, follow, max-image-preview:large, max-snippet:-1';
     const canonical = (typeof page.path !== 'undefined' && page.path) ? siteUrl + page.path : '';
-    const ogImage = (siteUrl || '') + '/assets/hero-laptop.png';
+    const v = typeof assetV !== 'undefined' ? '?v=' + assetV : '';
+    const ogImage = (siteUrl || '') + '/assets/og-image.jpg';
   %>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= page.title %></title>
   <meta name="description" content="<%= pageDesc %>">
   <meta name="robots" content="<%= robots %>">
-  <% if (canonical) { %><link rel="canonical" href="<%= canonical %>"><% } %>
+  <% if (canonical) { %><link rel="canonical" href="<%= canonical %>">
+  <link rel="alternate" hreflang="fr" href="<%= canonical %>"><% } %>
   <meta name="theme-color" content="#050505">
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
-  <link rel="apple-touch-icon" href="/assets/favicon.png">
+  <link rel="icon" type="image/png" href="/assets/favicon.png<%= v %>">
+  <link rel="apple-touch-icon" href="/assets/favicon.png<%= v %>">
   <!-- Open Graph / réseaux sociaux -->
   <meta property="og:type" content="<%= page.ogType || 'website' %>">
   <meta property="og:site_name" content="<%= typeof BRAND !== 'undefined' ? BRAND.name : 'DigitalVerse' %>">
@@ -24,17 +26,17 @@
   <meta property="og:description" content="<%= pageDesc %>">
   <meta property="og:url" content="<%= canonical || (siteUrl + '/') %>">
   <meta property="og:image" content="<%= ogImage %>">
-  <meta property="og:image:width" content="1376">
-  <meta property="og:image:height" content="768">
-  <meta property="og:image:alt" content="Ordinateur portable affichant un site web haut de gamme en thème sombre avec accents rouges">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="DigitalVerse — agence web & IA : site vitrine premium sur ordinateur portable, thème sombre et accents rouges">
   <meta property="og:locale" content="fr_FR">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="<%= page.title %>">
   <meta name="twitter:description" content="<%= pageDesc %>">
   <meta name="twitter:image" content="<%= ogImage %>">
-  <link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preload" href="/fonts/inter-400.woff2<%= v %>" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/inter-700.woff2<%= v %>" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/main.css<%= v %>">
   <% if (typeof jsonLd !== 'undefined' && jsonLd) { %><script type="application/ld+json"><%- jsonLd %></script><% } %>
   <% if (typeof headExtra !== 'undefined') { %><%- headExtra %><% } %>
 </head>

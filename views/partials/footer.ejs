@@ -2,7 +2,7 @@
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <img src="/assets/logo-wordmark.png" alt="DigitalVerse" class="brand-logo" width="170" height="32">
+      <picture><source type="image/webp" srcset="/assets/logo-wordmark.webp<%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>"><img src="/assets/logo-wordmark.png<%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>" alt="DigitalVerse" class="brand-logo" width="170" height="32"></picture>
       <p class="footer-tagline"><%= BRAND.tagline %></p>
       <p class="muted small"><%= BRAND.description %></p>
     </div>
@@ -43,6 +43,6 @@
     <p class="muted small">Réponse aux demandes via le <a href="/#contact">formulaire de contact</a>.</p>
   </div>
 </footer>
-<script src="/js/main.js" defer></script>
+<script src="/js/main.js<%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>" defer></script>
 </body>
 </html>

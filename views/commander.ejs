@@ -4,7 +4,7 @@
 <header class="site-header simple">
   <div class="container header-inner">
     <a href="/" class="brand" aria-label="DigitalVerse — retour à l’accueil">
-      <img src="/assets/logo-wordmark.png" alt="DigitalVerse" class="brand-logo" width="180" height="34">
+      <picture><source type="image/webp" srcset="/assets/logo-wordmark.webp<%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>"><img src="/assets/logo-wordmark.png<%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>" alt="DigitalVerse" class="brand-logo" width="180" height="34"></picture>
     </a>
     <a href="/#offres" class="btn btn-ghost btn-sm">← Retour aux offres</a>
   </div>
