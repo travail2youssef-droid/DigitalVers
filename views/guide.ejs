@@ -1,0 +1,30 @@
+<%- include('partials/head', { page }) %>
+<%- include('partials/header') %>
+<main id="contenu">
+  <section class="section legal">
+    <div class="container narrow">
+      <nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true"> › </span><a href="/guides">Guides</a><span aria-hidden="true"> › </span><%= g.title %></nav>
+      <p class="eyebrow">GUIDE PRATIQUE</p>
+      <h1><%= g.title %></h1>
+      <p class="article-meta">Par DigitalVerse — mis à jour le <%= fmtFr(g.date) %></p>
+      <p class="lead"><%= g.lede %></p>
+
+      <% g.sections.forEach(function (sec) { %>
+      <h2><%= sec.h %></h2>
+      <% (sec.p || []).forEach(function (par) { %><p><%= par %></p><% }); %>
+      <% if (sec.ul) { %><ul><% sec.ul.forEach(function (li) { %><li><%= li %></li><% }); %></ul><% } %>
+      <% (sec.pAfter || []).forEach(function (par) { %><p><%= par %></p><% }); %>
+      <% }); %>
+
+      <p class="cta-row">
+        <a class="btn btn-primary" href="<%= g.cta.href %>"><%= g.cta.label %></a>
+      </p>
+
+      <h2>Sur le même thème</h2>
+      <ul>
+        <% g.related.forEach(function (r) { %><li><a href="<%= r.href %>"><%= r.label %></a></li><% }); %>
+      </ul>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>
