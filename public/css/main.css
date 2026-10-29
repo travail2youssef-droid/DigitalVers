@@ -862,14 +862,3 @@ a, button { -webkit-tap-highlight-color: transparent; }
   .tilt-3d:hover, .tilt-soft:hover { transform: none; }
   .spotlight::after { display: none; }
 }
-
-/* ─────────────────────────── COMPLÉMENTS ÉDITORIAUX (offres, guides, concepts) */
-.crumbs { font-size: 0.82rem; color: var(--muted-2); margin: 0 0 1.2rem; }
-.crumbs a { color: var(--muted); }
-.crumbs a:hover { color: var(--red); }
-.lead { font-size: 1.04rem; color: var(--muted); max-width: 70ch; }
-.cta-row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1.6rem 0 0; }
-.note-flag { display: inline-block; padding: 0.35rem 0.8rem; border: 1px dashed var(--border-strong); border-radius: 999px; color: var(--muted-2); font-size: 0.76rem; letter-spacing: 0.03em; margin-bottom: 0.9rem; }
-.article-meta { font-size: 0.82rem; color: var(--muted-2); margin: 0.2rem 0 1.3rem; }
-.concept-media { margin: 0.4rem 0 1.6rem; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: var(--bg-2); }
-.concept-media img { width: 100%; height: auto; display: block; }

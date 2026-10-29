@@ -141,19 +141,16 @@ export const PLANS = {
 export const SERVICES = [
   {
     icon: 'code',
-    link: '/creation-site-internet',
     title: 'Création de sites web',
     text: 'Des sites modernes, rapides et sur mesure, conçus pour valoriser votre entreprise et convertir vos visiteurs.',
   },
   {
     icon: 'brain',
-    link: '/chatbot-ia-entreprise',
     title: 'Solutions IA',
     text: 'Des solutions intelligentes adaptées à vos besoins pour améliorer l’expérience client et optimiser vos opérations.',
   },
   {
     icon: 'bolt',
-    link: '/automatisation-ia',
     title: 'Automatisation',
     text: 'Automatisez certaines tâches répétitives pour gagner du temps et améliorer votre efficacité.',
   },

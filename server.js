@@ -15,7 +15,6 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BRAND, PLANS, SERVICES, AVANTAGES, PORTFOLIO, PROCESSUS, FAQ, PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES } from './config/site.config.js';
-import { LANDING_PAGES, GUIDES, CASE_PAGES } from './config/landing.config.js';
 import { loadDb, saveDb, loadSettings, saveSettings } from './lib/store.js';
 import { agentReply, buildBrief, testExternalApi, openingMessage } from './lib/agent.js';
 import {
@@ -424,80 +423,6 @@ app.post('/api/contact', rateLimit(20), (req, res) => {
   res.json({ ok: true });
 });
 
-/* ===================================== PAGES SEO — offres détaillées, guides, concepts */
-function fmtFr(iso) {
-  const d = new Date(iso + 'T12:00:00Z');
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' });
-}
-const GUIDE_BY_SLUG = new Map(GUIDES.map((g) => [g.slug, g]));
-const CASE_BY_SLUG = new Map(CASE_PAGES.map((c) => [c.slug, c]));
-const orgNode = (site) => ({ '@type': 'Organization', '@id': site + '/#organisation', name: BRAND.name, url: site });
-const crumbNode = (site, items) => ({ '@type': 'BreadcrumbList', itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: site + it.path })) });
-const faqNode = (list) => (list && list.length ? { '@type': 'FAQPage', mainEntity: list.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) } : null);
-const offerNodes = (site, slugs) => ({ '@type': 'OfferCatalog', name: 'Offres DigitalVerse', itemListElement: slugs.map((slug) => { const pl = PLANS[slug]; return { '@type': 'Offer', itemOffered: { '@type': 'Service', name: pl.name, description: pl.tagline }, price: pl.price, priceCurrency: 'EUR', category: pl.mode === 'monthly' ? 'Abonnement mensuel' : 'Paiement unique', url: site + '/commander?offre=' + slug }; }) });
-
-LANDING_PAGES.forEach((lp) => {
-  app.get(lp.path, (req, res) => {
-    const site = siteUrl(req);
-    const faqAll = [...lp.faqGlobal.map((i) => FAQ[i]), ...(lp.faq || [])];
-    res.render('offre', {
-      BRAND, PLANS, PROCESSUS, PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE,
-      lp, faqAll,
-      jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
-        crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: lp.nav, path: lp.path }]),
-        orgNode(site),
-        { '@type': 'Service', '@id': site + lp.path + '#service', name: lp.serviceName, serviceType: lp.serviceType, description: lp.metaDescription, url: site + lp.path, areaServed: { '@type': 'Country', name: 'France' }, provider: { '@id': site + '/#organisation' }, hasOfferCatalog: offerNodes(site, lp.plans) },
-        faqNode(faqAll),
-      ].filter(Boolean) }),
-      page: { title: lp.title, description: lp.metaDescription, path: lp.path },
-    });
-  });
-});
-
-app.get('/guides', (req, res) => {
-  const site = siteUrl(req);
-  res.render('guides', {
-    BRAND, GUIDES,
-    jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
-      crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: 'Guides', path: '/guides' }]),
-      { '@type': 'CollectionPage', '@id': site + '/guides', name: 'Guides DigitalVerse', description: 'Guides pratiques : prix d’un site, choix d’une agence web, IA et automatisation pour les PME.', isPartOf: { '@id': site + '/#site' }, mainEntity: { '@type': 'ItemList', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: site + '/guides/' + g.slug, name: g.title })) } },
-    ] }),
-    page: { title: 'Guides : site internet, agence web et IA pour PME — DigitalVerse', description: 'Les guides DigitalVerse : ce que coûte vraiment un site, quelles questions poser avant de signer, comment démarrer un projet IA. Notre propre grille tarifaire y figure — la transparence commence là.', path: '/guides' },
-  });
-});
-
-app.get('/guides/:slug', (req, res) => {
-  const g = GUIDE_BY_SLUG.get(req.params.slug);
-  if (!g) return res.status(404).render('404', { BRAND, page: { title: 'Page introuvable — DigitalVerse', robots: 'noindex, nofollow' } });
-  const site = siteUrl(req);
-  res.render('guide', {
-    BRAND, g, fmtFr,
-    jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
-      crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: 'Guides', path: '/guides' }, { name: g.title, path: '/guides/' + g.slug }]),
-      orgNode(site),
-      { '@type': 'Article', '@id': site + '/guides/' + g.slug + '#article', headline: g.title, description: g.metaDescription, inLanguage: 'fr-FR', datePublished: g.date, dateModified: g.date, image: site + '/assets/og-image.jpg', author: { '@id': site + '/#organisation' }, publisher: { '@id': site + '/#organisation' }, mainEntityOfPage: { '@type': 'WebPage', '@id': site + '/guides/' + g.slug } },
-    ] }),
-    page: { title: g.title, description: g.metaDescription, path: '/guides/' + g.slug, ogType: 'article' },
-  });
-});
-
-app.get('/realisations/:slug', (req, res) => {
-  const c = CASE_BY_SLUG.get(req.params.slug);
-  const work = PORTFOLIO.find((x) => x.slug === req.params.slug);
-  if (!c || !work) return res.status(404).render('404', { BRAND, page: { title: 'Page introuvable — DigitalVerse', robots: 'noindex, nofollow' } });
-  const site = siteUrl(req);
-  res.render('concept', {
-    BRAND, PLANS, work, c, PRICING_GLOBAL_NOTE, fmtFr,
-    jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
-      crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: 'Réalisations', path: '/#realisations' }, { name: work.name, path: '/realisations/' + work.slug }]),
-      orgNode(site),
-      { '@type': 'CreativeWork', '@id': site + '/realisations/' + work.slug + '#concept', name: work.name, alternateName: work.category, description: c.metaDescription, image: site + work.image, creator: { '@id': site + '/#organisation' }, keywords: 'projet concept, démonstration d’agence' },
-      faqNode(c.faq),
-    ].filter(Boolean) }),
-    page: { title: c.title, description: c.metaDescription, path: '/realisations/' + c.slug },
-  });
-});
-
 /* ============================================================== SEO — ROBOTS/SITEMAP */
 app.get('/robots.txt', (req, res) => {
   const site = siteUrl(req);
@@ -518,15 +443,11 @@ app.get('/sitemap.xml', (req, res) => {
   const urls = [
     { p: '/', pr: '1.0', freq: 'weekly' },
     { p: '/commander', pr: '0.9', freq: 'monthly' },
-    ...LANDING_PAGES.map((l) => ({ p: l.path, pr: '0.8', freq: 'monthly' })),
-    { p: '/guides', pr: '0.7', freq: 'monthly' },
-    ...GUIDES.map((g) => ({ p: '/guides/' + g.slug, pr: '0.6', freq: 'yearly', mod: g.date })),
-    ...CASE_PAGES.map((c) => ({ p: '/realisations/' + c.slug, pr: '0.5', freq: 'yearly' })),
     { p: '/mentions-legales', pr: '0.3', freq: 'yearly' },
     { p: '/politique-de-confidentialite', pr: '0.3', freq: 'yearly' },
   ];
   const body = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    + urls.map((u) => '  <url><loc>' + site + u.p + '</loc><lastmod>' + (u.mod || today) + '</lastmod><changefreq>' + u.freq + '</changefreq><priority>' + u.pr + '</priority></url>').join('\n')
+    + urls.map((u) => '  <url><loc>' + site + u.p + '</loc><lastmod>' + today + '</lastmod><changefreq>' + u.freq + '</changefreq><priority>' + u.pr + '</priority></url>').join('\n')
     + '\n</urlset>\n';
   res.type('application/xml').send(body);
 });
