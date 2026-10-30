@@ -4,6 +4,7 @@
    ========================================================================= */
 import { EXTRA_GUIDES } from './content.extra.js';
 import { EXTRA_GUIDES_2 } from './content.extra2.js';
+import { EXTRA_GUIDES_3 } from './content.extra3.js';
 
 export const LANDING_SEO = {
   '/creation-site-internet': {
@@ -60,7 +61,7 @@ export const PAGE_SEO = {
 
 export function applySeoOverrides(LANDING_PAGES, GUIDES) {
   /* Articles de fond et pages ville (config/content.extra*.js) */
-  for (const extra of [...EXTRA_GUIDES, ...EXTRA_GUIDES_2]) {
+  for (const extra of [...EXTRA_GUIDES, ...EXTRA_GUIDES_2, ...EXTRA_GUIDES_3]) {
     if (!GUIDES.some((g) => g.slug === extra.slug)) GUIDES.push(extra);
   }
   for (const lp of LANDING_PAGES) {
