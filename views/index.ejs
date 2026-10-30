@@ -170,42 +170,6 @@
 </section>
 
 <!-- ============================ RÉALISATIONS ============================ -->
-<section class="section section-alt" id="realisations">
-  <div class="container">
-    <header class="section-head split reveal">
-      <div>
-        <p class="eyebrow">RÉALISATIONS</p>
-        <h2>Des expériences digitales qui font <span class="text-red">la différence</span>.</h2>
-        <p class="section-sub">Une sélection de <strong>projets concepts</strong> réalisés par nos soins pour illustrer notre approche — vos projets prennent leur place ici.</p>
-      </div>
-      <a href="/commander" class="btn btn-outline">Lancer votre projet
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-    </header>
-    <div class="cards-3 portfolio-grid">
-      <% PORTFOLIO.forEach(function(p){ %>
-      <article class="card project-card tilt-soft reveal-3d spotlight">
-        <div class="project-media">
-          <picture>
-                      <source type="image/webp" srcset="<%= p.image.replace(/\.png$/, '.webp') %><%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>">
-                      <img src="<%= p.image %><%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>" alt="<%= p.alt %>" loading="lazy" decoding="async" width="1376" height="768">
-                    </picture>
-          <span class="project-kind"><%= p.kind %></span>
-        </div>
-        <div class="project-body">
-          <p class="project-cat"><%= p.category %></p>
-          <h3><%= p.name %></h3>
-          <p class="muted small"><%= p.text %></p>
-          <a class="link-arrow" href="/realisations/<%= p.slug %>">Étudier le concept
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-      </article>
-      <% }); %>
-    </div>
-  </div>
-</section>
-
 <!-- ============================ PROCESSUS ============================ -->
 <section class="section" id="processus">
   <div class="container">

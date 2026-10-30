@@ -181,41 +181,6 @@ export const AVANTAGES = [
     text: 'Des périmètres écrits, des tarifs clairs et un interlocuteur disponible, avant comme après la mise en ligne.',
   },
 ];
-
-/* -------------------------------------------------------------------------
-   PORTFOLIO — projets CONCEPTS (démonstrations), pas des clients réels.
-   Remplacez par de vraies réalisations dès qu’elles sont disponibles.
-   ------------------------------------------------------------------------- */
-export const PORTFOLIO = [
-  {
-    slug: 'maison-velora',
-    name: 'Maison Vélora',
-    kind: 'Projet concept',
-    category: 'Site vitrine premium',
-    text: 'Site vitrine haut de gamme pour une maison d’hôtes : identité raffinée, galerie immersive, demandes de séjour.',
-    image: '/assets/portfolio-velora.png',
-    alt: 'Concept de site vitrine premium « Maison Vélora » affiché sur un ordinateur portable',
-  },
-  {
-    slug: 'table-dauguste',
-    name: 'Table d’Auguste',
-    kind: 'Projet concept',
-    category: 'Site restaurant',
-    text: 'Site élégant pour un restaurant gastronomique : carte consultable, ambiance visuelle soignée, prise de contact.',
-    image: '/assets/portfolio-restaurant.png',
-    alt: 'Concept de site de restaurant « Table d’Auguste » sur smartphone et ordinateur portable',
-  },
-  {
-    slug: 'nexora-flow',
-    name: 'Nexora Flow',
-    kind: 'Projet concept',
-    category: 'Tableau de bord d’automatisation',
-    text: 'Interface de suivi d’automatisations : indicateurs en temps réel, scénarios actifs et synthèses d’activité.',
-    image: '/assets/portfolio-dashboard.png',
-    alt: 'Concept de tableau de bord d’automatisation « Nexora Flow » sur écran',
-  },
-];
-
 export const PROCESSUS = [
   { n: '01', title: 'Échange et compréhension du besoin', text: 'Un premier échange et un brief guidé pour cerner précisément votre projet et vos objectifs.' },
   { n: '02', title: 'Conception et validation du design', text: 'Une proposition visuelle claire, ajustée avec vous jusqu’à validation.' },

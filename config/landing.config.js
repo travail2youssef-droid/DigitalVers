@@ -159,7 +159,6 @@ export const LANDING_PAGES = [
     ],
     related: [
       { href: '/chatbot-ia-entreprise', t: 'Chatbot IA', p: 'La brique conversationnelle, si vos visiteurs en ont besoin.' },
-      { href: '/realisations/nexora-flow', t: 'Concept : Nexora Flow', p: 'À quoi peut ressembler un tableau de bord d’automatisations.' },
       { href: '/guides/chatbot-ia-pme', t: 'Guide : automatiser sans se tromper', p: 'Préparer le terrain avant de brancher l’IA.' },
     ],
     serviceName: 'Automatisation de processus avec IA',
@@ -370,119 +369,6 @@ export const GUIDES = [
     related: [
       { href: '/chatbot-ia-entreprise', label: 'L’offre Chatbot IA en détail' },
       { href: '/automatisation-ia', label: 'L’offre d’automatisation sur mesure' },
-      { href: '/realisations/nexora-flow', label: 'Concept : un tableau de bord d’automatisations' },
-    ],
-  },
-];
-
-/* -------------------------------------------------------------------------
-   ÉTUDES DE CONCEPT — démonstrations d'agence. Les PORTFOLIO sont des
-   projets concepts (jamais des clients) : chaque page le dit, noir sur blanc.
-   ------------------------------------------------------------------------- */
-export const CASE_PAGES = [
-  {
-    slug: 'maison-velora',
-    title: 'Concept de site vitrine pour maison d’hôtes — DigitalVerse',
-    metaDescription:
-      'À quoi devrait ressembler le site d’une maison d’hôtes ? Étude de concept par DigitalVerse : atmosphère, galerie immersive, demandes de séjour. Démonstration, pas un client réel.',
-    h1: 'Maison Vélora — vendre une atmosphère, pas seulement des chambres',
-    flag: 'Projet concept — démonstration d’agence, pas un client réel',
-    contexte:
-      'Une maison d’hôtes haut de gamme concurrente surtout des plateformes de réservation, qui prennent une commission sur chaque séjour et rendent l’établissement interchangeable. Le rôle du site : recréer le lien direct — donner à sentir la maison avant même la première demande.',
-    objectifs: [
-      'Donner envie avant même la première photo : le visiteur doit comprendre l’atmosphère en trois secondes.',
-      'Rendre la demande de séjour aussi simple qu’un message à un ami — le formulaire est une conversation, pas un tunnel.',
-      'Traduire le standing par la retenue : grandes images, typographie soignée, silence marketing.',
-    ],
-    montre: [
-      'Une structure immersive : l’histoire de la maison, les chambres une par une, la table d’hôtes, puis la demande.',
-      'Une galerie pensée comme une visite et non comme un dossier photo.',
-      'Un chemin de contact unique et répété — le même geste du début à la fin.',
-      'Des balises et une structure prêtes pour les recherches locales (« maison d’hôtes + ville »), sans promesse de position.',
-    ],
-    pourQui:
-      'Ce type de structure convient aux maisons d’hôtes, gîtes de charme, locations saisonnières haut de gamme et petits hôtels indépendants qui veulent vendre leur atmosphère en direct plutôt que de dépendre des plateformes.',
-    plans: ['vitrine-starter'],
-    faq: [
-      {
-        q: 'Ce concept est-il adaptable à mon établissement ?',
-        a: 'Oui — c’est une démonstration de direction, pas un gabarit : textes, photos, structure et parcours de demande sont reconstruits autour de votre maison. Le périmètre se définit lors du brief, et le concept lui-même n’engage à rien.',
-      },
-    ],
-    related: [
-      { href: '/creation-site-internet', label: 'L’offre Site Vitrine' },
-      { href: '/realisations/table-dauguste', label: 'Concept voisin : site de restaurant' },
-      { href: '/maintenance-site-internet', label: 'Maintenance après mise en ligne' },
-    ],
-  },
-  {
-    slug: 'table-dauguste',
-    title: 'Concept de site pour restaurant gastronomique — DigitalVerse',
-    metaDescription:
-      'Le site d’un restaurant doit vendre la table avant le plat. Étude de concept par DigitalVerse : carte consultable, ambiance, prise de contact. Démonstration d’agence, pas un client réel.',
-    h1: 'Table d’Auguste — le site qui met l’eau à la bouche avant la carte',
-    flag: 'Projet concept — démonstration d’agence, pas un client réel',
-    contexte:
-      'Un restaurant a trois ennemis : le client qui hésite entre deux adresses à deux minutes d’intervalle, l’affiche Instagram qui ne dit rien de l’assiette, et le téléphone occupé au mauvais moment. Le site arbitre ces trois batailles.',
-    objectifs: [
-      'Une carte lisible sur mobile en moins de deux secondes, sans PDF à télécharger.',
-      'Donner à voir la salle, la terrasse, l’assiette — dans cet ordre.',
-      'Transformer l’envie en réservation en un geste, avec le numéro de téléphone toujours à portée.',
-    ],
-    montre: [
-      'Une page d’accueil qui s’ouvre sur l’ambiance et la proposition du jour, pas sur un slogan.',
-      'Une carte structurée (entrées, plats, desserts, menu) prête à être mise à jour selon les saisons.',
-      'Les informations pratique — horaires, accès, parking, groupes — regroupées là où on les cherche.',
-      'Des photos légères et nettes sur mobile : la vitesse de chargement fait partie de l’appétit.',
-    ],
-    pourQui:
-      ' Restaurants, tables d’hôtes, caves et bars de qualité qui veulent exister autrement que par les annuaires, et garder la relation directe avec leurs habitués.',
-    plans: ['vitrine-starter', 'business-fonctionnel'],
-    faq: [
-      {
-        q: 'Et la réservation en ligne, dans ce concept ?',
-        a: 'Le concept montre la carte et le contact direct. Pour la réservation en ligne, deux voies au devis : redirection vers votre outil de réservation existant, ou module de réservation intégré — dans ce second cas, l’offre Site Business est le bon point de départ.',
-      },
-    ],
-    related: [
-      { href: '/creation-site-internet', label: 'Création de site internet' },
-      { href: '/refonte-site-internet', label: 'Refonte : moderniser un site de restaurant' },
-      { href: '/realisations/maison-velora', label: 'Concept voisin : maison d’hôtes' },
-    ],
-  },
-  {
-    slug: 'nexora-flow',
-    title: 'Concept de tableau de bord d’automatisation IA — DigitalVerse',
-    metaDescription:
-      'Que devient l’automatisation quand elle est bien pensée ? Étude de concept : tableau de bord de scénarios IA, indicateurs temps réel, synthèses. Démonstration d’agence, pas un client réel.',
-    h1: 'Nexora Flow — voir ses automatisations travailler',
-    flag: 'Projet concept — démonstration d’agence, pas un client réel',
-    contexte:
-      'Une automatisation invisible est une automatisation douteuse : au bout d’un mois, plus personne ne sait ce qui tourne, ce qui a échoué, ce que ça a rapporté. Le tableau de bord répond à ces trois questions en permanence.',
-    objectifs: [
-      'Un coup d’œil pour savoir si tout tourne : scénarios actifs, en erreur, en pause.',
-      'Une synthèse hebdomadaire qui remplace cinq écrans : volume traité, temps gagné estimé prudemment, incidents.',
-      'Un point d’entrée unique pour agir : réessayer un scénario, basculer sur un humain, ajustement.',
-    ],
-    montre: [
-      'La vue temps réel : flux entrants, files en cours, connexions aux outils.',
-      'Les scénarios comme des fiches vivantes : à quoi ils servent, ce qu’ils ont fait cette semaine.',
-      'Les exceptions traitables en un clic, pas dans un journal de logs.',
-      'Le vocabulaire humain partout : « relances de devis envoyées », jamais « jobs exécutés ».',
-    ],
-    pourQui:
-      'Toutes les entreprises et indépendants dont l’activité dépend d’outils connectés — CRM, facturation, formulaires, e-mail — et qui veulent piloter leurs automatisations sans embaucher un technicien dédié. Le tableau de bord est une option de présentation : beaucoup de scénarios démarrent utilement avec une simple synthèse par e-mail.',
-    plans: ['automatisation-ia'],
-    faq: [
-      {
-        q: 'Faut-il un tableau de bord pour automatiser ?',
-        a: 'Non. Pour un ou deux scénarios, une synthèse périodique par e-mail suffit souvent. Le tableau de bord devient utile quand les flux se multiplient et qu’il faut décider en dix secondes où regarder — il se justifie au cas par cas, jamais par défaut.',
-      },
-    ],
-    related: [
-      { href: '/automatisation-ia', label: 'L’offre d’automatisation sur mesure' },
-      { href: '/chatbot-ia-entreprise', label: 'Le complément : chatbot IA' },
-      { href: '/guides/chatbot-ia-pme', label: 'Guide : préparer son brief IA' },
     ],
   },
 ];
