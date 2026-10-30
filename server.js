@@ -487,7 +487,7 @@ app.get('/robots.txt', (req, res) => {
     'User-agent: *',
     'Allow: /',
     'Disallow: /admin',
-    'Disallow: /chat',
+    'Disallow: /chat/',
     'Disallow: /api',
     '',
     'Sitemap: ' + site + '/sitemap.xml',
