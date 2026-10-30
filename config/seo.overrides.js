@@ -2,6 +2,7 @@
    SEO — titres (<= 60 car.) et meta descriptions (<= 155 car.) optimisés,
    appliqués au démarrage sur LANDING_PAGES et GUIDES, + contenu llms.txt.
    ========================================================================= */
+import { EXTRA_GUIDES } from './content.extra.js';
 
 export const LANDING_SEO = {
   '/creation-site-internet': {
@@ -57,6 +58,10 @@ export const PAGE_SEO = {
 };
 
 export function applySeoOverrides(LANDING_PAGES, GUIDES) {
+  /* Articles de fond et pages ville (config/content.extra.js) */
+  for (const extra of EXTRA_GUIDES) {
+    if (!GUIDES.some((g) => g.slug === extra.slug)) GUIDES.push(extra);
+  }
   for (const lp of LANDING_PAGES) {
     const o = LANDING_SEO[lp.path];
     if (o) { lp.title = o.title; lp.metaDescription = o.metaDescription; }
@@ -77,7 +82,10 @@ export function buildLlmsTxt(site, LANDING_PAGES, GUIDES) {
     ...LANDING_PAGES.map((l) => '- [' + l.nav + '](' + site + l.path + ') : ' + l.metaDescription),
     '',
     '## Guides',
-    ...GUIDES.map((g) => '- [' + g.title + '](' + site + '/guides/' + g.slug + ') : ' + g.metaDescription),
+    ...GUIDES.filter((g) => !g.ville).map((g) => '- [' + g.title + '](' + site + '/guides/' + g.slug + ') : ' + g.metaDescription),
+    '',
+    '## Création de site par ville',
+    ...GUIDES.filter((g) => g.ville).map((g) => '- [' + g.title + '](' + site + '/guides/' + g.slug + ') : ' + g.metaDescription),
     '',
     '## Contact et commande',
     '- [Commander en ligne](' + site + '/commander) : choix de l’offre puis brief avec un assistant IA, sans paiement à cette étape.',

@@ -9,7 +9,7 @@
         <p class="section-sub">Ce que nous savons du métier de la création web et de l’IA appliquée aux entreprises, écrit pour servir aussi à ceux qui ne nous commanderont jamais rien. Nos propres tarifs y figurent — c’est la seule partie subjective.</p>
       </header>
       <div class="cards-3">
-        <% GUIDES.forEach(function (g) { %>
+        <% GUIDES.filter(function (g) { return !g.ville; }).forEach(function (g) { %>
         <article class="card why-card tilt-soft reveal-3d spotlight">
           <p class="eyebrow">GUIDE</p>
           <h3><%= g.title %></h3>
@@ -22,6 +22,13 @@
   </section>
   <section class="section section-alt">
     <div class="container">
+      <h2>Création de site internet par ville</h2>
+      <p class="muted">DigitalVerse travaille à distance pour les entreprises de toute la France.</p>
+      <ul>
+        <% GUIDES.filter(function (g) { return g.ville; }).forEach(function (g) { %>
+        <li><a href="/guides/<%= g.slug %>">Création de site internet à <%= g.ville %></a></li>
+        <% }); %>
+      </ul>
       <p class="cta-row">
         <a href="/#offres" class="btn btn-primary">Voir nos offres</a>
         <a href="/#contact" class="btn btn-ghost">Poser une question directe</a>

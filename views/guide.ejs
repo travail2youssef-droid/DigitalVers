@@ -4,7 +4,7 @@
   <section class="section legal">
     <div class="container narrow">
       <nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true"> › </span><a href="/guides">Guides</a><span aria-hidden="true"> › </span><%= g.title %></nav>
-      <p class="eyebrow">GUIDE PRATIQUE</p>
+      <p class="eyebrow"><%= g.ville ? 'SITE INTERNET À ' + g.ville.toUpperCase() : 'GUIDE PRATIQUE' %></p>
       <h1><%= g.title %></h1>
       <p class="article-meta">Par DigitalVerse — mis à jour le <%= fmtFr(g.date) %></p>
       <p class="lead"><%= g.lede %></p>
