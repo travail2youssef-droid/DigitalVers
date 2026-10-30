@@ -41,6 +41,13 @@ const PING_URL = SITE_URL + '/robots.txt';
 const PING_MS = Math.max(60, parseInt(env('PING_EVERY_SECONDS', '240'), 10) || 240) * 1000;
 const CHANNEL_ID = env('REPORT_CHANNEL_ID', '');
 const HEALTH_PORT = parseInt(env('PORT', ''), 10) || null;
+/* Auto-maintien : si le bot tourne sur un hébergeur qui endort les instances
+   gratuites (Render…), il se ping lui-même via son URL publique — le trafic
+   passe par le routeur de l'hébergeur et compte comme activité. Sans ça, le
+   bot s'endormirait exactement comme le site. RENDER_EXTERNAL_URL est fournie
+   automatiquement par Render ; SELF_PING_URL permet de forcer l'URL. */
+const SELF_URL = (env('SELF_PING_URL', '') || (HEALTH_PORT ? env('RENDER_EXTERNAL_URL', '') : '')).replace(/\/+$/, '');
+const SELF_MS = Math.max(60, parseInt(env('SELF_PING_EVERY_SECONDS', '180'), 10) || 180) * 1000;
 const UA = 'DigitalVerse-KeepAliveBot/1.0 (+bot de surveillance; ne modifie rien)';
 const ts = () => new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
 const log = (...a) => console.log(`[${ts()}]`, ...a);
@@ -85,6 +92,16 @@ async function pingSite() {
     }
     stats.state = newState;
   }
+}
+
+/* ─────────────────── auto-maintien du bot lui-même (voir SELF_URL) ─────── */
+async function selfPing() {
+  if (!SELF_URL) return;
+  try {
+    const r = await fetch(SELF_URL + '/health', { method: 'GET', headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(20000) });
+    await r.arrayBuffer().catch(() => {});
+    log(`auto-maintien bot → HTTP ${r.status} (empêche cette instance de s'endormir)`);
+  } catch (e) { log('auto-maintien bot échoue :', e.message); }
 }
 
 /* ─────────────── micro-serveur /health (utile si déployé en web service) ── */
@@ -143,10 +160,11 @@ function gatewayConnect() {
 }
 
 /* ───────────────────────────────────────────── démarrage ────────────────── */
-log(`veille DigitalVerse — cible ${PING_URL} toutes les ${Math.round(PING_MS / 1000)} s${CHANNEL_ID ? ' · alertes salon ' + CHANNEL_ID : ' · alertes console seulement'}`);
+log(`veille DigitalVerse — cible ${PING_URL} toutes les ${Math.round(PING_MS / 1000)} s${CHANNEL_ID ? ' · alertes salon ' + CHANNEL_ID : ' · alertes console seulement'}${SELF_URL ? ` · auto-maintien ${SELF_URL} toutes les ${Math.round(SELF_MS / 1000)} s` : ''}`);
 if (!TOKEN) log('ASTUCE : ajoute DISCORD_TOKEN dans bot/.env pour la présence en ligne + les alertes sur un salon.');
 pingSite();
 setInterval(pingSite, PING_MS);
+if (SELF_URL) { setTimeout(selfPing, 1500); setInterval(selfPing, SELF_MS); }
 gatewayConnect();
 process.on('SIGTERM', () => process.exit(0));
 process.on('SIGINT', () => process.exit(0));
