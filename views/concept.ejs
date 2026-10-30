@@ -1,0 +1,92 @@
+<%- include('partials/head', { page }) %>
+<%- include('partials/header') %>
+<main id="contenu">
+  <section class="section">
+    <div class="container narrow">
+      <nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true"> › </span><a href="/#realisations">Réalisations</a><span aria-hidden="true"> › </span><%= work.name %></nav>
+      <p class="note-flag"><%= c.flag %></p>
+      <p class="eyebrow"><%= work.category %></p>
+      <h1><%= c.h1 %></h1>
+      <div class="concept-media">
+        <picture>
+          <source type="image/webp" srcset="<%= work.image.replace(/\.png$/, '.webp') %><%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>">
+          <img src="<%= work.image %><%= typeof assetV !== 'undefined' ? '?v=' + assetV : '' %>" alt="<%= work.alt %>" width="1376" height="768" fetchpriority="high" decoding="async">
+        </picture>
+      </div>
+      <p class="lead"><%= c.contexte %></p>
+    </div>
+  </section>
+
+  <section class="section section-alt legal">
+    <div class="container narrow">
+      <h2>Ce que le concept doit prouver</h2>
+      <ul>
+        <% c.objectifs.forEach(function (o) { %><li><%= o %></li><% }); %>
+      </ul>
+      <h2>Ce que la démonstration montre</h2>
+      <ul>
+        <% c.montre.forEach(function (m) { %><li><%= m %></li><% }); %>
+      </ul>
+      <h2>À qui c’est transposable</h2>
+      <p><%= c.pourQui %></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <header class="section-head reveal">
+        <h2>L’offre qui correspondrait</h2>
+        <p class="section-sub">Le concept n’engage à rien : il illustre une direction. Le périmètre réel, lui, se définit au brief.</p>
+      </header>
+      <div class="pricing-grid<% if (c.plans.length <= 2) { %> pricing-grid-2<% } %>">
+        <% c.plans.forEach(function (slug) { const p = PLANS[slug]; %>
+        <article class="card price-card tilt-3d reveal-3d spotlight <%= p.recommended ? 'recommended' : '' %>">
+          <% if (p.recommended) { %><span class="badge-reco">Recommandée</span><% } %>
+          <h3><%= p.name %></h3>
+          <p class="price"><span class="price-amount"><% if (p.from) { %>dès <% } %><%= p.price.toLocaleString('fr-FR') %> €</span> <span class="price-unit"><%= p.unit %></span></p>
+          <p class="muted small"><%= p.tagline %></p>
+          <p class="price-note"><%= p.note %></p>
+          <a href="/commander?offre=<%= slug %>" class="btn <%= p.recommended ? 'btn-primary' : 'btn-outline' %> btn-block"><%= p.cta %></a>
+        </article>
+        <% }); %>
+      </div>
+      <p class="pricing-note reveal"><%= PRICING_GLOBAL_NOTE %></p>
+    </div>
+  </section>
+
+  <% if (c.faq && c.faq.length) { %>
+  <section class="section section-alt">
+    <div class="container faq-wrap">
+      <header class="section-head center reveal"><h2>La question qui vient souvent</h2></header>
+      <div class="faq-list reveal">
+        <% c.faq.forEach(function (item, i) { %>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false" aria-controls="cf-a-<%= i %>" id="cf-q-<%= i %>">
+            <span><%= item.q %></span>
+            <svg class="icon chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-a" id="cf-a-<%= i %>" role="region" aria-labelledby="cf-q-<%= i %>" hidden>
+            <p><%= item.a %></p>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+
+  <section class="section">
+    <div class="container">
+      <header class="section-head reveal"><h2>Continuer la visite</h2></header>
+      <div class="cards-3">
+        <% c.related.forEach(function (r) { %>
+        <article class="card why-card tilt-soft reveal-3d">
+          <h3><%= r.label %></h3>
+          <p><a class="btn btn-ghost btn-sm" href="<%= r.href %>">Voir</a></p>
+        </article>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>
