@@ -105,6 +105,36 @@
   </div>
 </section>
 
+<!-- ============================ EXPERTISES (SEO : H2 par service + maillage interne) ============================ -->
+<section class="section" id="expertises">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="eyebrow">NOS EXPERTISES</p>
+      <h2>Création de site internet, chatbot IA et automatisation pour <span class="text-red">PME</span>.</h2>
+      <p class="section-sub">Une agence web et IA pour les entreprises qui veulent un site clair, un assistant utile et moins de tâches répétitives. Chaque service détaille son périmètre, ses tarifs et ses limites.</p>
+    </header>
+    <div class="cards-3">
+      <% (LANDING_PAGES || []).slice(0, 4).forEach(function(lp){ %>
+      <article class="card service-card reveal">
+        <h3><a href="<%= lp.path %>"><%= lp.nav %></a></h3>
+        <p class="muted"><%= lp.metaDescription %></p>
+        <a class="link-arrow" href="<%= lp.path %>">En savoir plus sur la <%= lp.nav.toLowerCase() %></a>
+      </article>
+      <% }); %>
+    </div>
+    <div class="reveal" style="margin-top:2rem">
+      <h3>Guides pour bien démarrer</h3>
+      <ul>
+        <% (GUIDES || []).forEach(function(g){ %>
+        <li><a href="/guides/<%= g.slug %>"><%= g.title %></a></li>
+        <% }); %>
+        <li><a href="/maintenance-site-internet">Maintenance de site internet</a></li>
+        <li><a href="/guides">Tous nos guides</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 <!-- ============================ OFFRES ============================ -->
 <section class="section" id="offres">
   <div class="container">

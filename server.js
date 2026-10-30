@@ -16,12 +16,16 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BRAND, PLANS, SERVICES, AVANTAGES, PROCESSUS, FAQ, PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES } from './config/site.config.js';
 import { LANDING_PAGES, GUIDES } from './config/landing.config.js';
+import { applySeoOverrides, buildLlmsTxt, PAGE_SEO } from './config/seo.overrides.js';
 import { loadDb, saveDb, loadSettings, saveSettings } from './lib/store.js';
 import { agentReply, buildBrief, testExternalApi, openingMessage } from './lib/agent.js';
 import {
   notifyAdminNewOrder, notifyAdminBriefDone, notifyAdminNewMessage,
   confirmOrderToClient, ackContactToClient,
 } from './lib/mailer.js';
+
+/* Titres (<= 60 car.) et descriptions (<= 155 car.) optimisés */
+applySeoOverrides(LANDING_PAGES, GUIDES);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -36,6 +40,11 @@ const ADMIN_PASSWORD_2 = process.env.ADMIN_PASSWORD_2 || 'D.vrs@adsp';
 
 app.disable('x-powered-by');
 app.use((req, res, next) => {
+  /* Redirection http -> https (uniquement si le proxy indique explicitement http) + HSTS */
+  if (req.headers['x-forwarded-proto'] === 'http' && (req.method === 'GET' || req.method === 'HEAD')) {
+    return res.redirect(301, 'https://' + req.get('host') + req.originalUrl);
+  }
+  if (req.secure) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   next();
@@ -234,13 +243,13 @@ app.get('/', (req, res) => {
     ],
   };
   res.render('index', {
-    BRAND, PLANS, SERVICES, AVANTAGES, PROCESSUS, FAQ,
+    BRAND, PLANS, SERVICES, AVANTAGES, PROCESSUS, FAQ, LANDING_PAGES, GUIDES,
     PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES,
     sent: req.query.envoye === '1',
     jsonLd: jsonForScript(seoGraph),
     page: {
-      title: 'DigitalVerse — Agence web, chatbots IA & automatisation',
-      description: 'Agence web & IA en Île-de-France : sites sur mesure, chatbots IA et automatisation pour entreprises. Tarifs clairs, commande en ligne, accompagnement complet.',
+      title: PAGE_SEO.home.title,
+      description: PAGE_SEO.home.description,
       path: '/',
     },
   });
@@ -277,7 +286,7 @@ app.get('/commander', (req, res) => {
     BRAND, PLANS, SUBSCRIPTION_CANCELLATION_NOTE,
     plansJson: jsonForScript(Object.fromEntries(Object.entries(PLANS).map(([s, p]) => [s, { type: p.type, name: p.name, price: p.price, unit: p.unit, mode: p.mode, tagline: p.tagline, from: !!p.from }]))),
     offre,
-    page: { title: 'Commander un site web ou un agent IA en ligne — DigitalVerse', description: 'Commandez en ligne : choisissez votre offre, indiquez vos coordonnées, puis détaillez votre projet à notre assistant IA. Aucun paiement demandé à cette étape.', path: '/commander' },
+    page: { title: PAGE_SEO.commander.title, description: PAGE_SEO.commander.description, path: '/commander' },
   });
 });
 
@@ -461,7 +470,7 @@ app.get('/guides', (req, res) => {
       crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: 'Guides', path: '/guides' }]),
       { '@type': 'CollectionPage', '@id': site + '/guides', name: 'Guides DigitalVerse', description: 'Guides pratiques : prix d’un site, choix d’une agence web, IA et automatisation pour les PME.', isPartOf: { '@id': site + '/#site' }, mainEntity: { '@type': 'ItemList', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: site + '/guides/' + g.slug, name: g.title })) } },
     ] }),
-    page: { title: 'Guides : site internet, agence web et IA pour PME — DigitalVerse', description: 'Les guides DigitalVerse : ce que coûte vraiment un site, quelles questions poser avant de signer, comment démarrer un projet IA. Notre propre grille tarifaire y figure — la transparence commence là.', path: '/guides' },
+    page: { title: PAGE_SEO.guides.title, description: PAGE_SEO.guides.description, path: '/guides' },
   });
 });
 
@@ -480,7 +489,7 @@ app.get('/guides/:slug', (req, res) => {
   });
 });
 
-/* ============================================================== SEO — ROBOTS/SITEMAP */
+/* ============================================================== SEO — ROBOTS/SITEMAP/LLMS */
 app.get('/robots.txt', (req, res) => {
   const site = siteUrl(req);
   res.type('text/plain').send([
@@ -493,6 +502,9 @@ app.get('/robots.txt', (req, res) => {
     'Sitemap: ' + site + '/sitemap.xml',
     '',
   ].join('\n'));
+});
+app.get('/llms.txt', (req, res) => {
+  res.type('text/plain').send(buildLlmsTxt(siteUrl(req), LANDING_PAGES, GUIDES));
 });
 app.get('/sitemap.xml', (req, res) => {
   const site = siteUrl(req);
