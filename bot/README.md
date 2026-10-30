@@ -6,8 +6,8 @@ bot en ligne sur Discord, avec alertes dans un salon en cas de coupure.
 
 | Fichier | Rôle |
 |---|---|
-| `keepalive-bot.mjs` | Le bot : ping de veille + présence Discord + alertes salon |
-| `.env.example` | Modèle de config — à copier en `.env` (jamais commité) |
+| `keepalive-bot.mjs` | Le bot : ping de veille + auto-maintien + présence Discord + alertes salon |
+| `env.example` | Modèle de config — à copier en `.env` (jamais commité) |
 
 ## 1. Inviter le bot sur votre serveur
 
@@ -48,15 +48,35 @@ options, de la plus simple à la plus robuste :
    (décocher « condition batterie »).
 2. **Un petit VPS / machine toujours allumée** : copier le dossier `bot/`,
    `pm2 start keepalive-bot.mjs --name veille` (ou un service systemd).
-3. **Un deuxième service Render gratuit** (Web Service, hors répertoire du
-   site) qui ne sert qu'à tourner : définir `PORT` dans ses variables
-   d'environnement pour exposer `/health`. ⚠️ Une instance Render gratuite
-   s'endort aussi sans trafic — cette option n'a de sens que si quelqu'un
-   (ou le workflow GitHub Actions déjà en place) ping ce `/health` de temps
-   en temps. **En pratique, l'option la plus fiable sans payer reste le
-   workflow GitHub Actions** (`.github/workflows/keep-alive.yml`, toutes les
-   5 min) — le bot Discord est le complément « visible + alertes » que vous
-   demandiez.
+3. **Un deuxième service Render gratuit** — RECOMMANDÉ, ne dépend pas de ton
+   PC. Le bot s'auto-maintient éveillé (il se ping lui-même via
+   `RENDER_EXTERNAL_URL`, code déjà inclus) et réveille le site toutes les
+   4 min. Création en 5 minutes, voir « Déploiement Render pas à pas » plus
+   bas. **En complément, le workflow GitHub Actions déjà en place
+   (`.github/workflows/keep-alive.yml`) sert de filet : le ping des 5 min est
+   réel mais parfois espacé par GitHub (limitation gratuite) — les deux
+   ensemble couvrent le problème.
+
+## Déploiement Render pas à pas (gratuit)
+
+1. render.com → **New +** → **Web Service** → choisis le dépôt `DigitalVers`
+   (branche `main`).
+2. Nom : `digitalvers-keepalive`. **Build command** : `npm install --omit=dev`.
+   **Start command** : `node bot/keepalive-bot.mjs`. **Instance type** : Free.
+3. Variables d'environnement du service :
+   - `DISCORD_TOKEN` = ton token (celui du portail développeur, après Reset)
+   - `REPORT_CHANNEL_ID` = ID du salon des alertes (facultatif)
+   - `NODE_VERSION` = `22`
+   - `PORT` n'a rien à mettre : Render le fournit tout seul, et
+     `RENDER_EXTERNAL_URL` aussi → l'auto-maintien s'active tout seul.
+4. **Advanced → Health Check Path** : `/health` (rend le statut consultable).
+5. Create Web Service → Deploy (~2 min). Le log doit afficher
+   `ping #N → HTTP 200` pour le site et `auto-maintien bot → HTTP 200`.
+
+C'est fini : le site ne dort plus, ton PC n'y est pour rien, et le bot
+apparaît en ligne sur Discord. Si un jour le service est lui-même mis en
+veille (normalement impossible avec l'auto-maintien), le workflow GitHub
+Actions le réveille de toute façon à chaque passage.
 
 ## 4. Ce que vous verrez
 
