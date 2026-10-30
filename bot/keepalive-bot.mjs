@@ -107,7 +107,15 @@ async function selfPing() {
 /* ─────────────── micro-serveur /health (utile si déployé en web service) ── */
 if (HEALTH_PORT) {
   http.createServer((req, res) => {
-    if (req.url === '/health' || req.url === '/') {
+    /* Ce service n'est PAS le site : il ne doit jamais apparaître dans
+       Google, même si un crawler le découvre par hasard (le sous-domaine
+       .onrender.com est public). D'où : noindex global + robots.txt qui
+       interdit tout. */
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    if (req.url === '/robots.txt') {
+      res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
+      res.end('User-agent: *\nDisallow: /\n');
+    } else if (req.url === '/health' || req.url === '/') {
       res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
       res.end(`digitalvers-keepalive ${stats.state} — pings:${stats.pings} ok:${stats.ok} ko:${stats.fail} dernier:${stats.lastCode} (${stats.lastMs}ms)\n`);
     } else { res.writeHead(404); res.end(); }
