@@ -13,9 +13,9 @@ export const LANDING_PAGES = [
     title: 'Création de site internet pour entreprise — DigitalVerse',
     metaDescription:
       'Site vitrine ou site d’activité sur mesure : design responsive, formulaire de contact, référencement de base, mise en ligne incluse. Devis clair avant tout engagement.',
-    h1: 'Création de site internet pour TPE et PME',
+    h1: 'Création de site internet pour votre entreprise',
     lede:
-      'Votre site est votre support commercial le plus visible : il doit rassurer en trois secondes, expliquer votre offre clairement et donner envie de vous contacter. DigitalVerse conçoit des sites sur mesure — pas de gabarit — avec un périmètre écrit et un devis avant tout engagement.',
+      'Votre site est votre support commercial le plus visible : il doit rassurer en trois secondes, expliquer votre offre clairement et donner envie de vous contacter. DigitalVerse conçoit des sites sur mesure pour toute entreprise, quelle que soit sa taille — pas de gabarit — avec un périmètre écrit et un devis avant tout engagement. Et un site n’est pas une fin : nous l’équipons aussi de chatbot IA et d’automatisations quand votre activité le demande.',
     plans: ['vitrine-starter', 'business-fonctionnel', 'vitrine-care', 'business-care'],
     points: [
       {
@@ -120,7 +120,7 @@ export const LANDING_PAGES = [
     related: [
       { href: '/automatisation-ia', t: 'Automatisation IA', p: 'Quand le besoin dépasse la conversation : connecter l’IA à vos outils.' },
       { href: '/creation-site-internet', t: 'Création de site internet', p: 'Un chatbot se pose sur un site qui lui ressemble.' },
-      { href: '/guides/chatbot-ia-pme', t: 'Guide : chatbot en PME', p: 'Ce qu’il fait vraiment, ce qu’on ne doit pas vous promettre.' },
+      { href: '/guides/chatbot-ia-pme', t: 'Guide : le chatbot IA en entreprise', p: 'Ce qu’il fait vraiment, ce qu’on ne doit pas vous promettre.' },
     ],
     serviceName: 'Chatbot IA pour site d’entreprise',
     serviceType: 'Intelligence artificielle appliquée au service client',
@@ -327,7 +327,7 @@ export const GUIDES = [
   },
   {
     slug: 'chatbot-ia-pme',
-    title: 'Chatbot IA pour une PME : par où commencer, sans se faire avoir',
+    title: 'Chatbot IA pour votre entreprise : par où commencer, sans se faire avoir',
     date: '2026-10-28',
     metaDescription:
       'Ce qu’un assistant IA sur votre site fait vraiment, ce qu’on ne doit pas vous promettre, et comment préparer son brief. Mode d’emploi honnête, avec ce que ça coûte chez nous.',
@@ -471,7 +471,7 @@ export const CASE_PAGES = [
       'Le vocabulaire humain partout : « relances de devis envoyées », jamais « jobs exécutés ».',
     ],
     pourQui:
-      'PME et indépendants dont l’activité dépend d’outils connectés — CRM, facturation, formulaires, e-mail — et qui veulent piloter leurs automatisations sans embaucher un technicien dédié. Le tableau de bord est une option de présentation : beaucoup de scénarios démarrent utilement avec une simple synthèse par e-mail.',
+      'Toutes les entreprises et indépendants dont l’activité dépend d’outils connectés — CRM, facturation, formulaires, e-mail — et qui veulent piloter leurs automatisations sans embaucher un technicien dédié. Le tableau de bord est une option de présentation : beaucoup de scénarios démarrent utilement avec une simple synthèse par e-mail.',
     plans: ['automatisation-ia'],
     faq: [
       {
