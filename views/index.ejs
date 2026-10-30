@@ -65,7 +65,7 @@
             <svg viewBox="0 0 24 24"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <% } %>
         </div>
-        <h3><%= s.title %></h3>
+        <h3><a href="<%= s.link || '/commander' %>"><%= s.title %></a></h3>
         <p class="muted"><%= s.text %></p>
         <a class="link-arrow" href="/commander">Discuter de ce besoin
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -196,6 +196,9 @@
           <p class="project-cat"><%= p.category %></p>
           <h3><%= p.name %></h3>
           <p class="muted small"><%= p.text %></p>
+          <a class="link-arrow" href="/realisations/<%= p.slug %>">Étudier le concept
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
       </article>
       <% }); %>
