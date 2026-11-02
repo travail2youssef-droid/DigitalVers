@@ -15,17 +15,12 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BRAND, PLANS, SERVICES, AVANTAGES, PROCESSUS, FAQ, PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES } from './config/site.config.js';
-import { LANDING_PAGES, GUIDES } from './config/landing.config.js';
-import { applySeoOverrides, buildLlmsTxt, PAGE_SEO } from './config/seo.overrides.js';
 import { loadDb, saveDb, loadSettings, saveSettings } from './lib/store.js';
 import { agentReply, buildBrief, testExternalApi, openingMessage } from './lib/agent.js';
 import {
   notifyAdminNewOrder, notifyAdminBriefDone, notifyAdminNewMessage,
   confirmOrderToClient, ackContactToClient,
 } from './lib/mailer.js';
-
-/* Titres (<= 60 car.) et descriptions (<= 155 car.) optimisés */
-applySeoOverrides(LANDING_PAGES, GUIDES);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -40,11 +35,6 @@ const ADMIN_PASSWORD_2 = process.env.ADMIN_PASSWORD_2 || 'D.vrs@adsp';
 
 app.disable('x-powered-by');
 app.use((req, res, next) => {
-  /* Redirection http -> https (uniquement si le proxy indique explicitement http) + HSTS */
-  if (req.headers['x-forwarded-proto'] === 'http' && (req.method === 'GET' || req.method === 'HEAD')) {
-    return res.redirect(301, 'https://' + req.get('host') + req.originalUrl);
-  }
-  if (req.secure) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   next();
@@ -194,6 +184,7 @@ app.get('/', (req, res) => {
         name: BRAND.name,
         url: site,
         logo: site + '/assets/logo-emblem.png',
+        image: site + '/assets/og-image.jpg',
         description: BRAND.description,
         knowsAbout: [
           'Création de sites web sur mesure',
@@ -217,8 +208,13 @@ app.get('/', (req, res) => {
         name: BRAND.name,
         url: site,
         description: BRAND.description,
-        areaServed: { '@type': 'Country', name: 'France' },
+        areaServed: [
+          { '@type': 'Country', name: 'France' },
+          { '@type': 'State', name: 'Île-de-France' },
+          { '@type': 'AdministrativeArea', name: 'Essonne (91)' },
+        ],
         knowsLanguage: ['fr-FR'],
+        priceRange: '400 €-1 200 € (création, paiement unique) · 79 €/mois-245 €/mois (abonnements)',
         provider: { '@id': site + '/#organisation' },
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
@@ -243,13 +239,13 @@ app.get('/', (req, res) => {
     ],
   };
   res.render('index', {
-    BRAND, PLANS, SERVICES, AVANTAGES, PROCESSUS, FAQ, LANDING_PAGES, GUIDES,
+    BRAND, PLANS, SERVICES, AVANTAGES, PROCESSUS, FAQ,
     PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES,
     sent: req.query.envoye === '1',
     jsonLd: jsonForScript(seoGraph),
     page: {
-      title: PAGE_SEO.home.title,
-      description: PAGE_SEO.home.description,
+      title: 'DigitalVerse — Création de site internet & IA pour entreprises',
+      description: 'Création de site internet, chatbot IA et automatisation pour toute entreprise, quelle que soit sa taille — agence en Île-de-France. Prix affichés, devis clair avant tout engagement, commande en ligne.',
       path: '/',
     },
   });
@@ -286,7 +282,7 @@ app.get('/commander', (req, res) => {
     BRAND, PLANS, SUBSCRIPTION_CANCELLATION_NOTE,
     plansJson: jsonForScript(Object.fromEntries(Object.entries(PLANS).map(([s, p]) => [s, { type: p.type, name: p.name, price: p.price, unit: p.unit, mode: p.mode, tagline: p.tagline, from: !!p.from }]))),
     offre,
-    page: { title: PAGE_SEO.commander.title, description: PAGE_SEO.commander.description, path: '/commander' },
+    page: { title: 'Commander un site web ou un agent IA en ligne — DigitalVerse', description: 'Commandez en ligne : choisissez votre offre, indiquez vos coordonnées, puis détaillez votre projet à notre assistant IA. Aucun paiement demandé à cette étape.', path: '/commander' },
   });
 });
 
@@ -433,78 +429,19 @@ app.post('/api/contact', rateLimit(20), (req, res) => {
   res.json({ ok: true });
 });
 
-/* ===================================== PAGES SEO — offres détaillées, guides, concepts */
-function fmtFr(iso) {
-  const d = new Date(iso + 'T12:00:00Z');
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' });
-}
-const GUIDE_BY_SLUG = new Map(GUIDES.map((g) => [g.slug, g]));
-const orgNode = (site) => ({ '@type': 'Organization', '@id': site + '/#organisation', name: BRAND.name, url: site });
-const crumbNode = (site, items) => ({ '@type': 'BreadcrumbList', itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: site + it.path })) });
-const faqNode = (list) => (list && list.length ? { '@type': 'FAQPage', mainEntity: list.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) } : null);
-const offerNodes = (site, slugs) => ({ '@type': 'OfferCatalog', name: 'Offres DigitalVerse', itemListElement: slugs.map((slug) => { const pl = PLANS[slug]; return { '@type': 'Offer', itemOffered: { '@type': 'Service', name: pl.name, description: pl.tagline }, price: pl.price, priceCurrency: 'EUR', category: pl.mode === 'monthly' ? 'Abonnement mensuel' : 'Paiement unique', url: site + '/commander?offre=' + slug }; }) });
-
-LANDING_PAGES.forEach((lp) => {
-  app.get(lp.path, (req, res) => {
-    const site = siteUrl(req);
-    const faqAll = [...lp.faqGlobal.map((i) => FAQ[i]), ...(lp.faq || [])];
-    res.render('offre', {
-      BRAND, PLANS, PROCESSUS, PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE,
-      lp, faqAll,
-      jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
-        crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: lp.nav, path: lp.path }]),
-        orgNode(site),
-        { '@type': 'Service', '@id': site + lp.path + '#service', name: lp.serviceName, serviceType: lp.serviceType, description: lp.metaDescription, url: site + lp.path, areaServed: { '@type': 'Country', name: 'France' }, provider: { '@id': site + '/#organisation' }, hasOfferCatalog: offerNodes(site, lp.plans) },
-        faqNode(faqAll),
-      ].filter(Boolean) }),
-      page: { title: lp.title, description: lp.metaDescription, path: lp.path },
-    });
-  });
-});
-
-app.get('/guides', (req, res) => {
-  const site = siteUrl(req);
-  res.render('guides', {
-    BRAND, GUIDES,
-    jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
-      crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: 'Guides', path: '/guides' }]),
-      { '@type': 'CollectionPage', '@id': site + '/guides', name: 'Guides DigitalVerse', description: 'Guides pratiques : prix d’un site, choix d’une agence web, IA et automatisation pour les PME.', isPartOf: { '@id': site + '/#site' }, mainEntity: { '@type': 'ItemList', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: site + '/guides/' + g.slug, name: g.title })) } },
-    ] }),
-    page: { title: PAGE_SEO.guides.title, description: PAGE_SEO.guides.description, path: '/guides' },
-  });
-});
-
-app.get('/guides/:slug', (req, res) => {
-  const g = GUIDE_BY_SLUG.get(req.params.slug);
-  if (!g) return res.status(404).render('404', { BRAND, page: { title: 'Page introuvable — DigitalVerse', robots: 'noindex, nofollow' } });
-  const site = siteUrl(req);
-  res.render('guide', {
-    BRAND, g, fmtFr,
-    jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
-      crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: 'Guides', path: '/guides' }, { name: g.title, path: '/guides/' + g.slug }]),
-      orgNode(site),
-      { '@type': 'Article', '@id': site + '/guides/' + g.slug + '#article', headline: g.title, description: g.metaDescription, inLanguage: 'fr-FR', datePublished: g.date, dateModified: g.date, image: site + '/assets/og-image.jpg', author: { '@id': site + '/#organisation' }, publisher: { '@id': site + '/#organisation' }, mainEntityOfPage: { '@type': 'WebPage', '@id': site + '/guides/' + g.slug } },
-    ] }),
-    page: { title: g.title, description: g.metaDescription, path: '/guides/' + g.slug, ogType: 'article' },
-  });
-});
-
-/* ============================================================== SEO — ROBOTS/SITEMAP/LLMS */
+/* ============================================================== SEO — ROBOTS/SITEMAP */
 app.get('/robots.txt', (req, res) => {
   const site = siteUrl(req);
   res.type('text/plain').send([
     'User-agent: *',
     'Allow: /',
     'Disallow: /admin',
-    'Disallow: /chat/',
+    'Disallow: /chat',
     'Disallow: /api',
     '',
     'Sitemap: ' + site + '/sitemap.xml',
     '',
   ].join('\n'));
-});
-app.get('/llms.txt', (req, res) => {
-  res.type('text/plain').send(buildLlmsTxt(siteUrl(req), LANDING_PAGES, GUIDES));
 });
 app.get('/sitemap.xml', (req, res) => {
   const site = siteUrl(req);
@@ -512,14 +449,11 @@ app.get('/sitemap.xml', (req, res) => {
   const urls = [
     { p: '/', pr: '1.0', freq: 'weekly' },
     { p: '/commander', pr: '0.9', freq: 'monthly' },
-    ...LANDING_PAGES.map((l) => ({ p: l.path, pr: '0.8', freq: 'monthly' })),
-    { p: '/guides', pr: '0.7', freq: 'monthly' },
-    ...GUIDES.map((g) => ({ p: '/guides/' + g.slug, pr: '0.6', freq: 'yearly', mod: g.date })),
     { p: '/mentions-legales', pr: '0.3', freq: 'yearly' },
     { p: '/politique-de-confidentialite', pr: '0.3', freq: 'yearly' },
   ];
   const body = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    + urls.map((u) => '  <url><loc>' + site + u.p + '</loc><lastmod>' + (u.mod || today) + '</lastmod><changefreq>' + u.freq + '</changefreq><priority>' + u.pr + '</priority></url>').join('\n')
+    + urls.map((u) => '  <url><loc>' + site + u.p + '</loc><lastmod>' + today + '</lastmod><changefreq>' + u.freq + '</changefreq><priority>' + u.pr + '</priority></url>').join('\n')
     + '\n</urlset>\n';
   res.type('application/xml').send(body);
 });
