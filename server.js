@@ -47,6 +47,26 @@ app.use((req, res, next) => {
   if (req.secure) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  /* CSP stricte : chaque requête reçoit un nonce aléatoire que doivent porter
+     les deux seuls scripts inline du site (commande + fiche admin). Tout script
+     injecté par un attaquant, sans nonce, est bloqué par le navigateur.
+     frame-ancestors 'none' + X-Frame-Options = protection anti-clickjacking. */
+  const cspNonce = crypto.randomBytes(16).toString('base64url');
+  res.locals.cspNonce = cspNonce;
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'nonce-" + cspNonce + "'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    "connect-src 'self'",
+    "form-action 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    'upgrade-insecure-requests',
+  ].join('; '));
+  res.setHeader('X-Frame-Options', 'DENY');
   next();
 });
 /* Compression gzip/brotli : indispensable pour le poids du HTML/CSS/JS. */

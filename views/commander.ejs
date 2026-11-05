@@ -168,7 +168,7 @@
   </div>
 </main>
 <script id="plans-data" type="application/json"><%- plansJson %></script>
-<script>
+<script nonce="<%= cspNonce %>">
   window.PRESELECT_OFFRE = <%- JSON.stringify(offre) %>;
 </script>
 <script src="/js/order.js" defer></script>
