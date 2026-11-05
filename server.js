@@ -194,6 +194,7 @@ app.get('/', (req, res) => {
         name: BRAND.name,
         url: site,
         logo: site + '/assets/logo-emblem.png',
+        image: site + '/assets/og-image.jpg',
         description: BRAND.description,
         knowsAbout: [
           'Création de sites web sur mesure',
@@ -217,8 +218,13 @@ app.get('/', (req, res) => {
         name: BRAND.name,
         url: site,
         description: BRAND.description,
-        areaServed: { '@type': 'Country', name: 'France' },
+        areaServed: [
+          { '@type': 'Country', name: 'France' },
+          { '@type': 'State', name: 'Île-de-France' },
+          { '@type': 'AdministrativeArea', name: 'Essonne (91)' },
+        ],
         knowsLanguage: ['fr-FR'],
+        priceRange: '400 €-1 200 € (création, paiement unique) · 79 €/mois-245 €/mois (abonnements)',
         provider: { '@id': site + '/#organisation' },
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
