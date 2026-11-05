@@ -24,6 +24,12 @@
       <ul>
         <% g.related.forEach(function (r) { %><li><a href="<%= r.href %>"><%= r.label %></a></li><% }); %>
       </ul>
+      <% if (g.ville && ALL_GUIDES) { %>
+      <h2>Autres villes desservies</h2>
+      <ul>
+        <% ALL_GUIDES.filter(function (x) { return x.ville && x.slug !== g.slug; }).forEach(function (x) { %><li><a href="/guides/<%= x.slug %>">Création de site internet à <%= x.ville %></a></li><% }); %>
+      </ul>
+      <% } %>
     </div>
   </section>
 </main>

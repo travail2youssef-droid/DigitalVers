@@ -69,7 +69,12 @@ const ASSET_V = (() => {
     return h.digest('hex').slice(0, 10);
   } catch { return 'dev'; }
 })();
-app.use((req, res, next) => { res.locals.assetV = ASSET_V; next(); });
+app.use((req, res, next) => {
+  res.locals.assetV = ASSET_V;
+  /* Pied de page : ligne compacte « Sites par ville » (pages ville des guides). */
+  res.locals.villes = GUIDES.filter((g) => g.ville).map((g) => ({ slug: g.slug, ville: g.ville }));
+  next();
+});
 
 app.use(express.json({ limit: '200kb' }));
 app.use(express.urlencoded({ extended: true, limit: '200kb' }));
@@ -492,7 +497,7 @@ app.get('/guides', (req, res) => {
     BRAND, GUIDES,
     jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
       crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: 'Guides', path: '/guides' }]),
-      { '@type': 'CollectionPage', '@id': site + '/guides', name: 'Guides DigitalVerse', description: 'Guides pratiques : prix d’un site, choix d’une agence web, IA et automatisation pour les PME.', isPartOf: { '@id': site + '/#site' }, mainEntity: { '@type': 'ItemList', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: site + '/guides/' + g.slug, name: g.title })) } },
+      { '@type': 'CollectionPage', '@id': site + '/guides', name: 'Guides DigitalVerse', description: 'Guides pratiques : prix d’un site, choix d’une agence web, IA et automatisation pour les entreprises.', isPartOf: { '@id': site + '/#site' }, mainEntity: { '@type': 'ItemList', itemListElement: GUIDES.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: site + '/guides/' + g.slug, name: g.title })) } },
     ] }),
     page: { title: PAGE_SEO.guides.title, description: PAGE_SEO.guides.description, path: '/guides' },
   });
@@ -503,11 +508,12 @@ app.get('/guides/:slug', (req, res) => {
   if (!g) return res.status(404).render('404', { BRAND, page: { title: 'Page introuvable — DigitalVerse', robots: 'noindex, nofollow' } });
   const site = siteUrl(req);
   res.render('guide', {
-    BRAND, g, fmtFr,
+    BRAND, g, fmtFr, ALL_GUIDES: GUIDES,
     jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
       crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: 'Guides', path: '/guides' }, { name: g.title, path: '/guides/' + g.slug }]),
       orgNode(site),
-      { '@type': 'Article', '@id': site + '/guides/' + g.slug + '#article', headline: g.title, description: g.metaDescription, inLanguage: 'fr-FR', datePublished: g.date, dateModified: g.date, image: site + '/assets/og-image.jpg', author: { '@id': site + '/#organisation' }, publisher: { '@id': site + '/#organisation' }, mainEntityOfPage: { '@type': 'WebPage', '@id': site + '/guides/' + g.slug } },
+      g.ville ? { '@type': 'Service', '@id': site + '/guides/' + g.slug + '#service', name: 'Création de site internet à ' + g.ville, serviceType: 'Création de site internet pour entreprise', url: site + '/guides/' + g.slug, description: g.metaDescription, areaServed: { '@type': 'City', name: g.ville }, provider: { '@id': site + '/#organisation' } }
+      : { '@type': 'Article', '@id': site + '/guides/' + g.slug + '#article', headline: g.title, description: g.metaDescription, inLanguage: 'fr-FR', datePublished: g.date, dateModified: g.date, image: site + '/assets/og-image.jpg', author: { '@id': site + '/#organisation' }, publisher: { '@id': site + '/#organisation' }, mainEntityOfPage: { '@type': 'WebPage', '@id': site + '/guides/' + g.slug } },
     ] }),
     page: { title: g.title, description: g.metaDescription, path: '/guides/' + g.slug, ogType: 'article' },
   });
