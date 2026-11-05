@@ -409,6 +409,24 @@ app.get('/api/chat/:id/statut', (req, res) => {
   res.json({ ok: true, status: order.status, livraison: order.livraison || null });
 });
 
+/* Point de passage du robot de veille (GitHub Actions) : la liste des
+   commandes récentes SANS aucune donnée client (ni nom, ni contact) — juste
+   identifiant, offre, date et statut. Le blocage robots.txt sur /api évite
+   toute indexation. C'est ce signal qui déclenche l'e-mail d'alerte. */
+app.get('/api/veille', (req, res) => {
+  const db = loadDb();
+  res.json({
+    ok: true,
+    commandes: db.orders.slice(0, 50).map((o) => ({
+      id: o.id,
+      at: o.createdAt,
+      type: o.type,
+      offre: (PLANS[o.planSlug] && PLANS[o.planSlug].name) || o.planSlug || '',
+      statut: o.status,
+    })),
+  });
+});
+
 /* ================================================================== CONTACT */
 app.post('/api/contact', rateLimit(20), (req, res) => {
   const b = req.body || {};
