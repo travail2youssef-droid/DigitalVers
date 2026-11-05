@@ -24,7 +24,7 @@ export const LANDING_PAGES = [
       },
       {
         t: 'Le référencement de base, inclus dès le départ',
-        p: 'Pages structurées, titres et descriptions soignés dès la mise en ligne. Pour un travail éditorial SEO plus profond, c’est un périmètre complémentaire chiffré au devis — nous ne promettons aucune position dans Google.',
+        p: 'Pages structurées, titres et descriptions soignés dès la mise en ligne. Pour un travail éditorial SEO plus profond, ce n’est pas un service que nous vendons : nos offres incluent le socle technique, rien de plus — nous ne promettons aucune position dans Google.',
       },
       {
         t: 'Zéro surprise sur le prix',
@@ -182,7 +182,7 @@ export const LANDING_PAGES = [
       },
       {
         t: 'Création et maintenance sont séparées',
-        p: 'Ces offres entretiennent un site existant ; elles n’en incluent pas la création. Si votre site doit d’abord être refait, l’offre adaptée est chiffrée au devis, en transparence.',
+        p: 'Ces offres entretiennent un site existant ; elles n’en incluent pas la création. Si votre site doit d’abord être refait, nous vous le disons d’emblée et l’offre adaptée est la seule à vous proposer.',
       },
       {
         t: 'Six mois pour juger sur pièce',

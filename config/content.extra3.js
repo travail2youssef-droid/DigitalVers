@@ -199,7 +199,7 @@ export const EXTRA_GUIDES_3 = [
     cta: { label: 'Demander un chatbot IA', href: '/commander' },
     related: [
       { href: '/chatbot-ia-entreprise', label: 'Chatbot IA pour votre entreprise' },
-      { href: '/guides/chatbot-ia-pme', label: 'Chatbot IA pour PME : par où commencer' },
+      { href: '/guides/chatbot-ia-pme', label: 'Chatbot IA pour une entreprise : par où commencer' },
       { href: '/automatisation-ia', label: 'Automatisation IA des tâches' },
       { href: '/guides/creer-un-site-internet-avec-ia', label: 'Créer un site internet avec l’IA' },
     ],

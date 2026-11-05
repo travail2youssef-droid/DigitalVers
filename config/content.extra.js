@@ -62,7 +62,7 @@ const ARTICLES = [
   },
   {
     slug: 'automatiser-taches-entreprise-ia',
-    title: 'Automatiser sa PME : 6 tâches à confier à l’IA en premier',
+    title: 'Automatiser son entreprise : 6 tâches à confier à l’IA en premier',
     date: DATE,
     metaDescription:
       'Relances de devis, tri d’e-mails, saisie, comptes rendus : 6 tâches répétitives à automatiser en premier, et comment choisir un premier scénario sans risque.',
@@ -117,12 +117,12 @@ const ARTICLES = [
    distance pour les entreprises de la ville. */
 const VILLES = [
   { slug: 'paris', nom: 'Paris', prep: 'à Paris', angle: 'Paris concentre un très grand nombre d’entreprises, et donc une recherche locale très disputée : un site flou ou lent s’y fait vite dépasser. La clarté de l’offre et la précision des pages comptent plus qu’ailleurs.', publics: 'commerces, restaurants, cabinets, artisans, start-up et indépendants' },
-  { slug: 'lyon', nom: 'Lyon', prep: 'à Lyon', angle: 'Pour une entreprise lyonnaise, être trouvé quand un client tape « site internet Lyon » ou le nom d’un service suivi de la ville passe par des pages qui disent clairement ce que vous faites et où vous intervenez.', publics: 'commerces, restaurants, cabinets, artisans, PME de services et indépendants' },
+  { slug: 'lyon', nom: 'Lyon', prep: 'à Lyon', angle: 'Pour une entreprise lyonnaise, être trouvé quand un client tape « site internet Lyon » ou le nom d’un service suivi de la ville passe par des pages qui disent clairement ce que vous faites et où vous intervenez.', publics: 'commerces, restaurants, cabinets, artisans, entreprises de services et indépendants' },
   { slug: 'marseille', nom: 'Marseille', prep: 'à Marseille', angle: 'À Marseille comme ailleurs, la majorité des recherches de services locaux se font depuis un téléphone : un site rapide, lisible sur mobile, avec un contact à portée de pouce, est la base.', publics: 'commerces, restaurants, artisans, professionnels du tourisme et indépendants' },
-  { slug: 'toulouse', nom: 'Toulouse', prep: 'à Toulouse', angle: 'Pour une entreprise toulousaine, le site sert autant à rassurer un client qui compare qu’à être trouvé : présentation de l’offre, tarifs lisibles, preuves de sérieux et moyen de contact évident.', publics: 'PME, cabinets, artisans, commerces et indépendants' },
+  { slug: 'toulouse', nom: 'Toulouse', prep: 'à Toulouse', angle: 'Pour une entreprise toulousaine, le site sert autant à rassurer un client qui compare qu’à être trouvé : présentation de l’offre, tarifs lisibles, preuves de sérieux et moyen de contact évident.', publics: 'entreprises, cabinets, artisans, commerces et indépendants' },
   { slug: 'bordeaux', nom: 'Bordeaux', prep: 'à Bordeaux', angle: 'À Bordeaux, un site bien structuré permet d’apparaître sur les recherches « service + ville » sans dépendre uniquement des annuaires ou des réseaux sociaux, que vous ne contrôlez pas.', publics: 'commerces, restaurants, artisans, cabinets et indépendants' },
-  { slug: 'lille', nom: 'Lille', prep: 'à Lille', angle: 'Pour une entreprise lilloise, un site propre et rapide, avec des pages claires par service, aide à transformer une recherche locale en demande de devis ou en appel.', publics: 'commerces, PME de services, artisans, cabinets et indépendants' },
-  { slug: 'nantes', nom: 'Nantes', prep: 'à Nantes', angle: 'À Nantes, comme dans toute grande ville, un site qui présente clairement vos services et votre zone d’intervention est le premier support commercial, avant même le premier échange.', publics: 'commerces, PME, artisans, cabinets, start-up et indépendants' },
+  { slug: 'lille', nom: 'Lille', prep: 'à Lille', angle: 'Pour une entreprise lilloise, un site propre et rapide, avec des pages claires par service, aide à transformer une recherche locale en demande de devis ou en appel.', publics: 'commerces, entreprises de services, artisans, cabinets et indépendants' },
+  { slug: 'nantes', nom: 'Nantes', prep: 'à Nantes', angle: 'À Nantes, comme dans toute grande ville, un site qui présente clairement vos services et votre zone d’intervention est le premier support commercial, avant même le premier échange.', publics: 'commerces, artisans, cabinets, start-up et indépendants' },
 ];
 
 function pageVille(v) {
@@ -155,7 +155,7 @@ function pageVille(v) {
       {
         h: 'Être trouvé ' + v.prep + ' sur Google',
         p: [
-          'Le référencement de base est inclus à la création : pages structurées, titres et descriptions soignés, fichiers techniques conformes. Pour apparaître sur des recherches du type « ' + 'service + ' + v.nom + ' », il faut ensuite des contenus réguliers et de la notoriété, un travail distinct qui se chiffre séparément. Nous ne promettons aucune position dans Google.',
+          'Le référencement de base est inclus à la création : pages structurées, titres et descriptions soignés, fichiers techniques conformes. Pour apparaître sur des recherches du type « ' + 'service + ' + v.nom + ' », il faut ensuite des contenus réguliers et de la notoriété, un travail distinct que nous ne vendons pas. Nous ne promettons aucune position dans Google.',
         ],
       },
       {
@@ -167,7 +167,7 @@ function pageVille(v) {
         ],
       },
     ],
-    cta: { label: 'Demander un devis', href: '/commander' },
+    cta: { label: 'Commander en ligne', href: '/commander' },
     related: [
       { href: '/creation-site-internet', label: 'Création de site internet' },
       { href: '/refonte-site-internet', label: 'Refonte de site internet' },

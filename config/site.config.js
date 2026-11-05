@@ -73,7 +73,7 @@ export const PLANS = {
       'Fonctionnalités personnalisées avec le client',
       'Hébergement et mise en ligne',
     ],
-    note: 'Intégrations complexes, paiement en ligne, portails clients et fonctionnalités IA sur mesure : devis spécifique, sauf mention explicite.',
+    note: 'Intégrations complexes, paiement en ligne, portails clients et fonctionnalités IA sur mesure : non incluses par défaut, sauf mention explicite dans votre périmètre.',
     cta: 'Choisir Site Business',
     recommended: true,
   },
@@ -129,7 +129,7 @@ export const PLANS = {
       'Fonctionnalités personnalisées selon vos besoins',
       'Support client',
     ],
-    note: 'Intégrations complexes, licences tierces et coûts d’API externes : devis spécifique. Périmètre défini au contrat.',
+    note: 'Intégrations complexes, licences tierces et coûts d’API externes : non inclus par défaut. Périmètre défini au contrat.',
     cta: 'Choisir Automatisation sur mesure',
     recommended: true,
   },
@@ -211,15 +211,11 @@ export const FAQ = [
   },
   {
     q: 'Puis-je demander des fonctionnalités supplémentaires ?',
-    a: 'Bien sûr. Formulaires avancés, prise de rendez-vous, paiement en ligne, espaces clients : décrivez votre besoin. Les fonctionnalités hors périmètre de l’offre choisie font l’objet d’un devis complémentaire transparent.',
+    a: 'Les formulaires avancés, la prise de rendez-vous, le paiement en ligne ou les espaces clients relèvent de l’offre Site Business, qui les intègre. Nous ne fabriquons pas de projet sur mesure hors de nos deux offres : chacune affiche son périmètre et son prix, vous savez d’avance ce que vous achetez.',
   },
   {
     q: 'Proposez-vous des solutions d’intelligence artificielle ?',
     a: 'Oui : chatbot IA pour votre site (79 €/mois) et automatisation sur mesure connectée à vos outils (dès 199 €/mois). Après votre commande, notre assistant IA vous aide à définir précisément le besoin avant toute mise en production.',
-  },
-  {
-    q: 'Comment obtenir un devis personnalisé ?',
-    a: 'Deux options : commandez directement une offre en ligne (vous serez ensuite guidé par notre assistant IA pour détailler votre projet), ou décrivez votre besoin via le formulaire de contact. Vous recevez une réponse claire avec le périmètre et le tarif proposés.',
   },
 ];
 
@@ -234,19 +230,19 @@ export const COMPAT_RULES = {
       re: /(e[-\s]?commerce|boutique|panier|vendre en ligne|paiement|stripe|paypal|encaisse)/i,
       severity: 'hors_perimetre',
       label: 'Vente en ligne / paiement',
-      msg: 'La vente en ligne et le paiement ne sont pas inclus dans l’offre Site Vitrine : cela nécessite un devis spécifique.',
+      msg: 'La vente en ligne et le paiement ne sont pas inclus dans l’offre Site Vitrine : l’offre Site Business l’inclut.',
     },
     {
       re: /(espace (client|membre|abonn)|portail|compte(s)? (utilisateur|client)|connexion utilisateur|登录)/i,
       severity: 'hors_perimetre',
       label: 'Espace client / portail',
-      msg: 'Un espace client ou un portail avec comptes utilisateurs dépasse le périmètre Site Vitrine (devis spécifique).',
+      msg: 'Un espace client ou un portail avec comptes utilisateurs relève de l’offre Site Business.',
     },
     {
       re: /(chatbot|intelligence artificielle|\bia\b|agent (ia|virtuel))/i,
       severity: 'hors_perimetre',
       label: 'Fonctionnalité IA',
-      msg: 'Les fonctionnalités d’intelligence artificielle ne sont pas incluses dans Site Vitrine : voir nos offres IA dédiées ou un devis spécifique.',
+      msg: 'Les fonctionnalités d’intelligence artificielle ne sont pas incluses dans Site Vitrine : voir nos offres IA dédiées.',
     },
     {
       re: /(réservation|booking|agenda|prise de rendez[-\s]?vous|calendly|disponibilités)/i,
@@ -258,7 +254,7 @@ export const COMPAT_RULES = {
       re: /(multilingue|plusieurs langues|traduction|version anglaise|bilingue)/i,
       severity: 'ajustements',
       label: 'Site multilingue',
-      msg: 'Un site multilingue n’est pas inclus dans Site Vitrine : il sera chiffré au devis.',
+      msg: 'Un site multilingue n’est pas inclus dans Site Vitrine : il relève de l’offre Site Business.',
     },
   ],
   'vitrine-care': [
@@ -280,19 +276,19 @@ export const COMPAT_RULES = {
       re: /(e[-\s]?commerce|boutique|panier|paiement en ligne|stripe| paypal)/i,
       severity: 'ajustements',
       label: 'Paiement en ligne / e-commerce',
-      msg: 'Le paiement en ligne ou une boutique complète ne sont pas inclus par défaut dans Site Business : devis complémentaire, sauf mention explicite.',
+      msg: 'Le paiement en ligne ou une boutique complète ne sont pas inclus par défaut dans Site Business : à demander explicitement avant tout engagement.',
     },
     {
       re: /(espace (client|membre|abonn)|portail|compte(s)? (utilisateur|client))/i,
       severity: 'ajustements',
       label: 'Portail / espace client',
-      msg: 'Un portail client complet relève d’un devis spécifique. Un périmètre simplifié peut parfois être évoqué : à valider ensemble.',
+      msg: 'Un portail client complet n’est pas notre format : un périmètre simplifié peut être intégré à l’offre Site Business si demandé avant lancement.',
     },
     {
       re: /(chatbot|intelligence artificielle|\bia\b|agent (ia|virtuel))/i,
       severity: 'ajustements',
       label: 'Fonctionnalité IA sur mesure',
-      msg: 'Les fonctionnalités IA personnalisées sont chiffrées séparément : voir nos offres IA ou un devis complémentaire.',
+      msg: 'Les fonctionnalités IA personnalisées relèvent de nos offres IA dédiées : chatbot (79 €/mois) ou automatisation (dès 199 €/mois).',
     },
   ],
   'business-care': [

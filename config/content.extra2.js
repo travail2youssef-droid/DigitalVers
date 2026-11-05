@@ -102,7 +102,7 @@ export const EXTRA_GUIDES_2 = [
         ],
       },
     ],
-    cta: { label: 'Demander un devis de maintenance', href: '/commander' },
+    cta: { label: 'Commander une maintenance', href: '/commander' },
     related: [
       { href: '/maintenance-site-internet', label: 'L’offre de maintenance' },
       { href: '/guides/site-vitrine-ou-site-business', label: 'Site vitrine ou site business' },

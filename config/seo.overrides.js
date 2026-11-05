@@ -39,7 +39,7 @@ export const GUIDE_SEO = {
     metaDescription: 'Prix, propriété du site, maintenance, engagement, promesses SEO : la check-list pour distinguer une vraie agence d’un vendeur de gabarits.',
   },
   'chatbot-ia-pme': {
-    title: 'Chatbot IA pour PME : par où commencer (guide)',
+    title: 'Chatbot IA pour une entreprise : par où commencer (guide)',
     metaDescription: 'Ce qu’un assistant IA fait vraiment, ce qu’on ne doit pas vous promettre, comment préparer son brief. Mode d’emploi honnête, tarifs inclus.',
   },
 };

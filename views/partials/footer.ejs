@@ -42,6 +42,9 @@
   </div>
   <div class="container footer-bottom">
     <p>© <span id="annee"><%= new Date().getFullYear() %></span> DigitalVerse. Tous droits réservés.</p>
+    <% if (typeof villes !== 'undefined' && villes.length) { %>
+    <p class="muted small">Sites par ville : <% villes.forEach(function (v, i) { %><% if (i) { %> — <% } %><a href="/guides/<%= v.slug %>">site internet à <%= v.ville %></a><% }); %></p>
+    <% } %>
     <p class="muted small">Réponse aux demandes via le <a href="/#contact">formulaire de contact</a>.</p>
   </div>
 </footer>
