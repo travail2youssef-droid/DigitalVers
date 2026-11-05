@@ -80,7 +80,7 @@ jobs:
                   "- Statut : " + str(c.get('statut') or '?') + "\n\n"
                   "Coordonnées du client et détails complets dans l'espace administrateur : "
                   "<https://digitalvers.onrender.com/admin>\n\n"
-                  "_Cet issue sert aussi d'accusé de réception côté Google : si tu ne le vois pas dans ta boîte, "
+                  "_GitHub envoie cet e-mail au titre de tes notifications de dépôt : si tu ne le vois pas dans ta boîte, "
                   "vérifie que les notifications e-mail des issues sont activées dans GitHub → Settings → Notifications._"
               )
               subprocess.run(
