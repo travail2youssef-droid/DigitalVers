@@ -1,0 +1,110 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Veille commandes — DigitalVerse
+# Toutes les 10 minutes, lit /api/veille (aucune donnée client, juste des
+# identifiants de commandes). Quand une commande nouvelle apparaît, crée un
+# issue GitHub « Nouvelle commande … » : GitHub envoie alors un e-mail au
+# propriétaire du dépôt (le gérant), sans aucune configuration SMTP.
+# Le fichier veille-etat.json (racine) mémorise les commandes déjà vues ;
+# il est mis à jour et repoussé par le robot lui-même.
+# Le premier lancement sert d'initialisation : il ne prévient pas pour les
+# commandes passées avant sa mise en place.
+# Remarque : après 60 jours sans aucun commit sur le dépôt, GitHub désactive
+# les planifications — n'importe quel push (ou « Run workflow ») les relance.
+# ─────────────────────────────────────────────────────────────────────────────
+name: veille-commandes
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: veille-commandes
+  cancel-in-progress: false
+
+jobs:
+  surveiller:
+    name: Détecter les nouvelles commandes
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Récupérer le dépôt (pour l'état)
+        uses: actions/checkout@v4
+
+      - name: Lire l'état du site et alerter
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          gh label create "commande" --color "d73a4a" --description "Nouvelle commande reçue sur digitalvers.onrender.com" --force >/dev/null 2>&1 || true
+          code=000
+          for i in 1 2; do
+            code=$(curl -s -o /tmp/veille.json -w '%{http_code}' -m 60 "https://digitalvers.onrender.com/api/veille" || true)
+            [ "$code" = "200" ] && break
+            sleep 5
+          done
+          if [ "$code" != "200" ]; then
+            echo "Site injoignable (code $code) — rien de grave, le prochain passage réessaiera."
+            exit 0
+          fi
+          python3 - <<'PY'
+          import json, os, subprocess
+
+          data = json.load(open('/tmp/veille.json'))
+          commandes = data.get('commandes', [])
+          ids = [c['id'] for c in commandes]
+
+          if os.path.exists('veille-etat.json'):
+              try:
+                  vu = set(json.load(open('veille-etat.json')))
+              except Exception:
+                  vu = set()
+              initialisation = False
+          else:
+              vu = set()
+              initialisation = True
+
+          nouvelles = [] if initialisation else [c for c in commandes if c['id'] not in vu]
+
+          for c in nouvelles:
+              titre = "Nouvelle commande " + c['id'] + " — " + str(c.get('offre') or 'offre inconnue')
+              corps = (
+                  "🛒 Une nouvelle commande est arrivée sur DigitalVerse.\n\n"
+                  "- Référence : **" + c['id'] + "**\n"
+                  "- Reçue le : " + str(c.get('at') or '') + "\n"
+                  "- Offre : " + str(c.get('offre') or '?') + "\n"
+                  "- Type : " + str(c.get('type') or '?') + "\n"
+                  "- Statut : " + str(c.get('statut') or '?') + "\n\n"
+                  "Coordonnées du client et détails complets dans l'espace administrateur : "
+                  "<https://digitalvers.onrender.com/admin>\n\n"
+                  "_Cet issue sert aussi d'accusé de réception côté Google : si tu ne le vois pas dans ta boîte, "
+                  "vérifie que les notifications e-mail des issues sont activées dans GitHub → Settings → Notifications._"
+              )
+              subprocess.run(
+                  ['gh', 'issue', 'create', '--title', titre, '--body', corps, '--label', 'commande'],
+                  check=True,
+              )
+              print("Alerte créée pour", c['id'])
+
+          vu.update(ids)
+          json.dump(sorted(vu)[-500:], open('veille-etat.json', 'w'))
+          if initialisation:
+              print("Premier lancement : état initialisé sur", len(ids), "commande(s) connue(s) — aucune alerte (volontaire).")
+          else:
+              print(len(nouvelles), "alerte(s) envoyée(s).")
+          PY
+
+      - name: Mémoriser l'état
+        run: |
+          set -e
+          if [ -n "$(git status --porcelain -- veille-etat.json)" ]; then
+            git add veille-etat.json
+            git -c user.name="veille-commandes-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "veille : état des commandes [skip ci]"
+            git push
+          else
+            echo "Aucun changement d'état."
+          fi
