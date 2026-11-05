@@ -1,0 +1,122 @@
+<%- include('partials/head', { page }) %>
+<%- include('partials/header') %>
+<main id="contenu">
+  <section class="section">
+    <div class="container narrow">
+      <nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true"> › </span><%= lp.nav %></nav>
+      <p class="eyebrow"><%= lp.eyebrow %></p>
+      <h1><%= lp.h1 %></h1>
+      <p class="lead"><%= lp.lede %></p>
+      <p class="cta-row">
+        <a class="btn btn-primary" href="/commander?offre=<%= lp.plans[0] %>">Démarrer sur notre grille</a>
+        <a class="btn btn-ghost" href="/#contact">Parler de mon besoin</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <header class="section-head reveal"><h2>Ce qui compte vraiment</h2></header>
+      <div class="cards-3">
+        <% lp.points.forEach(function (pt) { %>
+        <article class="card why-card tilt-3d reveal-3d spotlight">
+          <h3><%= pt.t %></h3>
+          <p class="muted small"><%= pt.p %></p>
+        </article>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <header class="section-head reveal">
+        <h2>Offres concernées</h2>
+        <p class="section-sub">Tarifs publics, périmètre écrit : le devis confirme l’ensemble avant tout engagement.</p>
+      </header>
+      <div class="pricing-grid<% if (lp.plans.length <= 2) { %> pricing-grid-2<% } %>">
+        <% lp.plans.forEach(function (slug) { const p = PLANS[slug]; %>
+        <article class="card price-card tilt-3d reveal-3d spotlight <%= p.recommended ? 'recommended' : '' %>">
+          <% if (p.recommended) { %><span class="badge-reco">Recommandée</span><% } %>
+          <h3><%= p.name %></h3>
+          <p class="price"><span class="price-amount"><% if (p.from) { %>dès <% } %><%= p.price.toLocaleString('fr-FR') %> €</span> <span class="price-unit"><%= p.unit %></span></p>
+          <p class="muted small"><%= p.tagline %></p>
+          <ul class="price-features">
+            <% p.features.forEach(function (f) { %>
+            <li>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <%= f %>
+            </li>
+            <% }); %>
+          </ul>
+          <p class="price-note"><%= p.note %></p>
+          <a href="/commander?offre=<%= slug %>" class="btn <%= p.recommended ? 'btn-primary' : 'btn-outline' %> btn-block"><%= p.cta %></a>
+        </article>
+        <% }); %>
+      </div>
+      <% const hasMonthly = lp.plans.some(function (s) { return PLANS[s].mode === 'monthly'; }); %>
+      <% if (hasMonthly) { %>
+      <div class="pricing-notice reveal" role="note">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5m0 3h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p><%= SUBSCRIPTION_CANCELLATION_NOTE %></p>
+      </div>
+      <% } %>
+      <p class="pricing-note reveal"><%= PRICING_GLOBAL_NOTE %></p>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <header class="section-head reveal">
+        <h2>Comment ça se passe</h2>
+        <p class="section-sub">Le même processus, que le projet parte de zéro ou d’un site existant.</p>
+      </header>
+      <div class="cards-4">
+        <% PROCESSUS.forEach(function (st) { %>
+        <article class="card why-card">
+          <p class="eyebrow"><%= st.n %></p>
+          <h3><%= st.title %></h3>
+          <p class="muted small"><%= st.text %></p>
+        </article>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <% if (faqAll && faqAll.length) { %>
+  <section class="section">
+    <div class="container faq-wrap">
+      <header class="section-head center reveal"><h2>Questions fréquentes</h2></header>
+      <div class="faq-list reveal">
+        <% faqAll.forEach(function (item, i) { %>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false" aria-controls="faq-a-<%= i %>" id="faq-q-<%= i %>">
+            <span><%= item.q %></span>
+            <svg class="icon chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="faq-a" id="faq-a-<%= i %>" role="region" aria-labelledby="faq-q-<%= i %>" hidden>
+            <p><%= item.a %></p>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+
+  <section class="section section-alt">
+    <div class="container">
+      <header class="section-head reveal"><h2>Continuer la visite</h2></header>
+      <div class="cards-3">
+        <% lp.related.forEach(function (r) { %>
+        <article class="card why-card tilt-soft reveal-3d">
+          <h3><%= r.t %></h3>
+          <p class="muted small"><%= r.p %></p>
+          <p><a class="btn btn-ghost btn-sm" href="<%= r.href %>">Découvrir</a></p>
+        </article>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>
