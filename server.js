@@ -55,14 +55,15 @@ app.use((req, res, next) => {
   res.locals.cspNonce = cspNonce;
   res.setHeader('Content-Security-Policy', [
     "default-src 'self'",
-    "script-src 'self' 'nonce-" + cspNonce + "'",
+    "script-src 'self' https://www.googletagmanager.com 'nonce-" + cspNonce + "'",
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:",
+    "img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com https://www.google.com",
     "font-src 'self'",
-    "connect-src 'self'",
+    "connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com https://stats.g.doubleclick.net",
     "form-action 'self'",
     "base-uri 'self'",
     "object-src 'none'",
+    "frame-src https://www.googletagmanager.com",
     "frame-ancestors 'none'",
     'upgrade-insecure-requests',
   ].join('; '));

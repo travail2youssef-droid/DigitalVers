@@ -39,4 +39,13 @@
   <link rel="stylesheet" href="/css/main.css<%= v %>">
   <% if (typeof jsonLd !== 'undefined' && jsonLd) { %><script type="application/ld+json"><%- jsonLd %></script><% } %>
   <% if (typeof headExtra !== 'undefined') { %><%- headExtra %><% } %>
+  <% const __pageRobots = (typeof page !== 'undefined' && page) ? String(page.robots || '') : ''; %>
+  <% if (__pageRobots.indexOf('noindex') === -1) { %>
+  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-NW97NZPC"></script>
+  <script nonce="<%= cspNonce %>">
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  </script>
+  <% } %>
 </head>
