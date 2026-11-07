@@ -59,6 +59,10 @@
             <input type="url" id="a-url" name="livraisonUrl" placeholder="https://…" value="<%= order.livraison ? order.livraison.url : '' %>">
           </div>
           <div class="form-field">
+            <label for="a-paylink">Lien de paiement Stripe <span class="muted">(Payment Link — proposé au client dès le statut « Confirmée »)</span></label>
+            <input type="url" id="a-paylink" name="paymentUrl" placeholder="https://buy.stripe.com/…" value="<%= order.paymentUrl || '' %>">
+          </div>
+          <div class="form-field">
             <label for="a-livnote">Note de livraison <span class="muted">(visible par le client)</span></label>
             <input type="text" id="a-livnote" name="livraisonNote" placeholder="Ex. : identifiants transmis par e-mail" value="<%= order.livraison ? order.livraison.note : '' %>">
           </div>
@@ -138,6 +142,7 @@
             paye: document.getElementById('a-paye').checked,
             montantReel: parseFloat(document.getElementById('a-montantreel').value) || 0,
             livraisonUrl: document.getElementById('a-url').value,
+            paymentUrl: document.getElementById('a-paylink').value,
             livraisonNote: document.getElementById('a-livnote').value,
             adminNotes: document.getElementById('a-notes').value,
           }),
@@ -151,7 +156,8 @@
           pill.dataset.status = data.order.status;
           pill.textContent = data.order.status;
         } else {
-          out.textContent = 'Erreur lors de l’enregistrement.';
+          const err = await res.json().catch(() => ({}));
+          out.textContent = err.error || 'Erreur lors de l’enregistrement.';
         }
         setTimeout(() => (out.textContent = ''), 4000);
       });

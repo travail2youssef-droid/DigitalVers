@@ -383,7 +383,7 @@ app.get('/chat/:id', (req, res) => {
   res.render('chat', {
     BRAND,
     order: orderPublic(order),
-    orderJson: jsonForScript({ id: order.id, key: order.accessKey, chat: order.chat, brief: order.brief, status: order.status, livraison: order.livraison }),
+    orderJson: jsonForScript({ id: order.id, key: order.accessKey, chat: order.chat, brief: order.brief, status: order.status, livraison: order.livraison, paymentUrl: order.paymentUrl || null, paye: Boolean(order.paye) }),
     plan,
     page: { title: 'Votre brief — DigitalVerse', description: 'Décrivez votre projet à l’assistant de brief DigitalVerse.', robots: 'noindex, nofollow' },
   });
@@ -432,7 +432,7 @@ app.post('/api/chat/:id/terminer', rateLimit(30), async (req, res) => {
 app.get('/api/chat/:id/statut', (req, res) => {
   const { order } = getOrder(req.params.id);
   if (!checkOrderKey(req, res, order)) return;
-  res.json({ ok: true, status: order.status, livraison: order.livraison || null });
+  res.json({ ok: true, status: order.status, livraison: order.livraison || null, paymentUrl: order.paymentUrl || null, paye: Boolean(order.paye) });
 });
 
 /* Point de passage du robot de veille (GitHub Actions) : la liste des
@@ -662,6 +662,15 @@ app.post('/api/admin/commandes/:id', requireAdmin, (req, res) => {
   if (b.status && STATUTS.includes(b.status)) order.status = b.status;
   if (typeof b.livraisonUrl === 'string') {
     order.livraison = { url: clean(b.livraisonUrl, 400), note: clean(b.livraisonNote, 400) };
+  }
+  /* Lien de paiement Stripe (Payment Link créé dans le tableau de bord Stripe).
+     Validé strict : uniquement https://buy.stripe.com/… ou sous-domaine *.stripe.com,
+     pour qu'aucun lien tiers ne puisse être refilé au client depuis l'admin. */
+  if (typeof b.paymentUrl === 'string') {
+    const u = b.paymentUrl.trim();
+    if (!u) order.paymentUrl = null;
+    else if (/^https:\/\/(?:buy\.stripe\.com|[a-z0-9-]+\.stripe\.com)\/\S{5,}$/i.test(u)) order.paymentUrl = u;
+    else return res.status(400).json({ ok: false, error: 'Lien de paiement invalide : collez un lien Stripe (https://buy.stripe.com/…).', });
   }
   if (typeof b.adminNotes === 'string') order.adminNotes = clean(b.adminNotes, 1000);
   if (typeof b.paye === 'boolean') {
