@@ -144,6 +144,7 @@
     textEl.placeholder = 'Brief transmis — vous pouvez fermer cette page, nous revenons vers vous.';
   }
   if (data.livraison && data.livraison.url) showLivraison(data.livraison);
+  updatePay(data.status, data.paymentUrl, data.paye);
   updateFinishBtn(false);
 
   // Lien privé de suivi : affichage + copie
@@ -158,6 +159,25 @@
       suiviBtn.textContent = 'Copié ✓';
       setTimeout(() => (suiviBtn.textContent = old), 2500);
     });
+  }
+
+  function updatePay(status, paymentUrl, paye) {
+    const box = document.getElementById('pay-box');
+    if (!box) return;
+    const a = document.getElementById('pay-url');
+    const note = document.getElementById('pay-note');
+    if (paye) {
+      box.hidden = false;
+      if (a) a.hidden = true;
+      if (note) note.textContent = 'Paiement enregistré par DigitalVerse — la production est lancée, rien à faire de votre côté.';
+      return;
+    }
+    if (status === 'confirmee' && paymentUrl) {
+      box.hidden = false;
+      if (a) { a.hidden = false; a.href = paymentUrl; }
+      return;
+    }
+    box.hidden = true;
   }
 
   function showLivraison(liv) {
@@ -260,6 +280,7 @@
       if (out.ok) {
         setStatusPill(out.status);
         if (out.livraison && out.livraison.url) showLivraison(out.livraison);
+        updatePay(out.status, out.paymentUrl, out.paye);
       }
     } catch { /* silencieux */ }
   }, 15000);

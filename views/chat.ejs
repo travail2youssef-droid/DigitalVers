@@ -26,6 +26,12 @@
         <button type="button" class="btn btn-outline btn-sm" id="copy-suivi">Copier</button>
       </div>
       <p class="muted small" style="margin:0.4rem 0 0">Lien privé de suivi — conservez-le pour retrouver cette page (statut, livraison).</p>
+      <div id="pay-box" class="livraison-box"<%= (order.status === 'confirmee' && order.paymentUrl && !order.paye) ? '' : ' hidden' %>>
+        <p class="side-title text-red">Votre périmètre est confirmé</p>
+        <p class="muted small" id="pay-note" style="margin:0 0 0.6rem">Pour lancer la production, réglez l’offre convenue en ligne : le paiement est traité par Stripe, la solution de paiement sécurisée utilisée par DigitalVerse.</p>
+        <a id="pay-url" class="btn btn-primary btn-block" href="<%= order.paymentUrl || '#' %>" target="_blank" rel="noopener noreferrer">Payer en ligne (Stripe)</a>
+        <p class="muted small">Vous restez sur le réseau sécurisé Stripe — aucun mot de passe DigitalVerse ne vous sera demandé.</p>
+      </div>
       <div id="livraison-box" class="livraison-box" hidden>
         <p class="side-title text-red">Votre livraison est prête</p>
         <a id="livraison-url" class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">Accéder à ma livraison</a>
