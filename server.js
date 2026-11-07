@@ -218,10 +218,10 @@ app.get('/', (req, res) => {
         '@type': 'Organization',
         '@id': site + '/#organisation',
         name: BRAND.name,
-        url: site,
+        url: site + '/',
         logo: site + '/assets/logo-emblem.png',
         image: site + '/assets/og-image.jpg',
-        description: BRAND.description,
+        description: 'Agence spécialisée dans la création de sites internet et les solutions d’intelligence artificielle.',
         knowsAbout: [
           'Création de sites web sur mesure',
           'Chatbots IA pour entreprises',

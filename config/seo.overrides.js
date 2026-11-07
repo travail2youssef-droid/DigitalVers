@@ -46,8 +46,8 @@ export const GUIDE_SEO = {
 
 export const PAGE_SEO = {
   home: {
-    title: 'DigitalVerse — Création de site internet & IA pour entreprises',
-    description: 'Création de site internet, chatbot IA et automatisation pour toute entreprise, quelle que soit sa taille — agence en Île-de-France. Prix affichés, devis clair avant tout engagement, commande en ligne.',
+    title: 'DigitalVerse | Création de sites internet et solutions IA',
+    description: 'DigitalVerse accompagne les entreprises dans la création de sites internet sur mesure, le développement de solutions d’intelligence artificielle et l’automatisation.',
   },
   guides: {
     title: 'Guides site internet, agence web et IA | DigitalVerse',
