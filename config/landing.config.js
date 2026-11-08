@@ -10,13 +10,14 @@ export const LANDING_PAGES = [
     path: '/creation-site-internet',
     nav: 'Création de site internet',
     eyebrow: 'CRÉATION DE SITE WEB',
-    title: 'Création de site internet pour entreprise — DigitalVerse',
+    title: 'Création de site web | DigitalVerse',
     metaDescription:
-      'Site vitrine ou site d’activité sur mesure : design responsive, formulaire de contact, référencement de base, mise en ligne incluse. Devis clair avant tout engagement.',
-    h1: 'Création de site internet pour votre entreprise',
+      'Création de site web dès 400 € : design responsive, formulaire, SEO de base et hébergement inclus. Devis clair avant engagement. Commandez en ligne.',
+    h1: 'Création de site web pour indépendants et petites entreprises',
     lede:
-      'Votre site est votre support commercial le plus visible : il doit rassurer en trois secondes, expliquer votre offre clairement et donner envie de vous contacter. DigitalVerse conçoit des sites sur mesure pour toute entreprise, quelle que soit sa taille — pas de gabarit — avec un périmètre écrit et un devis avant tout engagement. Et un site n’est pas une fin : nous l’équipons aussi de chatbot IA et d’automatisations quand votre activité le demande.',
+      'Combien coûte un site web, et que comprend-il ? Chez DigitalVerse, le site vitrine complet est à 400 € et le site Business avec gestion à 1 200 €, en paiement unique : design responsive, formulaire de contact, référencement de base, mise en ligne et hébergement inclus. Le devis écrit liste ce qui est compris comme ce qui ne l’est pas, avant tout engagement. Votre site reste votre support commercial le plus visible : du sur mesure pour toute entreprise, quelle que soit sa taille, jamais un gabarit.',
     plans: ['vitrine-starter', 'business-fonctionnel', 'vitrine-care', 'business-care'],
+    tarifs: true,
     points: [
       {
         t: 'Un design qui vous ressemble',
@@ -36,6 +37,7 @@ export const LANDING_PAGES = [
     related: [
       { href: '/refonte-site-internet', t: 'Refonte de site internet', p: 'Votre site actuel mérite mieux qu’un coup de peinture ?' },
       { href: '/maintenance-site-internet', t: 'Maintenance de site', p: 'Pour qu’un site vive, il faut l’entretenir — par écrit.' },
+      { href: '/tarifs', t: 'Tarifs création de site web', p: 'Chaque offre, son prix public et ce qu’elle comprend.' },
       { href: '/guides/prix-site-internet', t: 'Guide : le prix d’un site', p: 'Grille de lecture honnête pour comparer les devis.' },
     ],
     serviceName: 'Création de site internet sur mesure',
@@ -218,17 +220,17 @@ export const GUIDES = [
     metaDescription:
       'Vitrine, activité, maintenance, IA : ce que couvre chaque poste d’un devis de site web, et les questions à poser avant de signer. Exemple chiffré avec notre propre grille.',
     lede:
-      '« Un site, c’est entre 150 € et 15 000 €. » Voilà le problème : cette phrase est vraie, et elle ne vous aide en rien. Ce qui compte n’est pas le total affiché, mais ce que chaque poste finance réellement.',
+      'Combien coûte un site web en 2026 ? Réponse directe : chez DigitalVerse, 400 € le site vitrine complet et 1 200 € le site Business avec gestion, en paiement unique. Ailleurs, ce qui fait varier le total, ce n’est pas le mot « site » — c’est ce que chaque poste finance réellement.',
     sections: [
       {
-        h: 'Les quatre postes que vous payez, en fait',
+        h: 'Ce qui fait varier le prix',
         p: [
           'Tout devis de site recouvre quatre familles de coûts : le design (structure, identité, maquettes), le développement (la technique qui tient derrière), les contenus (textes, photos, et c’est souvent le grand oublié du budget), et la vie du site après la mise en ligne (hébergement, maintenance, évolutions).',
-          'La plupart des mauvaises surprises ne viennent pas du prix total, mais d’un poste jamais discuté à la commande — presque toujours la maintenance ou les contenus.',
+          'Ces quatre postes expliquent les écarts d’un devis à l’autre, bien plus que le total affiché : deux sites au même prix peuvent ne rien couvrir de comparable.',
         ],
       },
       {
-        h: 'Ce que coûte un site chez nous (grille publique)',
+        h: 'Ce qui est inclus (et ce que ça coûte chez nous)',
         p: [
           'Pour vous donner un repère concret, voici notre grille, telle qu’affichée sur le site :',
         ],
@@ -244,7 +246,10 @@ export const GUIDES = [
         ],
       },
       {
-        h: 'Les questions qui évitent les mauvaises surprises',
+        h: 'Les erreurs à éviter',
+        p: [
+          'La plupart des mauvaises surprises ne viennent pas du prix total, mais d’un poste jamais discuté à la commande — presque toujours la maintenance ou les contenus. Chaque erreur se pare en une question à poser avant de signer ; elles valent aussi pour DigitalVerse :',
+        ],
         ul: [
           'Le nom de domaine et l’hébergement sont-ils à mon nom ? Comment les récupère-t-on un jour ?',
           'Que couvre la maintenance — et surtout, que couvre-t-elle explicitement ? (« illimité » ne veut rien dire.)',
@@ -260,10 +265,19 @@ export const GUIDES = [
           'Notre position est simple : le site bien construit d’abord, la visibilité ensuite, avec un périmètre écrit à chaque étape. C’est moins vendeur qu’une promesse, et c’est la seule chose que l’on puisse garantir.',
         ],
       },
+      {
+        h: 'Questions fréquentes sur le prix d’un site',
+        ul: [
+          'Combien coûte un site web en 2026 ? — Chez DigitalVerse : 400 € en paiement unique pour le site vitrine complet, 1 200 € pour le site Business avec gestion. Sur le marché, l’écart entre deux devis s’explique d’abord par le périmètre, pas par le total affiché.',
+          'Le prix inclut-il la maintenance ? — Non, volontairement : créer et entretenir sont deux postes distincts. Nos forfaits d’entretien sont tarifés séparément, périmètre écrit et règle d’annulation affichée.',
+          'Que doit contenir un devis de site web ? — Le détail des postes, la liste des exclusions (nom de domaine, contenus, coûts de tiers), le délai estimé et les conditions d’annulation. Un devis sans liste d’exclusions est incomplet : demandez-la.',
+        ],
+      },
     ],
-    cta: { label: 'Voir la grille tarifaire complète', href: '/#offres' },
+    cta: { label: 'Voir les tarifs des offres', href: '/tarifs' },
     related: [
       { href: '/creation-site-internet', label: 'Création de site internet' },
+      { href: '/tarifs', label: 'Tarifs création de site web' },
       { href: '/maintenance-site-internet', label: 'Maintenance de site' },
       { href: '/guides/choisir-agence-web', label: 'Guide : les 8 questions à poser à une agence' },
     ],

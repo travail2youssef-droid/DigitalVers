@@ -8,8 +8,8 @@ import { EXTRA_GUIDES_3 } from './content.extra3.js';
 
 export const LANDING_SEO = {
   '/creation-site-internet': {
-    title: 'Création de site internet pour entreprise | DigitalVerse',
-    metaDescription: 'Site vitrine ou d’activité sur mesure : design responsive, formulaire de contact, SEO de base, mise en ligne incluse. Devis clair avant engagement.',
+    title: 'Création de site web | DigitalVerse',
+    metaDescription: 'Création de site web dès 400 € : design responsive, formulaire, SEO de base et hébergement inclus. Devis clair avant engagement. Commandez en ligne.',
   },
   '/refonte-site-internet': {
     title: 'Refonte de site internet pour entreprise | DigitalVerse',
@@ -31,8 +31,8 @@ export const LANDING_SEO = {
 
 export const GUIDE_SEO = {
   'prix-site-internet': {
-    title: 'Combien coûte un site internet en 2026 ? Grille honnête',
-    metaDescription: 'Vitrine, activité, maintenance, IA : ce que couvre chaque poste d’un devis web et les questions à poser avant de signer. Exemple chiffré.',
+    title: 'Combien coûte un site web en 2026 ? Grille honnête',
+    metaDescription: 'Réponse directe : 400 € le site vitrine complet, 1 200 € le site Business avec gestion. Ce qui varie, ce qui est inclus, les erreurs à éviter, la FAQ.',
   },
   'choisir-agence-web': {
     title: 'Agence web : les 8 questions à poser avant de signer',
@@ -56,6 +56,10 @@ export const PAGE_SEO = {
   commander: {
     title: 'Commander un site web ou un agent IA | DigitalVerse',
     description: 'Commandez en ligne : choisissez votre offre, indiquez vos coordonnées, détaillez votre projet à notre assistant IA. Aucun paiement à cette étape.',
+  },
+  tarifs: {
+    title: 'Tarifs création de site web | DigitalVerse',
+    description: 'Tarifs création de site web : vitrine 400 €, Business avec gestion 1 200 €, entretien et options IA à part. Prix publics, périmètre écrit au devis.',
   },
 };
 
@@ -91,6 +95,7 @@ export function buildLlmsTxt(site, LANDING_PAGES, GUIDES) {
     '',
     '## Contact et commande',
     '- [Commander en ligne](' + site + '/commander) : choix de l’offre puis brief avec un assistant IA, sans paiement à cette étape.',
+    '- [Tarifs création de site web](' + site + '/tarifs) : prix publics des offres de création, de l’entretien et des options IA.',
     '- [Contact](' + site + '/#contact) : formulaire de contact.',
     '',
   ];

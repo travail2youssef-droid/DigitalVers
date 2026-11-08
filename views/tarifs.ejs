@@ -1,0 +1,80 @@
+<%- include('partials/head', { page }) %>
+<%- include('partials/header') %>
+<main id="contenu">
+  <section class="section">
+    <div class="container narrow">
+      <nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true"> › </span>Tarifs</nav>
+      <p class="eyebrow">TARIFS</p>
+      <h1>Tarifs création de site web</h1>
+      <p class="lead"><%= intro %></p>
+      <p class="cta-row">
+        <a class="btn btn-primary" href="/commander?offre=vitrine-starter">Démarrer sur notre grille</a>
+        <a class="btn btn-ghost" href="/creation-site-internet">L’offre de création en détail</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <header class="section-head reveal">
+        <h2>Les offres de création</h2>
+        <p class="section-sub">Prix publics, périmètre écrit : le devis confirme l’ensemble avant tout engagement.</p>
+      </header>
+      <div class="pricing-grid pricing-grid-2">
+        <% createPlans.forEach(function (cp) { const p = cp.p; %>
+        <article class="card price-card tilt-3d reveal-3d spotlight <%= p.recommended ? 'recommended' : '' %>">
+          <% if (p.recommended) { %><span class="badge-reco">Recommandée</span><% } %>
+          <h3><%= p.name %></h3>
+          <p class="price"><span class="price-amount"><% if (p.from) { %>dès <% } %><%= p.price.toLocaleString('fr-FR') %> €</span> <span class="price-unit"><%= p.unit %></span></p>
+          <p class="muted small"><%= p.tagline %></p>
+          <ul class="price-features">
+            <% p.features.forEach(function (f) { %>
+            <li>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <%= f %>
+            </li>
+            <% }); %>
+          </ul>
+          <p class="price-note"><%= p.note %></p>
+          <a href="/commander?offre=<%= cp.slug %>" class="btn <%= p.recommended ? 'btn-primary' : 'btn-outline' %> btn-block"><%= p.cta %></a>
+        </article>
+        <% }); %>
+      </div>
+      <div class="pricing-notice reveal" role="note">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5m0 3h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p><%= SUBSCRIPTION_CANCELLATION_NOTE %></p>
+      </div>
+      <p class="pricing-note reveal"><%= PRICING_GLOBAL_NOTE %></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <header class="section-head reveal">
+        <h2>Options : entretien et IA</h2>
+        <p class="section-sub">Non incluses dans la création, tarifées séparément et sans obligation.</p>
+      </header>
+      <div class="pricing-grid">
+        <% optionPlans.forEach(function (op) { const p = op.p; %>
+        <article class="card price-card tilt-soft reveal-3d">
+          <h3><%= p.name %></h3>
+          <p class="price"><span class="price-amount"><% if (p.from) { %>dès <% } %><%= p.price.toLocaleString('fr-FR') %> €</span> <span class="price-unit"><%= p.unit %></span></p>
+          <p class="muted small"><%= p.tagline %></p>
+          <p><a class="btn btn-ghost btn-sm" href="<%= op.href %>">Découvrir</a></p>
+        </article>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container narrow">
+      <header class="section-head reveal">
+        <h2>Délais et transparence</h2>
+      </header>
+      <p><%= delaiA %></p>
+      <p class="muted small">Tous les montants de cette page proviennent de la grille publique DigitalVerse. Pour lire n’importe quel devis, le guide « <a href="/guides/prix-site-internet">Combien coûte un site en 2026</a> » détaille poste par poste ce que finance chaque ligne.</p>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>

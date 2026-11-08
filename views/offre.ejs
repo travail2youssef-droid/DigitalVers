@@ -10,6 +10,7 @@
       <p class="cta-row">
         <a class="btn btn-primary" href="/commander?offre=<%= lp.plans[0] %>">Démarrer sur notre grille</a>
         <a class="btn btn-ghost" href="/#contact">Parler de mon besoin</a>
+        <% if (lp.tarifs) { %><a class="btn btn-outline" href="/tarifs">Voir les tarifs</a><% } %>
       </p>
     </div>
   </section>
