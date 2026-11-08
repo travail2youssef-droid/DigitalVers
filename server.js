@@ -104,8 +104,8 @@ app.use(express.static(PUBLIC_DIR, {
   index: false,
   maxAge: '7d', // sûr : toutes les URL d'assets sont versionnées (?v=…)
   setHeaders(res0, filePath) {
-    // le fichier de vérification Google doit rester toujours frais
-    if (/google[0-9a-f]+\.html$/.test(filePath)) res0.setHeader('Cache-Control', 'public, max-age=300');
+    // les fichiers de vérification Google/Bing doivent rester toujours frais
+    if (/google[0-9a-f]+\.html$/.test(filePath) || /BingSiteAuth\.xml$/.test(filePath)) res0.setHeader('Cache-Control', 'public, max-age=300');
   },
 }));
 /* Zones privées : interdiction stricte même si un lien fuite quelque part. */
