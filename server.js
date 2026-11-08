@@ -14,7 +14,7 @@ import cookieParser from 'cookie-parser';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BRAND, PLANS, SERVICES, AVANTAGES, PROCESSUS, FAQ, PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES } from './config/site.config.js';
+import { BRAND, PLANS, SERVICES, AVANTAGES, PROCESSUS, FAQ, PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE, PROJECT_TYPES, GOOGLE_REVIEWS_URL } from './config/site.config.js';
 import { LANDING_PAGES, GUIDES } from './config/landing.config.js';
 import { applySeoOverrides, buildLlmsTxt, PAGE_SEO } from './config/seo.overrides.js';
 import { loadDb, saveDb, loadSettings, saveSettings } from './lib/store.js';
@@ -382,6 +382,7 @@ app.get('/chat/:id', (req, res) => {
   const plan = PLANS[order.planSlug];
   res.render('chat', {
     BRAND,
+    reviewUrl: GOOGLE_REVIEWS_URL,
     order: orderPublic(order),
     orderJson: jsonForScript({ id: order.id, key: order.accessKey, chat: order.chat, brief: order.brief, status: order.status, livraison: order.livraison, paymentUrl: order.paymentUrl || null, paye: Boolean(order.paye) }),
     plan,
