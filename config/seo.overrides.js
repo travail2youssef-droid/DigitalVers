@@ -30,6 +30,10 @@ export const LANDING_SEO = {
 };
 
 export const GUIDE_SEO = {
+  'refonte-site-7-signes': {
+    title: 'Refonte de site web : les 7 signes qu’il est temps',
+    metaDescription: 'Site lent, illisible sur mobile, zéro contact : 7 signes qui justifient une refonte, ce que l’on garde, ce que l’on reprend — et le prix public.',
+  },
   'prix-site-internet': {
     title: 'Combien coûte un site web en 2026 ? Grille honnête',
     metaDescription: 'Réponse directe : 400 € le site vitrine complet, 1 200 € le site Business avec gestion. Ce qui varie, ce qui est inclus, les erreurs à éviter, la FAQ.',

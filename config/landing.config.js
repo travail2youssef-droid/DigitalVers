@@ -83,6 +83,7 @@ export const LANDING_PAGES = [
       { href: '/creation-site-internet', t: 'Création de site internet', p: 'Si vous partez de zéro, c’est par ici.' },
       { href: '/maintenance-site-internet', t: 'Maintenance de site', p: 'Après la refonte, entretenir ce qui vient d’être reconstruit.' },
       { href: '/guides/choisir-agence-web', t: 'Guide : choisir une agence web', p: 'Les 8 questions à poser avant de signer.' },
+      { href: '/guides/refonte-site-7-signes', t: 'Les 7 signes qu’une refonte est nécessaire', p: 'Chaque signe se vérifie en quelques minutes, sans avis d’expert.' },
     ],
     serviceName: 'Refonte de site internet',
     serviceType: 'Refonte de sites web',
@@ -283,6 +284,94 @@ export const GUIDES = [
     ],
   },
   {
+    slug: 'refonte-site-7-signes',
+    title: 'Refonte de site web : les 7 signes qu’il est temps, et ce qu’on garde',
+    date: '2026-11-08',
+    metaDescription:
+      'Site lent, illisible sur mobile, zéro contact : les 7 signes qui justifient une refonte, ce que l’on garde, ce que l’on reprend — et le vrai prix, sur grille publique.',
+    lede:
+      'Une refonte se décide quand le site vous coûte du temps au lieu d’en faire gagner, pas quand le design commence à vous lasser. Si vous reconnaissez deux ou plus des sept signes ci-dessous, il est temps d’agir — et la bonne nouvelle est que vous gardez bien plus que vous ne le craignez.',
+    sections: [
+      {
+        h: 'Les 7 signes qu’il est temps de refondre',
+        p: [
+          'Un site ne se juge pas au goût de son propriétaire, mais à ce qu’il bloque au quotidien. Voici les sept signaux qui reviennent le plus souvent quand on nous apporte un projet de refonte — chacun est vérifiable en quelques minutes, sans avis d’expert.',
+        ],
+        ul: [
+          '1. Il met trop longtemps à s’afficher. Sur mobile, chaque seconde de chargement en trop est une raison de plus de fermer l’onglet : testez votre page d’accueil sur un téléphone, hors Wi-Fi, et vous saurez sans discussion.',
+          '2. Il est illisible sur smartphone. Textes minuscules, boutons trop rapprochés, menu introuvable : vos clients regardent leur téléphone bien avant de regarder le vôtre.',
+          '3. Vous ne pouvez rien y changer vous-même. Une faute à corriger passe par un prestataire ? Une offre à publier attend trois semaines ? Le site est devenu un locataire qu’on subit.',
+          '4. Il ne rapporte aucun contact. Du trafic, mais zéro formulaire rempli et zéro appel : le design n’y est pour rien, c’est l’offre qui est mal racontée ou mal présentée.',
+          '5. Il a dix ans d’écart avec vos concurrents. Vous pouvez trouver cela injuste ; vos visiteurs, eux, en tirent une conclusion en trois secondes, avant même de lire la première ligne.',
+          '6. Votre propre nom vous enfonce. Tapez le nom de votre entreprise dans Google : si votre site n’apparaît pas en tête, le problème est technique, pas une question de mode.',
+          '7. Vous ne savez plus qui détient quoi. Nom de domaine, hébergement, accès à l’administration : si personne ne peut vous répondre par écrit, la refonte sera aussi l’occasion de reprendre vos clés.',
+        ],
+      },
+      {
+        h: 'Ce que l’on garde (beaucoup plus que vous ne le craignez)',
+        p: [
+          'La peur classique de la refonte, c’est le grand vide : tout perdre et repartir de zéro. En réalité, une refonte sérieuse est une opération de reprise, pas une table rase. Ce qui fonctionne est identifié, puis conservé — et c’est écrit dans le devis, ligne par ligne.',
+        ],
+        ul: [
+          'Les contenus qui travaillent : textes qui convertissent, pages références, descriptions d’offres. Chacun est audité, puis repris tel quel, réécrit ou supprimé en connaissance de cause.',
+          'Les adresses qui rapportent : les pages correctement positionnées gardent leur URL ou obtiennent une redirection une-pour-une — c’est ce qui protège le référencement existant.',
+          'Le nom de domaine, les fiches en ligne, les adwares et comptes divers : ils pointent vers votre adresse ; tant qu’elle ne change pas, rien ne bouge.',
+          'Ce qui vous ressemble : logo, photos, ton. Une refonte moderne qui vous transforme en une autre entreprise est une refonte ratée.',
+        ],
+      },
+      {
+        h: 'Ce que l’on ne garde presque jamais',
+        p: [
+          'À l’inverse, trois choses méritent de disparaître sans état d’âme :',
+        ],
+        ul: [
+          'L’architecture héritée : les onze pages « utiles » dont trois seulement reçoivent des visiteurs, cela s’appelle du poids mort — et cela se nettoie.',
+          'Les technologies mortes : formulaires bricolés, modules que plus personne ne maintient, extensions payantes qui ne servent plus à rien depuis deux ans.',
+          'Le site-musée : de belles images, aucune manière simple de vous contacter.',
+        ],
+      },
+      {
+        h: 'Refonte ou nouveau site : la question d’avant',
+        p: [
+          'Il arrive que la refonte coûte plus cher que de repartir propre : quand le socle technique est trop ancien, que les contenus à reprendre sont rares ou que le positionnement doit changer. Dans ce cas, un site neuf sur la grille de création est plus simple et plus franc — le premier échange sert exactement à trancher, chiffres à l’appui, avant toute vente. Un doute sur ce que le basculement ferait à votre visibilité ? Notre guide « Refonte de site : la checklist SEO pour ne rien perdre » liste point par point ce qui protège vos positions.',
+        ],
+      },
+      {
+        h: 'Combien coûte une refonte ?',
+        p: [
+          'Chez DigitalVerse, la refonte se chiffre sur la même grille publique qu’une création : 400 € en paiement unique pour un site vitrine complet, 1 200 € pour un site Business avec gestion. C’est le devis qui ajuste le périmètre : volume de pages, contenus repris ou réécrits, fonctionnalités conservées. Pas de forfait « modernisation express » ni de facturation à l’heure surprise — ce qui est écrit au devis est inclus, et le reste y figure comme exclusion : nom de domaine, hébergement et contenus fournis par le client en tête.',
+        ],
+      },
+      {
+        h: 'Comment ça se passe, concrètement',
+        p: [
+          'Les mêmes quatre étapes qu’une création, avec un audit de reprise en plus :',
+        ],
+        ul: [
+          'Échange et état des lieux : ce qui fonctionne, ce qui freine, ce qui doit disparaître — vous savez ce que vous paierez avant de lancer quoi que ce soit.',
+          'Conception et validation : une base visuelle nouvelle, ajustée avec vous jusqu’à ce qu’elle vous ressemble assez.',
+          'Développement et tests : reprise des URLs une par une, vérification sur tous les appareils, formulaires testés pour de vrai.',
+          'Mise en ligne et filet de sécurité : redirections en place, fichiers techniques à jour, suivi des premiers jours. Une refonte ne se livre pas, elle se surveille.',
+        ],
+      },
+      {
+        h: 'Questions fréquentes sur la refonte',
+        ul: [
+          'Vais-je perdre mon référencement ? — Mal conduite, une refonte en coûte une partie ; c’est précisément pour cela que la reprise des URLs et les redirections se décrivent dans le devis, pas dans les promesses. La checklist SEO de ce site détaille chaque point à exiger.',
+          'Mon site reste-t-il en ligne pendant la refonte ? — Oui, entièrement : l’ancien site continue de tourner pendant que le nouveau se construit à côté, et la bascule ne se fait qu’une fois votre validation.',
+          'Et si mon prestataire actuel garde mes accès ? — C’est le signe n°7, et la première urgence à traiter : reprendre le domaine, l’hébergement et l’administration à votre nom ouvre nos états des lieux, avant même de parler design.',
+        ],
+      },
+    ],
+    cta: { label: 'Parler de ma refonte', href: '/refonte-site-internet' },
+    related: [
+      { href: '/refonte-site-internet', label: 'L’offre de refonte DigitalVerse' },
+      { href: '/tarifs', label: 'Tarifs création de site web' },
+      { href: '/guides/refonte-site-seo-checklist', label: 'Refonte et SEO : la checklist complète' },
+      { href: '/guides/prix-site-internet', label: 'Guide : le prix d’un site en 2026' },
+    ],
+  },
+  {
     slug: 'choisir-agence-web',
     title: 'Agence web : les 8 questions à poser avant de signer',
     date: '2026-10-28',
@@ -335,6 +424,7 @@ export const GUIDES = [
     cta: { label: 'Parler de votre projet', href: '/#contact' },
     related: [
       { href: '/guides/prix-site-internet', label: 'Guide : le prix d’un site en 2026' },
+      { href: '/guides/refonte-site-7-signes', label: 'Refonte : les 7 signes qu’il est temps' },
       { href: '/creation-site-internet', label: 'Notre offre de création de site' },
     ],
   },
