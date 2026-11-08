@@ -430,6 +430,26 @@ app.post('/api/chat/:id/terminer', rateLimit(30), async (req, res) => {
   res.json({ ok: true, brief: order.brief, status: order.status });
 });
 
+/* Avis du client SUR LE SITE (étoiles + texte), collecté à la livraison.
+   Enregistré dans la commande (visible admin). Google n'ayant aucune API de
+   dépôt d'avis, le client est ensuite guidé en un clic vers la fiche avec son
+   texte copié : il le colle et publie lui-même — seul procédé conforme. */
+app.post('/api/chat/:id/avis', rateLimit(10), (req, res) => {
+  const { db, order } = getOrder(req.params.id);
+  if (!checkOrderKey(req, res, order)) return;
+  if (order.status !== 'prete' && order.status !== 'archivee') {
+    return res.status(400).json({ ok: false, error: 'L’avis est proposé une fois le site livré.' });
+  }
+  const stars = Number(req.body && req.body.stars);
+  const text = clean(req.body && req.body.text, 1500);
+  if (!Number.isInteger(stars) || stars < 1 || stars > 5) return res.status(400).json({ ok: false, error: 'Choisissez de 1 à 5 étoiles.' });
+  if (text.length < 5) return res.status(400).json({ ok: false, error: 'Quelques mots de plus (5 caractères minimum).' });
+  order.review = { stars, text, at: new Date().toISOString() };
+  order.updatedAt = order.review.at;
+  saveDb(db);
+  res.json({ ok: true, review: { stars, text } });
+});
+
 app.get('/api/chat/:id/statut', (req, res) => {
   const { order } = getOrder(req.params.id);
   if (!checkOrderKey(req, res, order)) return;
@@ -666,7 +686,7 @@ app.get('/admin', requireAdmin, (req, res) => {
 app.get('/admin/commandes/:id', requireAdmin, (req, res) => {
   const { order } = getOrder(req.params.id);
   if (!order) return res.status(404).render('404', { BRAND, page: { title: 'Commande introuvable — DigitalVerse', robots: 'noindex, nofollow' } });
-  res.render('admin/order', { BRAND, order: orderPublic(order), plan: PLANS[order.planSlug], page: { title: `Commande ${order.id} — DigitalVerse`, robots: 'noindex, nofollow' } });
+  res.render('admin/order', { BRAND, order: orderPublic(order), plan: PLANS[order.planSlug], GOOGLE_REVIEWS_URL, page: { title: `Commande ${order.id} — DigitalVerse`, robots: 'noindex, nofollow' } });
 });
 
 /* ------- API admin (JSON, utilisée par le tableau de bord auto-actualisé) */

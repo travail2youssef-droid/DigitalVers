@@ -185,6 +185,61 @@
     if (box) box.hidden = false;
   }
 
+  /* --------------------------- avis client sur le site (à la livraison) */
+  (function initReview() {
+    const box = document.getElementById('review-box');
+    if (!box) return;
+    const btnCopy = document.getElementById('review-copy-btn');
+    if (btnCopy) {
+      btnCopy.addEventListener('click', async () => {
+        const inp = document.getElementById('review-copy');
+        try { await navigator.clipboard.writeText(inp.value); btnCopy.textContent = 'Copié !'; setTimeout(() => (btnCopy.textContent = 'Copier'), 2500); }
+        catch { inp.select(); document.execCommand('copy'); btnCopy.textContent = 'Copié !'; setTimeout(() => (btnCopy.textContent = 'Copier'), 2500); }
+      });
+      return;
+    }
+    const starsRow = document.getElementById('review-stars');
+    if (!starsRow) return;
+    const stars = Array.prototype.slice.call(starsRow.querySelectorAll('.dv-star'));
+    const ta = document.getElementById('review-text');
+    const err = document.getElementById('review-err');
+    const send = document.getElementById('review-send');
+    let val = 0;
+    const paint = (n) => stars.forEach((el, i) => el.classList.toggle('on', i < n));
+    const ready = () => { send.disabled = !(val >= 1 && ta.value.trim().length >= 5); };
+    stars.forEach((el) => {
+      el.addEventListener('mouseenter', () => paint(Number(el.dataset.v)));
+      el.addEventListener('mouseleave', () => paint(val));
+      el.addEventListener('click', () => { val = Number(el.dataset.v); paint(val); ready(); });
+    });
+    ta.addEventListener('input', ready);
+    const escHtml = (x) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    send.addEventListener('click', async () => {
+      send.disabled = true;
+      try {
+        const res = await fetch('/api/chat/' + encodeURIComponent(data.id) + '/avis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: data.key, stars: val, text: ta.value.trim() }),
+        });
+        const out = await res.json();
+        if (!out.ok) { err.hidden = false; err.textContent = out.error || 'Envoi impossible — réessayez.'; send.disabled = false; return; }
+        let copied = false;
+        const txt = ta.value.trim();
+        try { await navigator.clipboard.writeText(txt); copied = true; } catch { copied = false; }
+        box.innerHTML = '<p class="side-title text-red">Merci pour votre avis !</p>'
+          + '<p class="muted small" style="margin:0 0 .6rem">' + (copied ? 'Votre texte est copié : dans la fenêtre Google, un simple coller (Ctrl+V) suffit, puis validez.' : 'Votre avis est enregistré sur la commande : copiez le texte ci-dessous puis collez-le dans la fenêtre Google.') + '</p>'
+          + '<div class="copy-row"><input type="text" id="review-copy" readonly aria-label="Votre avis" value="' + escHtml(txt) + '"><button type="button" class="btn btn-outline btn-sm" id="review-copy-btn">Copier</button></div>'
+          + '<a class="btn btn-primary btn-block" style="margin-top:.6rem" href="' + box.dataset.reviewUrl + '" target="_blank" rel="noopener noreferrer">Publier mon avis sur Google</a>';
+        const b2 = document.getElementById('review-copy-btn');
+        if (b2) b2.addEventListener('click', async () => {
+          const inp = document.getElementById('review-copy');
+          try { await navigator.clipboard.writeText(inp.value); } catch { inp.select(); document.execCommand('copy'); }
+        });
+      } catch { err.hidden = false; err.textContent = 'Erreur réseau — réessayez.'; send.disabled = false; }
+    });
+  })();
+
   function showLivraison(liv) {
     const box = document.getElementById('livraison-box');
     box.hidden = false;

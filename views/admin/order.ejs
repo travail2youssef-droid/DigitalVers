@@ -79,6 +79,15 @@
       </div>
 
       <!-- Colonne 2 : brief généré -->
+      <% if (order.review) { %>
+      <div class="card">
+        <h2 class="card-title">Avis client (collecté sur le site)</h2>
+        <p style="font-size:1.25rem;line-height:1;color:#f5b301" aria-label="<%= order.review.stars %> sur 5"><%= '★'.repeat(order.review.stars) %><span class="muted"><%= '★'.repeat(5 - order.review.stars) %></span></p>
+        <p class="muted small"><%= new Date(order.review.at).toLocaleString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
+        <blockquote style="margin:.5rem 0 0"><%= order.review.text %></blockquote>
+        <p class="muted small" style="margin-top:.6rem"><a href="<%= GOOGLE_REVIEWS_URL %>" target="_blank" rel="noopener noreferrer">Lien d’avis Google (pour relancer le client au besoin)</a> — l’avis n’est sur Maps que si le client l’a publié lui-même depuis ce bouton.</p>
+      </div>
+      <% } %>
       <div class="card">
         <h2 class="card-title">Brief généré par l’assistant</h2>
         <% if (!order.brief) { %>

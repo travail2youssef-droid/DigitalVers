@@ -37,10 +37,25 @@
         <a id="livraison-url" class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">Accéder à ma livraison</a>
         <p class="muted small" id="livraison-note"></p>
       </div>
-      <div id="review-box" class="livraison-box"<%= order.status === 'prete' ? '' : ' hidden' %>>
-        <p class="side-title text-red">Votre site est livré — merci !</p>
-        <p class="muted small" style="margin:0 0 0.6rem">Si vous êtes satisfait, un avis Google de 2 minutes aide énormément une jeune entreprise. Répondez-y quand vous voulez, il restera disponible sur cette page.</p>
-        <a class="btn btn-outline btn-block" href="<%= reviewUrl %>" target="_blank" rel="noopener noreferrer">Partager mon expérience (Google)</a>
+      <style>
+        .dv-stars{display:flex;gap:.35rem;margin:.35rem 0 .6rem;font-size:1.5rem;line-height:1;color:#6b6b6b}
+        .dv-star{cursor:pointer;user-select:none;transition:color .12s}
+        .dv-star.on{color:#f5b301}
+      </style>
+      <div id="review-box" class="livraison-box" data-review-url="<%= reviewUrl %>"<%= order.status === 'prete' ? '' : ' hidden' %>>
+        <% if (order.review) { %>
+        <p class="side-title text-red">Merci pour votre avis !</p>
+        <p class="muted small" style="margin:0 0 0.6rem">Votre évaluation (<%= order.review.stars %>/5) est enregistrée sur votre commande. Pour la rendre visible sur Google, copiez votre texte puis collez-le dans la fenêtre qui s’ouvre :</p>
+        <div class="copy-row"><input type="text" id="review-copy" readonly aria-label="Votre avis" value="<%= order.review.text.replace(/"/g, '&quot;') %>"><button type="button" class="btn btn-outline btn-sm" id="review-copy-btn">Copier</button></div>
+        <a class="btn btn-primary btn-block" style="margin-top:.6rem" href="<%= reviewUrl %>" target="_blank" rel="noopener noreferrer">Publier mon avis sur Google</a>
+        <% } else { %>
+        <p class="side-title text-red">Votre site est livré — votre impression en quelques secondes ?</p>
+        <div class="dv-stars" id="review-stars" role="group" aria-label="Votre note"><span class="dv-star" data-v="1">★</span><span class="dv-star" data-v="2">★</span><span class="dv-star" data-v="3">★</span><span class="dv-star" data-v="4">★</span><span class="dv-star" data-v="5">★</span></div>
+        <textarea id="review-text" rows="3" maxlength="1500" placeholder="Ce qui vous a plu, ce qui a manqué — quelques phrases suffisent."></textarea>
+        <p class="text-red small" id="review-err" hidden></p>
+        <button type="button" class="btn btn-primary btn-block" id="review-send" disabled>Envoyer mon avis</button>
+        <p class="muted small">Enregistré sur cette page et visible dans votre commande ; un bouton vous proposera ensuite de le publier aussi sur Google (1 clic).</p>
+        <% } %>
       </div>
     </div>
 
