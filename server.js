@@ -540,6 +540,34 @@ app.get('/guides/:slug', (req, res) => {
   });
 });
 
+/* ============================================================ PAGE TARIFS */
+/* Page tarifs dédiée (SEO) : les prix ne sont jamais recopiés — lus dans PLANS au rendu. */
+app.get('/tarifs', (req, res) => {
+  const site = siteUrl(req);
+  const eur = (n) => n.toLocaleString('fr-FR') + ' €';
+  const vp = PLANS['vitrine-starter'];
+  const bp = PLANS['business-fonctionnel'];
+  const delai = FAQ.find((f) => /délai de réalisation/i.test(f.q));
+  res.render('tarifs', {
+    BRAND, PLANS, PRICING_GLOBAL_NOTE, SUBSCRIPTION_CANCELLATION_NOTE,
+    intro: 'Combien coûte un site web ? Le site vitrine complet est à ' + eur(vp.price) + ' et le site Business avec gestion à ' + eur(bp.price) + ', en paiement unique. Entretien, chatbot IA et automatisation sont des options tarifées séparément — tous les prix de cette page viennent de notre grille publique, et le devis liste le périmètre inclus comme les exclusions avant tout engagement.',
+    createPlans: ['vitrine-starter', 'business-fonctionnel'].map((slug) => ({ slug, p: PLANS[slug] })),
+    optionPlans: [
+      { slug: 'vitrine-care', href: '/maintenance-site-internet' },
+      { slug: 'business-care', href: '/maintenance-site-internet' },
+      { slug: 'chatbot-ia', href: '/chatbot-ia-entreprise' },
+      { slug: 'automatisation-ia', href: '/automatisation-ia' },
+    ].map((o) => ({ ...o, p: PLANS[o.slug] })),
+    delaiA: delai ? delai.a : '',
+    jsonLd: jsonForScript({ '@context': 'https://schema.org', '@graph': [
+      crumbNode(site, [{ name: 'Accueil', path: '/' }, { name: 'Tarifs', path: '/tarifs' }]),
+      orgNode(site),
+      { '@type': 'WebPage', '@id': site + '/tarifs#webpage', name: 'Tarifs création de site web', url: site + '/tarifs', inLanguage: 'fr-FR', description: PAGE_SEO.tarifs.description, isPartOf: { '@id': site + '/#site' }, mainEntity: offerNodes(site, ['vitrine-starter', 'business-fonctionnel', 'vitrine-care', 'business-care', 'chatbot-ia', 'automatisation-ia']) },
+    ] }),
+    page: { title: PAGE_SEO.tarifs.title, description: PAGE_SEO.tarifs.description, path: '/tarifs' },
+  });
+});
+
 /* ============================================================== SEO — ROBOTS/SITEMAP/LLMS */
 app.get('/robots.txt', (req, res) => {
   const site = siteUrl(req);
@@ -563,6 +591,7 @@ app.get('/sitemap.xml', (req, res) => {
   const urls = [
     { p: '/', pr: '1.0', freq: 'weekly' },
     { p: '/commander', pr: '0.9', freq: 'monthly' },
+    { p: '/tarifs', pr: '0.8', freq: 'monthly' },
     ...LANDING_PAGES.map((l) => ({ p: l.path, pr: '0.8', freq: 'monthly' })),
     { p: '/guides', pr: '0.7', freq: 'monthly' },
     ...GUIDES.map((g) => ({ p: '/guides/' + g.slug, pr: '0.6', freq: 'yearly', mod: g.date })),
