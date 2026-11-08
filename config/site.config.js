@@ -327,6 +327,11 @@ export const PRICING_GLOBAL_NOTE =
   'TVA : non précisée à ce stade — le statut de TVA applicable sera indiqué sur le devis. Hébergement, noms de domaine, licences tierces et coûts d’API/IA externes ne sont inclus que si mentionnés explicitement au devis. Aucune modification ou assistance illimitée n’est promise : chaque périmètre est défini par écrit.';
 
 /* Notice spécifique aux abonnements mensuels (affichée sous les tarifs et dans le récapitulatif de commande) */
+/* Lien court « Demander des avis » de la fiche Google Business Profile
+   (régénérable depuis business.google.com si un jour il change).
+   Utilisé côté client : proposé uniquement à la livraison (statut prete). */
+export const GOOGLE_REVIEWS_URL = 'https://g.page/r/CS2O4CxJxK2jECE/review';
+
 export const SUBSCRIPTION_CANCELLATION_NOTE =
   'Pour les abonnements mensuels : vous pouvez exiger une annulation de votre abonnement au bout de 6 mois sans résultats concluants, à condition que le justificatif soit valable.';
 

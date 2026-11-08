@@ -37,6 +37,11 @@
         <a id="livraison-url" class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">Accéder à ma livraison</a>
         <p class="muted small" id="livraison-note"></p>
       </div>
+      <div id="review-box" class="livraison-box"<%= order.status === 'prete' ? '' : ' hidden' %>>
+        <p class="side-title text-red">Votre site est livré — merci !</p>
+        <p class="muted small" style="margin:0 0 0.6rem">Si vous êtes satisfait, un avis Google de 2 minutes aide énormément une jeune entreprise. Répondez-y quand vous voulez, il restera disponible sur cette page.</p>
+        <a class="btn btn-outline btn-block" href="<%= reviewUrl %>" target="_blank" rel="noopener noreferrer">Partager mon expérience (Google)</a>
+      </div>
     </div>
 
     <div class="card" id="progress-card">

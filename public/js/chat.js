@@ -180,6 +180,11 @@
     box.hidden = true;
   }
 
+  function showReview() {
+    const box = document.getElementById('review-box');
+    if (box) box.hidden = false;
+  }
+
   function showLivraison(liv) {
     const box = document.getElementById('livraison-box');
     box.hidden = false;
@@ -281,6 +286,7 @@
         setStatusPill(out.status);
         if (out.livraison && out.livraison.url) showLivraison(out.livraison);
         updatePay(out.status, out.paymentUrl, out.paye);
+        if (out.status === 'prete') showReview();
       }
     } catch { /* silencieux */ }
   }, 15000);
