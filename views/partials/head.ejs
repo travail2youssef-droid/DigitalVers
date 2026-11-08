@@ -46,6 +46,8 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
+    // GA4 branché directement ici : NE PAS recréer de balise GA4 dans le conteneur GTM (double comptage).
+    gtag('config', 'G-6FEHEE7BB8');
   </script>
   <% } %>
 </head>
