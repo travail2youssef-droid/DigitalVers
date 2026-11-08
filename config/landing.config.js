@@ -315,7 +315,7 @@ export const GUIDES = [
         ul: [
           'Les contenus qui travaillent : textes qui convertissent, pages références, descriptions d’offres. Chacun est audité, puis repris tel quel, réécrit ou supprimé en connaissance de cause.',
           'Les adresses qui rapportent : les pages correctement positionnées gardent leur URL ou obtiennent une redirection une-pour-une — c’est ce qui protège le référencement existant.',
-          'Le nom de domaine, les fiches en ligne, les adwares et comptes divers : ils pointent vers votre adresse ; tant qu’elle ne change pas, rien ne bouge.',
+          'Le nom de domaine, les fiches en ligne (Google, annuaires) et vos comptes associés : ils pointent vers votre adresse ; tant qu’elle ne change pas, rien ne bouge.',
           'Ce qui vous ressemble : logo, photos, ton. Une refonte moderne qui vous transforme en une autre entreprise est une refonte ratée.',
         ],
       },
